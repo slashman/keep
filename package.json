@@ -1,0 +1,20 @@
+{
+  "name": "slashie-keep",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A first-person 3D castle/museum of the projects on slashie.net",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.169.0",
+    "typescript": "^5.6.0",
+    "vite": "^5.4.0"
+  }
+}

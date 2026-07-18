@@ -1,0 +1,5507 @@
+{
+  "projects":[
+    {
+      "name":"Big Games",
+      "id":"games1",
+      "text":"Development of these games has taken over a year. Some of these I never considered completely finished or were just not released.",
+      "sort":1,
+      "projects":[
+                {
+          "title":"The Abbyss of Bringlia",
+          "image":"img/buttons/bringlia.png",
+          "text":"Centuries ago, a swirling magical portal was discovered under Hinua, capital city of the Kingdom of Bringlia.",
+          "status":"alpha",
+          "activity":"stalled",
+          "buttons":[],
+          "lastUpdate": 2023,
+          "year":2023,
+          "years":[2023],
+          "genre":["roguelike"],
+          "technologies":[
+            "java"
+          ],
+          "collaborators":[
+            "stoltverd"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Wrath of Kramora",
+          "image":"img/buttons/wok.png",
+          "text":"Despair and horror reign supreme over the world of Concordia after the last hope of the world has vanished.",
+          "status":"design",
+          "activity":"stalled",
+          "buttons":[],
+          "lastUpdate": 2022,
+          "year":2022,
+          "years":[2022],
+          "genre":["roguelike"],
+          "technologies":[],
+          "collaborators":[
+            "stoltverd"
+          ],
+          "artStyle":[]
+        },
+        {
+          "title":"Project Hadria",
+          "image":"img/buttons/hadria.png",
+          "text":"A great evil is rising from the depths of Kiaraheyek: the black mountains.",
+          "status":"design",
+          "activity":"active",
+          "buttons":[],
+          "lastUpdate": 2024,
+          "year":2022,
+          "years":[2022, 2024],
+          "genre":["strategy"],
+          "technologies":[
+            "unity"
+          ],
+          "collaborators":[
+            "simernio",
+            "armyboy",
+            "quietgecko",
+            "stoltverd"
+          ],
+          "artStyle":[
+            "illustrations"
+          ]
+        },
+        {
+          "title":"Mysterious Project 3",
+          "image":"img/buttons/s3.png",
+          "text":"More info soon!",
+          "status":"beta",
+          "activity": "active",
+          "buttons":[],
+          "year": 2025,
+          "years": [2025, 2026],
+          "lastUpdate": 2026,
+          "genre":["roguelike"],
+          "collaborators":[],
+          "technologies":[
+            "typescript",  "pixi"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },        
+        {
+          "title":"Mysterious Project 2",
+          "image":"img/buttons/s2.png",
+          "text":"More info soon!",
+          "status":"pre-alpha",
+          "activity": "active",
+          "buttons":[],
+          "year": 2025,
+          "years": [2025, 2026],
+          "lastUpdate": 2026,
+          "genre":[],
+          "collaborators":[
+            "randy",
+            "aguahervida"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Senatus",
+          "image":"img/buttons/senatus.png",
+          "text":"Strategic card battles in the heart of the Roman Senate. Debate, persuade, and rise through the ranks to become Consul of Rome. Influence is power — and power decides everything.",
+          "status":"alpha",
+          "activity": "active",
+          "buttons":[
+            {
+              "title":"Steam Page",
+              "url":"https://store.steampowered.com/app/4094470/Senatus/",
+              "type": "website"
+            }
+          ],
+          "year": 2025,
+          "years": [2025, 2026],
+          "lastUpdate": 2026,
+          "genre":["strategy", "card-battle"],
+          "collaborators":[
+            "aguahervida", "quietgecko"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Secret NES Game",
+          "image":"img/buttons/nes.jpg",
+          "text":"An unreleased open world side scrolling NES Game.",
+          "status":"alpha",
+          "activity": "stalled",
+          "buttons":[],
+          "year": 2022,
+          "years": [2022],
+          "lastUpdate": 2022,
+          "genre":["platformer"],
+          "collaborators":[
+            "mapedorr", "quietgecko", "randy"
+          ],
+          "technologies":[
+            "assembler"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"NovaMundi",
+          "image":"img/buttons/novamundi.png",
+          "text":"Unite the Muisca people to repel the Spanish invasion of the Andean highlands.",
+          "status":"public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Website",
+              "url":"https://slashware.games/novamundi",
+              "type": "website"
+            },
+            {
+              "title":"Steam Page",
+              "url":"https://store.steampowered.com/app/1370940/NovaMundi/",
+              "type": "website"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/novamundi/",
+              "type": "devlog"
+            }
+          ],
+          "year": 2021,
+          "years": [2022, 2023, 2024],
+          "lastUpdate": 2024,
+          "genre":[
+            "strategy"
+          ],
+          "collaborators":[
+            "quietgecko", "aguaquiña", "simernio", "inkiluanna", "aliwoo", "stoltverd", "jucarave", "cesarart"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "3d",
+            "illustrations"
+          ]
+        },
+        {
+          "title":"Expedition - Children of Bachue",
+          "image":"img/buttons/novamundi.png",
+          "text":"Pacanchique, a young Tyba of Ramiriqui, visits Hunza with his loved one, only to lose her to the Zaque.",
+          "status": "beta",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/expedition/",
+              "type": "devlog"
+            }
+          ],
+          "year": 2019,
+          "years": [2019],
+          "lastUpdate": 2019,
+          "genre":[
+            "strategy", "rpg"
+          ],
+          "collaborators":[
+            "quietgecko", "simernio", "jucarave", "luisEstrada", "danielJojoa", "estebanJojoa", "paulPereda"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "3d",
+            "illustrations"
+          ]
+        },
+        {
+          "title":"Expedition - Echoes of the Emerald Jungle",
+          "image":"img/buttons/novamundi.png",
+          "text":"Sail from Spain to explore the Emerald Jungle, documenting the cultures and species you find, and trading with its inhabitants for survival.",
+          "status": "beta",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/expedition/",
+              "type": "devlog"
+            }
+          ],
+          "year": 2018,
+          "years": [2019, 2020],
+          "lastUpdate": 2020,
+          "genre":[
+            "strategy",
+            "roguelike"
+          ],
+          "collaborators":[
+            "quietgecko", "simernio", "jucarave", "paulPereda"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "3d",
+            "illustrations"
+          ]
+        },
+        {
+          "title":"Kramora's Shadow - Ananias Roguelike",
+          "image":"img/buttons/ananias.png",
+          "text":"All features of traditional roguelikes without the clumsy million keyboard command UI. Available in custom experiences for mobile and desktop.",
+          "status":"public",
+          "activity": "paused",
+          "buttons":[
+            {
+              "title":"Website",
+              "url":"http://ananiasgame.com/",
+              "type": "website"
+            },
+            {
+              "title":"Steam",
+              "url":"https://store.steampowered.com/app/372080/Ananias_Roguelike/",
+              "type": "steam"
+            },
+            {
+              "title":"AppStore",
+              "url":"https://itunes.apple.com/us/app/ananias-fellowship/id992325394?mt=8",
+              "type": "apple"
+            },
+            {
+              "title":"Play Store",
+              "url":"https://play.google.com/store/apps/details?id=co.slashland.ananias",
+              "type": "android"
+            },
+            {
+              "title":"itch.io",
+              "url":"http://slash.itch.io/ananias",
+              "type": "play-online"
+            }
+          ],
+          "year":2014,
+          "years": [2015, 2016, 2017, 2025],
+          "lastUpdate":2025,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+            "denzi",
+            "cosmicMenace",
+            "ashtonMorris"
+          ],
+          "technologies":[
+            "javascript",
+            "cordova"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Drash Roguelike",
+          "image":"img/buttons/drashrl.png",
+          "text":"Survive in the arena gaining new skills on each level. Plan your character development wisely, or die.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/drashrl",
+              "type": "download"
+            },
+            {
+              "title":"Info Page",
+              "url":"http://slashie.net/info/drashrl.html",
+              "type": "info"
+            },
+            {
+              "title":"Download",
+              "url":"downloads/drashrl032.zip",
+              "type": "download"
+            },
+            {
+              "title":"Source Code",
+              "url":"http://code.google.com/p/mtdrashroguelike/",
+              "type": "source-code"
+            }
+          ],
+          "year":2006,
+          "years": [2007],
+          "lastUpdate":2007,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "pixel-art",
+            "terminal"
+          ]
+        },
+        {
+          "title":"Castlevania Roguelike",
+          "subtitle":"Serenade of Chaos",
+          "image":"img/buttons/cvrl.png",
+          "text":"Challenge the castle of count Dracula facing all kind of monsters and perils. Features six different classes with different skills and tactics.",
+          "status":"beta",
+          "activity":"stalled",
+          "buttons":[
+            {
+              "title": "Itch.io",
+              "url": "https://slash.itch.io/serenade-of-chaos",
+              "type": "play-online"
+            },
+            {
+              "title":"Info Page",
+              "url":"http://slashie.net/info/cvrl.html",
+              "type": "info"
+            },
+            {
+              "title":"Download",
+              "url":"downloads/cvrl073.zip",
+              "type": "download"
+            },
+            {
+              "title":"Source Code",
+              "url":"http://code.google.com/p/castlevaniarl/",
+              "type": "source-code"
+            }
+          ],
+          "year":2005,
+          "years": [2006, 2009, 2010, 2024],
+          "lastUpdate":2024,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+            "oryx"
+          ],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "pixel-art",
+            "terminal"
+          ]
+        },
+        {
+          "title":"Expedition",
+          "image":"img/buttons/expedition.png",
+          "text":"Set sail to unexplored seas and land to discover cultures, and animal and plant species.",
+          "status":"beta",
+          "activity":"stalled",
+          "buttons":[
+            {
+              "title": "Itch.io",
+              "url": "https://slash.itch.io/expedition",
+              "type": "download"
+            },
+            {
+              "title":"Old Website",
+              "url":"http://slashwareint.com/expedition",
+              "type": "website"
+            }
+          ],
+          "year":2009,
+          "years": [2010, 2011, 2017],
+          "lastUpdate":2017,
+          "genre":[
+            "turn-based"
+          ],
+          "collaborators":[
+            "oryx"
+          ],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Pixal",
+          "image":"img/buttons/pixal.png",
+          "text":"Browser based card battles tournament. Fight your friends in the arena and buy cool gear.",
+          "status":"beta",
+          "activity":"stalled",
+          "buttons":[
+            {
+              "title":"Devlog",
+              "url":"http://slashland.wordpress.com/category/my-games/pixal/",
+              "type": "devlog"
+            }
+          ],
+          "lastUpdate": 2012,
+          "year":2007,
+          "years":[2008, 2009, 2010, 2012],
+          "genre":[
+            "persistent-browser-based-game",
+            "card-battle"
+          ],
+          "collaborators":[
+            "denzi", "straust", "valnyr"
+          ],
+          "technologies":[
+            "java",
+            "javascript"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        }
+      ]
+    },
+    {
+      "name":"+1 Month Game Projects",
+      "text":"Development of these mid-sized games goes beyond an experimental phase, but is still less than a year.",
+      "id":"games2",
+      "sort":2,
+      "projects": [
+        {
+          "title":"Magical Mirai Procon 2026 Entry",
+          "image":"img/buttons/procon26.png",
+          "origin": "An entry for『初音ミク「マジカルミライ 2026」プログラミング・コンテスト』",
+          "text": "Updates are private until the result announcements",
+          "status": "private",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Info",
+              "url":"https://magicalmirai.com/2026/index_en.html",
+              "type": "info"
+            }
+          ],
+          "year": 2026,
+          "genre":[
+            "creative"
+          ],
+          "collaborators":["alzarac", "quietgecko", "dintimusic", "goetia"],
+          "technologies":["typescript", "threejs"],
+          "artStyle":["3d"],
+          "effortMeasures": [
+            {
+              "type": "blogDays",
+              "period": "contestEntry2026",
+              "days": 26
+            }
+          ]
+        },
+        {
+          "title": "Yuah-lak: The Cycles of Fire",
+          "image":"img/buttons/yuah-lak.jpg",
+          "text":"A quick first-person dungeon-crawler set in a region inspired by Ultima Underworld and the Agartha myth.",
+          "status":"alpha",
+          "activity":"paused",
+          "buttons":[
+            {
+              "title":"Blog",
+              "url":"https://blog.slashie.net/category/yuhalak/",
+              "type": "devlog"
+            }
+          ],
+          "year":2024,
+          "genre":[
+            "dungeon-crawler"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "pixel-art", "3d"
+          ],
+          "collaborators":[
+            "stoltverd",
+            "quietgecko",
+            "jucarave",
+            "aliwoo"
+          ]
+        },
+        {
+          "title":"Flashlight Defense",
+          "image":"img/buttons/flashlight.jpg",
+          "text":"",
+          "status":"private",
+          "activity":"finished",
+          "client": true,
+          "weeksOfWork": 12,
+          "buttons":[],
+          "year":2022,
+          "genre":[
+            "arcade"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "illustrations"
+          ],
+          "collaborators":[
+            "bombilloAmarillo",
+            "stoltverd"
+          ]
+        },
+        {
+          "title":"Emerald Woods",
+          "image":"img/buttons/emeraldWoods.png",
+          "text":"Live a life in the tranquil Emerald Woods. An entry for 7DRLC 2020.",
+          "status":"public",
+          "activity":"active",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/emerald-woods",
+              "type": "play-online"
+            },
+            {
+              "title":"Blog",
+              "url":"https://blog.slashie.net/category/emerald-woods/",
+              "type": "devlog"
+            }
+          ],
+          "year":2020,
+          "years": [2020, 2022,2023, 2024, 2026],
+          "lastUpdate": 2026,
+          "genre":[
+            "roguelike",
+            "farming"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "characters", "pixel-art"
+          ],
+          "collaborators":[
+            "quietgecko",
+            "mapedorr",
+            "aguahervida",
+            "stoltverd",
+            "naiyenzo"
+          ]
+        },
+        {
+          "title":"FormulaProc",
+          "image":"img/buttons/formulaProc.png",
+          "text":"A generator of racing stories; follow the progress of the season as the drivers make their best to dominate in tracks all around the world.",
+          "origin": "Originally, an entry for procjam 2024",
+          "status":"public",
+          "activity":"paused",
+          "buttons":[
+            {
+              "title":"Main Website",
+              "url":"https://slashie.net/formulaproc",
+              "type": "website"
+            },
+            {
+              "title":"YouTube Channel",
+              "url":"https://www.youtube.com/channel/UCeAQxahPlR5KYqwSwoI4Phg",
+              "type": "video"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/formulaproc",
+              "type": "devlog"
+            }
+          ],
+          "year":2021,
+          "years": [2021, 2022],
+          "lastUpdate":2022,
+          "genre":[
+            "fantasy-sport"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "illustrations"
+          ],
+          "collaborators":[
+            "simernio",
+            "stoltverd",
+            "quietgecko"
+          ]
+        },
+        {
+          "title":"Roguenet",
+          "image":"img/buttons/roguenet.png",
+          "text":"Visit the Temple of the Roguelike to talk with fellow roguelikers.",
+          "status": "public",
+          "activity": "active",
+          "buttons":[
+            {
+              "title":"Play",
+              "url":"http://roguetemple.com/net",
+              "type": "play-online"
+            },
+            {
+              "title":"Source code",
+              "url":"https://github.com/slashman/roguenet",
+              "type": "source-code"
+            }
+          ],
+          "year":2020,
+          "genre":[
+            "social"
+          ],
+          "technologies":[
+            "javascript",
+            "nodejs"
+          ],
+          "artStyle":[
+            "characters"
+          ],
+          "collaborators":[]
+        },
+        {
+          "title":"Slashbot",
+          "image":"img/buttons/slashbot.png",
+          "text":"A bot to create stories interactively with your friends",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/slashbot/",
+              "type": "source-code"
+            }
+          ],
+          "year":2014,
+          "genre":[
+            "creative",
+            "social"
+          ],
+          "collaborators":[
+            "mojitoking",
+            "rbuitrago",
+            "zurdus",
+            "dahernandezt"
+          ],
+          "technologies":[
+            "javascript",
+            "nodejs",
+            "irc"
+          ],
+          "artStyle":[
+            "none"
+          ]
+        },
+        {
+          "title":"My Brazil 2014 Collection",
+          "image":"img/buttons/brazil2014.png",
+          "text":"Complete your virtual sticker collection in this mobile-friendly website.",
+          "status":"offline",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/other-games/brazil-2014/",
+              "type": "devlog"
+            }
+          ],
+          "year":2014,
+          "genre":[
+            "card-trading",
+            "social"
+          ],
+          "collaborators":[
+            "gioram"
+          ],
+          "technologies":[
+            "javascript",
+            "java"
+          ],
+          "artStyle":[
+            "vector-art"
+          ]
+        },
+        {
+          "title":"MetroidRL: Rogue",
+          "image":"img/buttons/metroidrl.png",
+          "text":"Explore a randomly generated military base gaining new powers and suits.",
+          "status":"beta",
+          "activity":"stalled",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/metroidrl",
+              "type": "download"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/metroidrl",
+              "type": "source-code"
+            }
+          ],
+          "year":2006,
+          "years": [2006, 2007, 2010],
+          "lastUpdate": 2010,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        },
+        {
+          "title":"Morgaelin",
+          "image":"img/buttons/morgaelin.png",
+          "text":"A demake of Ultima VIII in a classic U4/5 like engine; an effort to turn it into a more traditional Ultima experience.",
+          "status":"alpha",
+          "activity":"stalled",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/morgaelin",
+              "type": "download"
+            },
+            {
+              "title":"Source code",
+              "url":"https://bitbucket.org/slash_slashware/morgaelin/src",
+              "type": "source-code"
+            },
+            {
+              "title":"Online Demo (alpha)",
+              "url":"http://slashie.net/morgaelin/",
+              "type": "play-online"
+            },
+            {
+              "title":"Devlog",
+              "url":"http://slashland.wordpress.com/category/my-games/morgaelin/",
+              "type": "devlog"
+            }
+          ],
+          "year":2013,
+          "genre":[
+            "turn-based",
+            "cRPG"
+          ],
+          "collaborators":[
+            "jucarave"
+          ],
+          "technologies":[
+            "java",
+            "libgdx"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        
+        {
+          "title":"ArcherFire (Flash)",
+          "image":"img/buttons/archerfire.png",
+          "text":"Fight against the hordes of aliens invading the human empire, share your accomplishments with your friends.",
+          "status":"beta",
+          "activity":"stalled",
+          "buttons":[
+            {
+              "title":"Blog",
+              "url":"https://blog.slashie.net/category/other-games/archerfire/",
+              "type": "devlog"
+            }
+          ],
+          "lastUpdate":2014,
+          "years": [2012, 2014],
+          "year":2012,
+          "genre":[
+            "arcade",
+            "space-shooter"
+          ],
+          "collaborators":[
+            "denzi",
+            "axelTheGod",
+            "jucarave",
+            "ashtonMorris"
+          ],
+          "technologies":[
+            "flash",
+            "php",
+            "facebook"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"ArcherFire QB",
+          "image":"img/buttons/archerfireQB.png",
+          "text":"Fight against the of aliens invading the human empire. (Source code is lost)",
+          "status":"beta",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"Gameplay Video",
+              "url":"https://www.youtube.com/watch?v=YxLc4lQ3bH0",
+              "type": "video"
+            },
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/early-qbasic-games",
+              "type": "download"
+            },
+            {
+              "title":"Download",
+              "url":"downloads/af024.zip",
+              "type": "download"
+            }
+          ],
+          "year":2002,
+          "genre":[
+            "arcade",
+            "space-shooter"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+            "qbasic"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Guardian Angel",
+          "image":"img/buttons/guardianAngelLogo.jpg",
+          "text":"An ambitious unfinished roguelike that intended players to be able to immerse into a fully simulated medieval fantasy world",
+          "status":"alpha",
+          "activity":"dead",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/guardian-angel",
+              "type": "download"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/ga",
+              "type": "source-code"
+            }
+          ],
+          "year":2003,
+          "years":[2003, 2004],
+          "lastUpdate": 2004,
+          "genre":[
+            "roguelike"
+          ],
+          "collaborators":[],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "characters"
+          ]
+        },
+        
+
+
+        {
+          "title":"Nemesis Stars",
+          "image":"img/buttons/nemesisStars.png",
+          "text":"Join Prince Juran of Terra in his search for the mystic Stones called Nemesis Stars, hidden into the perilous planet Zarkka",
+          "status":"alpha",
+          "activity":"lost",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/early-qbasic-games",
+              "type": "download"
+            }
+          ],
+          "year":2002,
+          "genre":[
+            "rpg"
+          ],
+          "collaborators":[],
+          "technologies":[
+            "qbasic"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"QBasic Ultima 1 Remake",
+          "image":"img/buttons/u1remake.png",
+          "text":"A remake of Ultima 1 in a more jRPG format",
+          "status":"alpha",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/early-qbasic-games",
+              "type": "download"
+            }
+          ],
+          "year":2003,
+          "genre":[
+            "rpg"
+          ],
+          "collaborators":[],
+          "technologies":[
+            "qbasic"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"ArcherFire Revolutions",
+          "text":"Remaking ArcherFire in Java with improved visuals and open-universe gameplay",
+          "status":"alpha",
+          "activity":"stopped",
+          "buttons":[],
+          "year":2005,
+          "genre":[
+            "space-shooter"
+          ],
+          "collaborators":[],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[]
+        },
+        {
+          "title":"NeoArcherFire QB",
+          "image":"img/buttons/naf.png",
+          "text":"Fight against the of aliens invading the human empire.",
+          "status":"beta",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"Gameplay Video",
+              "url":"https://www.youtube.com/watch?v=mJdnDcCk7g4",
+              "type": "video"
+            },
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/early-qbasic-games",
+              "type": "download"
+            },
+            {
+              "title":"Download",
+              "url":"downloads/naf.zip",
+              "type": "download"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/archerfire/tree/master/neoafqb",
+              "type": "source-code"
+            }
+          ],
+          "year":2002,
+          "genre":[
+            "arcade",
+            "space-shooter"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+            "qbasic",
+            "DirectQB"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"ArcherFire QB Text Mode",
+          "image":"img/buttons/archerfire1.png",
+          "text":"Fight against the aliens in three exciting scenarios.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Gameplay Video",
+              "url":"https://www.youtube.com/watch?v=i82lCbcKoEI",
+              "type": "video"
+            },
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/early-qbasic-games",
+              "type": "download"
+            },
+            {
+              "title":"Download",
+              "url":"downloads/arch07b.zip",
+              "type": "download"
+            }
+          ],
+          "year":2001,
+          "genre":[
+            "arcade",
+            "space-shooter"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+            "qbasic"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        },
+        {
+          "title":"Virtual Olympics",
+          "image":"img/buttons/virtualOlympics.png",
+          "text":"Compete with your friends to be the best virtual athlete.",
+          "status":"beta",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"Play on Facebook",
+              "url":"https://apps.facebook.com/virtualgames/",
+              "type": "play-online"
+            }
+          ],
+          "year":2012,
+          "genre":[
+            "arcade",
+            "sports"
+          ],
+          "collaborators":[
+            "bombilloAmarillo",
+            "axelTheGod"
+          ],
+          "technologies":[
+            "flash",
+            "php",
+            "facebook"
+          ],
+          "artStyle":[
+            "vector-art"
+          ]
+        },
+        {
+          "title":"misilleta.com",
+          "image":"img/buttons/misilleta.png",
+          "text":"Create flower arrangements and share with your friends.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Gameplay Video",
+              "url":"https://www.youtube.com/watch?v=MiYOB4Uzl1c",
+              "type": "video"
+            },
+            {
+              "title":"Play Online",
+              "url":"http://misilleta.com",
+              "type": "play-online"
+            }
+          ],
+          "lastUpdate":2017,
+          "year":2012,
+          "years":[2012, 2013, 2014, 2015, 2017],
+          "genre":[
+            "creative",
+            "social"
+          ],
+          "collaborators":[
+            "jucarave",
+            "valnyr"
+          ],
+          "technologies":[
+            "javascript",
+            "php",
+            "facebook"
+          ],
+          "artStyle":[
+            "illustrations"
+          ]
+        },
+        
+        {
+          "title":"Ancient Shadows",
+          "image":"img/buttons/ancientShadows.png",
+          "text":"Explore the mysterious mansion in this magical adventure.",
+          "status":"beta",
+          "activity":"stalled",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/ancient-shadows    ",
+              "type": "play-online"
+            }
+          ],
+          "year":2011,
+          "genre":[
+            "point-and-click",
+            "interactive-fiction"
+          ],
+          "collaborators":[
+            "jucarave",
+            "valnyr",
+            "bombilloAmarillo"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "illustrations",
+            "3d-renders"
+          ]
+        },
+        {
+          "title":"Vuelta a Colombia (Colombian Tour)",
+          "image":"img/buttons/vac.png",
+          "text":"Test your knowledge about Colombia in this fun educational game.",
+          "status":"beta",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://apps.facebook.com/vueltacolombia/",
+              "type": "play-online"
+            }
+          ],
+          "year":2012,
+          "genre":[
+            "board-game",
+            "educational"
+          ],
+          "collaborators":[
+            "axelTheGod",
+            "bombilloAmarillo",
+            "valnyr"
+          ],
+          "technologies":[
+            "flash"
+          ],
+          "artStyle":[
+            "illustrations"
+          ]
+        }
+      ]
+    },
+    {
+      "name":"Game Jams, Experiments or Adaptations of existing work",
+      "id":"games3",
+      "text":"Spanning from a couple of days to a month of dev.",
+      "sort":3,
+      "projects":[
+        {
+          "title":"Pizzas Slashie",
+          "image":"img/buttons/pizza.png",
+          "origin": "An advergaming prototype",
+          "text":"A chaotic memory game about multitasking in the kitchen: knead the dough while keeping your customer’s pizza order in your head.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play (itch.io)",
+              "url":"https://slash.itch.io/pizzas-slashie",
+              "type": "play-online"
+            },
+            {
+              "title":"Play",
+              "url":"https://slashie.net/pizza",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/pizzas-slashie",
+              "type": "source-code"
+            }
+          ],
+          "lastUpdate": 2013,
+          "year":2013,
+          "years":[2013],
+          "genre":[
+            "cooking"
+          ],
+          "technologies":[
+            "flash"
+          ],
+          "collaborators":["axelTheGod"],
+          "artStyle":[
+            "illustrations"
+          ]
+        },
+        {
+          "title":"Berlin Interpretation 1992",
+          "image":"img/buttons/bi92.png",
+          "origin": "An entry for 7DRL Challenge 2026",
+          "text":"It's 1992. A German PC gaming magazine, Dungeon Weekly, is hosting a worldwide tournament. The challenge: complete a series of strange dungeon-crawling “games” they send you. Each one feels familiar, but never quite the same.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Download",
+              "url":"https://slash.itch.io/berlin-interpretation-92",
+              "type": "download"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/berlin-interpretation-1992/",
+              "type": "devlog"
+            }
+          ],
+          "lastUpdate": 2026,
+          "year":2026,
+          "years":[2026],
+          "genre":[
+            "roguelike"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "collaborators":["quietgecko", "dintimusic", "jucarave"],
+          "artStyle":[
+            "pixel-art"
+          ],
+          "effortMeasures": [
+            {
+              "type": "blogDays",
+              "period": "2026 First Half",
+              "days": 26
+            }
+          ]
+        },
+        {
+          "title":"Il Principe della Maschera",
+          "image":"img/buttons/pov.png",
+          "origin": "An entry for Global Game Jam 2026",
+          "text" : "A precision platformer inspired by the original Prince of Persia. Infiltrate the mansion via the underground tunnels of Venice, filled with centuries long mysteries to be found.",
+          "status": "public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Itch.io",
+              "url":"https://slash.itch.io/il-principe-della-maschera",
+              "type": "download"
+            }
+          ],
+          "lastUpdate": 2026,
+          "year": 2026,
+          "years":[2026],
+          "genre":[
+            "platformer"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "collaborators":[
+            "jucarave"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ],
+          "effortMeasures": [
+            {
+              "type": "fullJamDays",
+              "period": "2026 GGJ",
+              "days": 3
+            }
+          ]
+        },
+        {
+          "title":"Blue Chicken: The Online Coop",
+          "image":"img/buttons/blueChickenOnline.png",
+          "origin": "An entry for Epic Jam Colombia 2025",
+          "text" : "A Fornite action roguelike featuring Procedural level generation, online coop, permadeath (NO metaprogression), melee combat.",
+          "status": "alpha",
+          "activity": "active",
+          "buttons":[
+            {
+              "title":"Gameplay Video",
+              "url":"https://www.youtube.com/watch?v=DT5nDMLBUmg",
+              "type": "video"
+            }
+          ],
+          "lastUpdate": 2025,
+          "year": 2025,
+          "years":[2025],
+          "genre":[
+            "action-roguelike"
+          ],
+          "technologies":[
+            "uefn", "verse"
+          ],
+          "artStyle":[
+            "3d"
+          ],
+          "effortMeasures": [
+            {
+              "type": "reckon",
+              "period": "2025",
+              "days": 3
+            }
+          ]
+        },
+        {
+          "title":"カタカナカタナ (katakanakatana)",
+          "image":"img/buttons/katakanakatana.png",
+          "origin": "A quick prototype",
+          "text" : "Katana your way thru katakana lyrics using your keyboard.",
+          "status": "public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://slashie.net/katakanakatana",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/katakanakatana",
+              "type": "source-code"
+            },
+            {
+              "title":"Gameplay Video",
+              "url":"https://www.youtube.com/watch?v=hCorQDLuvJk",
+              "type": "video"
+            }
+          ],
+          "lastUpdate": 2025,
+          "year": 2025,
+          "years":[2025],
+          "genre":[
+            "typing"
+          ],
+          "technologies":[
+            "css", "javascript"
+          ],
+          "artStyle":[
+            "web"
+          ],
+          "effortMeasures": [
+            {
+              "type": "reckon",
+              "period": "2025",
+              "days": 1
+            }
+          ]
+        },
+        {
+          "title":"Rogue Operator: Trinity",
+          "image":"img/buttons/rot.png",
+          "origin": "An entry for Roguetemple's Fortnight 2025",
+          "text" : "Escape the matrix surviving hordes of law enforcement and the treat of the Agents.",
+          "status": "public",
+          "activity": "active",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/matrix-rogue-agent",
+              "type": "play-online"
+            }
+          ],
+          "lastUpdate": 2025,
+          "year": 2025,
+          "years":[2025],
+          "genre":[
+            "roguelike"
+          ],
+          "technologies":[
+            "typescript", "pixi"
+          ],
+          "collaborators":[
+            "jucarave",
+            "stoltverd",
+            "quietgecko"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        },
+        {
+          "title":"Cat vs. The World",
+          "image":"img/buttons/cvtw.png",
+          "origin": "An entry for js13k 2025",
+          "text" : "Destroy as many household items as possible before the human returns.",
+          "status": "public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Play Online (Improved Version)",
+              "url":"https://slash.itch.io/cat-vs-the-world",
+              "type": "play-online"
+            },
+            {
+              "title":"Original Jam Entry",
+              "url":"https://js13kgames.com/2025/games/cat-vs-the-world",
+              "type": "play-online"
+            }
+          ],
+          "lastUpdate": 2025,
+          "year": 2025,
+          "years":[2025],
+          "genre":[
+            "roguelike"
+          ],
+          "technologies":[
+            "typescript", "pixi"
+          ],
+          "collaborators":[
+            "jucarave",
+            "stoltverd",
+            "quietgecko"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        },
+        {
+          "title":"Hoshikawa Harumonia - Meiko’s Galactic Artifact Hunt",
+          "image":"img/buttons/mm25.png",
+          "origin": "An entry for 『初音ミク「マジカルミライ 2025」プログラミング・コンテスト』",
+          "text":"Explore the galaxy looking for the lost artifacts of the vocaloid.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/hoshikawa-harumonia",
+              "type": "play-online"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/hoshikawa-harumonia/",
+              "type": "devlog"
+            }
+          ],
+          "lastUpdate": 2025,
+          "year":2025,
+          "years":[2025],
+          "genre":[
+            "exploration"
+          ],
+          "technologies":[
+            "javascript", "text-alive"
+          ],
+          "collaborators":[
+            "saraRios",
+            "alzarac",
+            "armyboy",
+            "quietgecko"
+          ],
+          "artStyle":[
+            "illustrations"
+          ],
+          "effortMeasures": [
+            {
+              "type": "blogDays",
+              "period": "2025",
+              "days": 7
+            }
+          ]
+        },
+        {
+          "title":"Blue Chicken",
+          "image":"img/buttons/blueChicken.png",
+          "origin": "An entry for DungeonCrawlers Jam 2025 AND GameDev.js Jam 2025",
+          "text":"The blue chicken will meet you at the end of your existence.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/blue-chicken-dx",
+              "type": "play-online"
+            },
+                        {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/blueChicken",
+              "type": "source-code"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/blue-chicken/",
+              "type": "devlog"
+            }
+          ],
+          "lastUpdate": 2025,
+          "year":2025,
+          "years":[2025],
+          "genre":[
+            "dungeon-crawler"
+          ],
+          "technologies":[
+            "phaser"
+          ],
+          "collaborators":[],
+          "artStyle":[
+            "illustrations"
+          ],
+          "effortMeasures": [
+            {
+              "type": "blogDays",
+              "period": "2025 - dungeon crawlers jam",
+              "days": 6,
+              "ref": "https://blog.slashie.net/2025/05/03/blue-chicken-part-1-bad-vibes-coding/"
+            },
+            {
+              "type": "repositoryLog",
+              "period": "2025 - gamedev.js jam",
+              "ref": "https://github.com/slashman/blueChicken/commits/main/",
+              "days": 5
+            }
+          ]
+        },
+        {
+          "title":"Reggaeton de Capibara",
+          "image":"img/buttons/rdc.png",
+          "origin": "An entry for Latam VG Showcase Jam 2025",
+          "text":"A Capibara hits the party with his girlfriend, but falls in love with a dancing capibara and decides to conquer her heart without his girlfriend noticing.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/reggaeton-de-capibara",
+              "type": "play-online"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/reggaeton-del-capibara/",
+              "type": "devlog"
+            }
+          ],
+          "lastUpdate": 2025,
+          "year":2025,
+          "years":[2025],
+          "genre":[
+            "rhythm"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "collaborators":["quietgecko", "aguahervida", "dintimusic", "saraRios"],
+          "artStyle":[
+            "pixel-art"
+          ],
+          "effortMeasures": [
+            {
+              "type": "blogDays",
+              "period": "2025 - jam",
+              "days": 6,
+              "ref": "https://blog.slashie.net/2025/04/08/reggaeton-de-capibara-lags25-dev-story/"
+            }
+          ]
+        },
+        {
+          "title":"Rogue Monster: Theolodorus",
+          "image":"img/buttons/roguemon.png",
+          "origin": "An entry for 7DRL Challenge 2025",
+          "text":"Theolodorus, commander of the army of Yendor, rebels against the authority of his creator, seeking redemption for the suffering he has brought into the land.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Download",
+              "url":"https://slash.itch.io/rogue-monster",
+              "type": "download"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/rogue-monster-theolodorus/",
+              "type": "devlog"
+            }
+          ],
+          "lastUpdate": 2025,
+          "year":2025,
+          "years":[2025],
+          "genre":[
+            "roguelike",
+            "card-battle"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "collaborators":["stoltverd", "quietgecko", "simernio", "aguahervida", "dintimusic", "kevinParra", "mauroBetancourt", "glennWichman"],
+          "artStyle":[
+            "pixel-art"
+          ],
+          "effortMeasures": [
+            {
+              "type": "blogDays",
+              "period": "2025 - jam",
+              "days": 7,
+              "ref": "https://blog.slashie.net/2025/03/19/rogue-monster-theolodorus-7drl-2025-success/"
+            },
+            {
+              "type": "blogDays",
+              "period": "2025 - post jam",
+              "days": 3,
+              "ref": "https://blog.slashie.net/category/rogue-monster-theolodorus/"
+            }
+          ]
+        },
+        {
+          "title":"Pixal 2",
+          "image":"img/buttons/pixal2.png",
+          "text":"A remake of Pixal, modernized and optimized for mobile.",
+          "status":"alpha",
+          "activity":"dead",
+          "buttons":[
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/pixal2/",
+              "type": "devlog"
+            }
+          ],
+          "lastUpdate": 2014,
+          "year":2014,
+          "years":[2014],
+          "genre":[
+            "persistent-browser-based-game",
+            "card-battle"
+          ],
+          "usesAssetsBy": [
+            "denzi"
+          ],
+          "technologies":[
+            "javascript",
+            "jqueryMobile",
+            "java",
+            "mysql"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Troria",
+          "origin": "An entry for Trials of Oryx: The Ultimate Roguelike Challenge",
+          "image":"img/buttons/troria.png",
+          "text":"Explore the world of Troria becoming stronger and wiser while battling fierce enemies and roaming a huge world, all from your phone or your computer.",
+          "status":"alpha",
+          "activity":"dead",
+          "buttons":[
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/other-games/troria/",
+              "type": "devlog"
+            }
+          ],
+          "lastUpdate": 2013,
+          "year":2013,
+          "years":[2013],
+          "genre":[
+            "persistent-browser-based-game",
+            "card-battle"
+          ],
+          "usesAssetsBy": [
+            "oryx"
+          ],
+          "technologies":[
+            "javascript",
+            "jqueryMobile",
+            "java",
+            "mysql"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Glade of Tranquility",
+          "image":"img/buttons/got.jpg",
+          "origin": "Another entry for GGJ 2025",
+          "text": "Live inside a peaceful glade, shielded by a bubble from the outside world while it burns.",
+          "status": "public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/glade-of-tranquility",
+              "type": "play-online"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/2025/02/11/glade-of-tranquility-ggj25-2/",
+              "type": "devlog"
+            }
+          ],
+          "year": 2025,
+          "genre":[
+            "survival"
+          ],
+          "collaborators":["stoltverd", "quietgecko", "albertin444", "nicolino", "alejandraTorres"],
+          "technologies":["unity"],
+          "artStyle":["lowpoly"],
+          "effortMeasures": [
+            {
+              "type": "blogDays",
+              "period": "2025 GGJ (virtual)",
+              "ref": "https://blog.slashie.net/2025/02/11/glade-of-tranquility-ggj25-2/",
+              "days": 4
+            }
+          ]
+        },
+        {
+          "title":"Economic Bubble Burst",
+          "image":"img/buttons/ebc.png",
+          "origin": "An entry for GGJ 2025",
+          "text": "Prevent the dotCom bubble from bursting",
+          "status": "public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/economic-bubble-burst",
+              "type": "play-online"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/2025/01/31/economic-bubble-burst-ggj25-1/",
+              "type": "devlog"
+            }
+          ],
+          "year": 2025,
+          "genre":[
+            "arcade"
+          ],
+          "collaborators":["mauroBetancourt", "jhonRestrepo", "kevinParra", "pixelMuu", "valeriaOrtega", "juanCamiloValencia"],
+          "technologies":["unity"],
+          "artStyle":["pixel-art"],
+          "effortMeasures": [
+            {
+              "type": "fullJamDays",
+              "period": "2025 GGJ",
+              "days": 3
+            }
+          ]
+        },
+        {
+          "title":"Dungeons of Persia",
+          "image":"img/buttons/dop.jpg",
+          "origin": "An entry for lowrezjam 2024",
+          "text": "Escape the dungeons of Persia with your beloved in this speed puzzle",
+          "status": "public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/dungeons-of-persia",
+              "type": "play-online"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/dungeons-of-persia/",
+              "type": "devlog"
+            }
+          ],
+          "year": 2024,
+          "genre":[
+            "puzzle", "dungeon-crawler"
+          ],
+          "collaborators":["aguahervida", "quietgecko", "alzarac"],
+          "technologies":["typescript", "pixi"],
+          "artStyle":["pixel-art", "3d-renders"],
+          "effortMeasures": [
+            {
+              "type": "blogDays",
+              "period": "2024 Jam",
+              "ref": "https://blog.slashie.net/2024/08/22/dungeons-of-persia-lowrezjam24/",
+              "days": 15
+            },
+            {
+              "type": "blogDays",
+              "period": "2024 Post Jam",
+              "ref": "https://blog.slashie.net/2024/08/24/dungeons-of-persia-v3/",
+              "days": 2
+            }
+          ]
+        },
+        {
+          "title":"Hatsune Miku's Magical Drawing Tablet",
+          "image":"img/buttons/procon24.jpg",
+          "origin": "An entry for『初音ミク「マジカルミライ 2024」プログラミング・コンテスト』",
+          "text": "Draw accessories for Miku and have her dance Magical Mirai songs",
+          "status": "public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/mikus-magical-drawing-tablet",
+              "type": "play-online"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/2024/08/08/magical-mirai-2024-procon24/",
+              "type": "devlog"
+            }
+          ],
+          "year": 2024,
+          "genre":[
+            "creative"
+          ],
+          "collaborators":["armyboy", "alzarac"],
+          "technologies":["typescript", "svg"],
+          "artStyle":["illustrations", "3d-renders"],
+          "effortMeasures": [
+            {
+              "type": "blogDays",
+              "period": "jam",
+              "ref": "https://blog.slashie.net/2024/08/08/magical-mirai-2024-procon24/",
+              "days": 12
+            }
+          ]
+          
+        },
+        {
+          "title":"Relics of The Demon",
+          "image":"img/buttons/cvrl2-lob.png",
+          "origin": "An entry for 7DRL Challenge 2024",
+          "text": "Acquire the relics of Dracula to save yourself from his curse.",
+          "status": "public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/cvrl2-the-lady-of-berkeley",
+              "type": "play-online"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/2024/03/15/cvrl2-7drl-2024/",
+              "type": "devlog"
+            }
+          ],
+          "year": 2024,
+          "genre":[
+            "roguelike"
+          ],
+          "collaborators":["quietgecko", "sirena", "woodsyTee", "jucarave"],
+          "technologies":["jsrl", "javascript"],
+          "artStyle":["characters"]
+        },
+        {
+          "title":"Laugh Please",
+          "image":"img/buttons/laughPlease.png",
+          "origin": "Another entry for GGJ 2024",
+          "text":"Explore a cyberpunk neon town draining happiness from corrupt cops to save your family",
+          "status":"public",
+          "activity": "stalled",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://guldann.itch.io/laugh-please",
+              "type": "play-online"
+            },
+            {
+              "title":"Videolog (Spanish)",
+              "url":"https://www.youtube.com/watch?v=177qaPCkJTU",
+              "type": "devlog"
+            },
+            {
+              "title":"Original Entry",
+              "url":"https://globalgamejam.org/games/2024/laugh-please-2",
+              "type": "play-online"
+            }
+          ],
+          "year": 2024,
+          "genre":[
+            "arcade"
+          ],
+          "collaborators":["mauroBetancourt", "saraRios"],
+          "technologies":["unity"],
+          "artStyle":["pixel-art"],
+          "effortMeasures": [
+            {
+              "type": "reckon",
+              "period": "jam",
+              "days": 3
+            }
+          ]
+        },
+        {
+          "title":"Knights of the Pun",
+          "image":"img/buttons/kotp.png",
+          "origin": "An entry for GGJ 2024",
+          "text":"Gain confidence to make The King laugh in turn-based punbat",
+          "status":"public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/knights-of-the-pun",
+              "type": "play-online"
+            },
+            {
+              "title":"Blog Post",
+              "url":"https://blog.slashie.net/2024/02/06/knights-of-the-pun-ggj-24/",
+              "type": "devlog"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/kotp",
+              "type": "source-code"
+            },
+            {
+              "title":"Original Entry",
+              "url":"https://globalgamejam.org/games/2024/knights-pun-5",
+              "type": "play-online"
+            }
+          ],
+          "year": 2024,
+          "genre":[
+            "jrpg"
+          ],
+          "collaborators":["soliman","azra"],
+          "technologies":["javascript"],
+          "artStyle":["pixel-art"],
+          "effortMeasures": [
+            {
+              "type": "blogDays",
+              "period": "jam",
+              "ref": "https://blog.slashie.net/2024/02/06/knights-of-the-pun-ggj-24/",
+              "days": 9
+            }
+          ]
+        },
+        {
+          "title":"1977: Bottle-cap legends",
+          "image":"img/buttons/1977.png",
+          "origin": "An entry for GJ+ 23/24",
+          "text":"Race with your friends across tracks drawn in the streets!",
+          "status":"public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/1977-bottlecap-legends",
+              "type": "play-online"
+            }
+          ],
+          "year": 2023,
+          "genre":[
+            "arcade"
+          ],
+          "collaborators":["quietgecko", "stoltverd", "cesarart", "jucarave"],
+          "technologies":["unity"],
+          "artStyle":["illustrations"]
+        },
+        {
+          "title":"The First Horde",
+          "image":"img/buttons/firstHorde.png",
+          "origin": "An entry for js13k 2023",
+          "text":"Take control of a commander of the Golden Horde under Batu Khan and rise as a powerful Mongol conqueror!",
+          "status":"public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://js13kgames.com/entries/the-first-horde",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/js13k2023",
+              "type": "source-code"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/2023/09/13/the-last-horde-js13k-2023/",
+              "type": "devlog"
+            }
+          ],
+          "year": 2023,
+          "genre":[
+            "arcade"
+          ],
+          "collaborators":["quietgecko", "stoltverd"],
+          "technologies":["javascript"],
+          "artStyle":["emoji"]
+        },
+        {
+          "title":"The Minstrel's Clock (Widget)",
+          "image":"img/buttons/celestial.png",
+          "origin": "A android/iOS widget made just for fun",
+          "text":"Watch time pass by as the minstrel plays his song.",
+          "status":"public",
+          "activity": "active",
+          "buttons":[
+            {
+              "title":"Get it for Android",
+              "url":"itchio",
+              "type": "android"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/sunMoonClock",
+              "type": "source-code"
+            },
+            {
+              "title":"Making of",
+              "url":"slashie blog",
+              "type": "devlog"
+            }
+          ],
+          "year": 2026,
+          "genre":[
+            "widget"
+          ],
+          "collaborators":["claude"],
+          "technologies":["swift", "kotlin", "php", "nodejs", "playwright"],
+          "artStyle":["pixel-art"],
+          "effortMeasures": [
+            {
+              "type": "blogDays",
+              "period": "2026 First Half",
+              "days": 4
+            }
+          ]
+        },
+        {
+          "title":"The Minstrel's Clock",
+          "image":"img/buttons/celestial.png",
+          "origin": "A small website made just for fun",
+          "text":"Watch time pass by as the minstrel plays his song.",
+          "status":"public",
+          "activity": "active",
+          "buttons":[
+            {
+              "title":"Check it out",
+              "url":"https://slashie.net/time/",
+              "type": "website"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/sunMoonClock",
+              "type": "source-code"
+            },
+            {
+              "title":"Making of",
+              "url":"https://www.youtube.com/watch?v=77Jvx1DL7as",
+              "type": "devlog"
+            }
+          ],
+          "year": 2023,
+          "genre":[
+            "watchface"
+          ],
+          "collaborators":[],
+          "technologies":["javascript"],
+          "artStyle":["pixel-art"]
+        },
+        {
+          "title":"Monte del Diablo",
+          "image":"img/buttons/mdd.png",
+          "origin": "An entry for 7DRL Challenge 2023",
+          "text":"A coffee-grower challenges The Devil to a machete duel in rural Colombia.",
+          "status":"public",
+          "activity":"finished",
+          "weeksOfWork": 2,
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/monte-del-diablo",
+              "type": "play-online"
+            }
+          ],
+          "year":2023,
+          "genre":[
+            "roguelike"
+          ],
+          "technologies":[
+            "javascript", 
+            "jsrl",
+            "pixi"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ],
+          "collaborators":[
+            "Camilo Fique",
+            "inkiluanna",
+            "aguahervida",
+            "quietgecko",
+            "stoltverd"
+          ]
+        },
+        {
+          "title":"Broken Connections",
+          "image":"img/buttons/brokenConnections.png",
+          "origin": "An entry for IndieCade's Hidden Heroes Jam 2023",
+          "text":"1980, Glenn Wichman ventures into a basement in University of California Santa Cruz, to save the development of rogue.",
+          "status":"public",
+          "activity":"finished",
+          "weeksOfWork": 1,
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/broken-connections",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/rogueHero",
+              "type": "source-code"
+            }
+          ],
+          "year":2023,
+          "genre":[
+            "RPG"
+          ],
+          "technologies":[
+            "javascript", 
+            "jsrl",
+            "pixi"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ],
+          "collaborators":[
+            "VGMushroom"
+          ]
+        },
+        {
+          "title":"Farewell San Vicente",
+          "image":"img/buttons/fsv.jpg",
+          "origin": "An entry for Global Game Jam 2023",
+          "text":"A family flees their home displaced by \"La Violencia\", a cruel civil war in 1950's Colombia.",
+          "status":"public",
+          "activity":"finished",
+          "weeksOfWork": 2,
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/farewell-san-vicente",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/fsv",
+              "type": "source-code"
+            }
+          ],
+          "year":2023,
+          "genre":[
+            "survival"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "illustrations"
+          ],
+          "collaborators":[
+            "Camilo Fique",
+            "Oscar Creart",
+            "quietgecko",
+            "stoltverd"
+          ]
+        },
+        {
+          "title":"No Survivors",
+          "image":"img/buttons/noSurvivors.jpg",
+          "origin": "An entry for TriJam #169",
+          "text":"Summon swarms of bats to stop corny heroes from stealing your holy relic.",
+          "status":"public",
+          "activity":"stalled",
+          "weeksOfWork": 1,
+          "buttons":[
+            {
+              "title":"Download",
+              "url":"https://slash.itch.io/no-survivors",
+              "type": "download"
+            }
+          ],
+          "year":2022,
+          "genre":[
+            "arcade"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ],
+          "collaborators":[
+            "quietgecko"
+          ]
+        },
+        {
+          "title":"SpelunkyRL",
+          "image":"img/buttons/spelunkyRL.jpg",
+          "origin": "An entry for 7DRL Challenge 2022",
+          "text":"A roguelike game inspired by Spelunky Classic.",
+          "status":"public",
+          "activity":"active",
+          "weeksOfWork": 3,
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/spelunkyrl",
+              "type": "play-online"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/spelunkyrl/",
+              "type": "devlog"
+            }
+          ],
+          "year":2022,
+          "years": [2025],
+          "genre":[
+            "roguelike"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "character"
+          ],
+          "collaborators":[
+            "quietgecko",
+            "simernio",
+            "stoltverd"
+          ]
+        },
+        {
+          "title":"Muyscamuy",
+          "image":"img/buttons/muyscamuy.jpg",
+          "origin": "An entry for GGJ Cultural Heritage Jam 2021",
+          "text":"Lead an indigenous Muisca community, farming Maize, making offers to the gods, and crafting sacred gold-works in preparation for a great celebration.",
+          "status":"public",
+          "activity":"finished",
+          "weeksOfWork": 6,
+          "buttons":[
+            {
+              "title":"Jam Entry",
+              "url":"https://slash.itch.io/muyscamuy",
+              "type": "jam"
+            },
+            {
+              "title":"Play Online",
+              "url":"https://slashie.net/muyscamuy",
+              "type": "play-online"
+            },
+            {
+              "title":"Blog Post",
+              "url":"https://blog.slashie.net/category/muyscamuy/",
+              "type": "devlog"
+            }
+          ],
+          "year":2021,
+          "years": [2021, 2022],
+          "lastUpdate": 2022,
+          "genre":[
+            "strategy", "simulation"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "vector-art"
+          ],
+          "collaborators":[
+            "quietgecko",
+            "simernio",
+            "aguaquiña",
+            "stoltverd"
+          ]
+        },
+        {
+          "title":"Tendergotchi",
+          "image":"img/buttons/tendergotchi.jpg",
+          "origin": "An entry for js13k 2022",
+          "text":"Try to keep Death away from your virtual pet by feeding it precisely while creating a safe environment for it.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Original Jam Entry",
+              "url":"https://js13kgames.com/entries/tendergotchi",
+              "type": "jam"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/tendergotchi/",
+              "type": "devlog"
+            }
+          ],
+          "year":2022,
+          "genre":[
+            "arcade", "virtual-pet", "rhythm"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "vector-art"
+          ],
+          "collaborators":[
+            "quietgecko",
+            "mapedorr"
+          ]
+        },
+        {
+          "title":"Distant Friends",
+          "image":"img/buttons/distantFriends.jpg",
+          "origin": "An entry for js13k 2021",
+          "text":"Race across the galaxy, become an asteroid miner, and fish legendary creatures from deep space as you hop from planet to planet, following the lives of your now distant friends.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/distant-friends",
+              "type": "play-online"
+            },
+            {
+              "title":"Original Jam Entry",
+              "url":"https://js13kgames.com/entries/distant-friends",
+              "type": "jam"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/distant-friends/",
+              "type": "devlog"
+            }
+          ],
+          "year":2021,
+          "years":[2021, 2022],
+          "lastUpdate": 2022,
+          "genre":[
+            "arcade", "exploration", "space-shooter"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "vector-art"
+          ],
+          "collaborators":[
+            "quietgecko",
+            "mapedorr"
+          ]
+        },
+        {
+          "title":"404 - Rhythm Not Found",
+          "image":"img/buttons/404rnf.png",
+          "origin": "An entry for js13k 2020",
+          "text":"Dance robot dance! Find the rhythm within your circuits and beat the five super P.U.L.S.E. robot masters in head to head dance stand-offs!",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Jam Entry",
+              "url":"https://js13kgames.com/entries/404-rhythm-not-found",
+              "type": "jam"
+            },
+            {
+              "title":"Blog Post",
+              "url":"https://blog.slashie.net/2020/09/18/404-rhythm-not-found-js13k-2020/",
+              "type": "devlog"
+            }
+          ],
+          "year":2020,
+          "genre":[
+            "rhythm"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ],
+          "collaborators":[
+            "quietgecko",
+            "mapedorr",
+            "agar3s"
+          ]
+        },
+        {
+          "title":"No Salem D'la House",
+          "image":"img/buttons/nosalem.png",
+          "origin": "An entry for ADVJam 2020",
+          "text":"A young couple moves to a house in Salem with a mysterious past, will they discover its dark heritage?",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play",
+              "url":"https://slashie.net/nosalem",
+              "type": "play-online"
+            },
+            {
+              "title":"Jam Entry",
+              "url":"https://gamejolt.com/games/salem_house/493404",
+              "type": "jam"
+            }
+          ],
+          "year":2020,
+          "genre":[
+            "interactiveFiction"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "illustrations"
+          ],
+          "collaborators":[
+            "quietgecko",
+            "theNoisyPanda",
+            "mapedorr",
+            "jmromeroe"
+          ]
+        },
+        {
+          "title":"Rainy Day",
+          "image":"img/buttons/rainyDay.png",
+          "origin": "An entry for 7DRL Challenge 2021",
+          "text":"Blow up the Willemite Reactors draining the planet dry.",
+          "status":"public",
+          "activity":"active",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/rainy-day",
+              "type": "play-online"
+            },
+            {
+              "title":"Blog",
+              "url":"https://blog.slashie.net/category/rainy-day/",
+              "type": "devlog"
+            }
+          ],
+          "year":2021,
+          "genre":[
+            "roguelike"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "character"
+          ],
+          "collaborators":[
+            "quietgecko"
+          ]
+        },
+        {
+          "title":"Backpack Monsters",
+          "image":"img/buttons/bpm.png",
+          "origin": "An entry for js13k 2019",
+          "text":"Explore the world looking for monsters to capture. 151 monsters and an entire world in 13KB.",
+          "status":"public",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slashie.net/bpm",
+              "type": "play-online"
+            },
+            {
+              "title":"Jam Entry",
+              "url":"http://js13kgames.com/entries/backpack-monsters",
+              "type": "play-online"
+            },
+            {
+              "title":"Blog",
+              "url":"https://blog.slashie.net/category/backpack-monsters/",
+              "type": "devlog"
+            },
+            {
+              "title":"Source code",
+              "url":"https://github.com/slashman/backpackMonsters",
+              "type": "source-code"
+            }
+          ],
+          "year":2019,
+          "years": [2019, 2023],
+          "lastUpdate": 2023,
+          "genre":[
+            "monster-catching"
+          ],
+          "technologies":[
+            "javascript",
+            "svg"
+          ],
+          "artStyle":[
+            "vector-art"
+          ],
+          "collaborators":[
+            "rybar"
+          ]
+        },
+        {
+          "title":"Heroes of Noresskia",
+          "image":"img/buttons/noresskia.png",
+          "origin": "An entry for 7DRL Challenge 2019",
+          "text":"Explore the land of Noresskia, a new adventure every time!",
+          "status":"beta",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/heroes-of-noresskia",
+              "type": "play-online"
+            },
+            {
+              "title":"Blog",
+              "url":"https://blog.slashie.net/category/heroes-of-noresskia/",
+              "type": "devlog"
+            },
+            {
+              "title":"Source code",
+              "url":"https://github.com/slashman/autodm",
+              "type": "source-code"
+            }
+          ],
+          "year":2019,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "technologies":[
+            "javascript",
+            "phaser"
+          ],
+          "artStyle":[
+            "illustrations"
+          ]
+        },
+        {
+          "title":"Bandersnatch Demo",
+          "image":"img/buttons/bandersnatch.png",
+          "origin": "Small demo inspired by the Netflix interactive episode.",
+          "text":"Your fate has been dictated, it's out of your hands",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slashie.net/bandersnatch/",
+              "type": "play-online"
+            },
+            {
+              "title":"Blog",
+              "url":"https://blog.slashie.net/category/bandersnatch-demo/",
+              "type": "devlog"
+            },
+            {
+              "title":"Source code",
+              "url":"https://github.com/jucarave/Stygian-Abyss/tree/bandersnatch",
+              "type": "source-code"
+            }
+          ],
+          "year":2019,
+          "genre":[
+            "turn-based",
+            "interactive-fiction"
+          ],
+          "collaborators":[
+            "jucarave"
+          ],
+          "technologies":[
+            "javascript",
+            "webgl"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Futby.co - Russia",
+          "image":"img/buttons/wcaRussia.png",
+          "text":"Collect virtual stickers to complete your collection for the upcoming World Cup!",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://futby.co",
+              "type": "play-online"
+            }
+          ],
+          "year":2018,
+          "genre":[
+            "card-trading",
+            "social"
+          ],
+          "collaborators":[
+            "valnyr"
+          ],
+          "technologies":[
+            "javascript",
+            "java"
+          ],
+          "artStyle":[
+            "vector-art"
+          ]
+        },
+        {
+          "title":"ArcherFire: Duet of Aces",
+          "image":"img/buttons/afdoa.png",
+          "text":"A two player hot-seat space shooter. An entry for js13k 2018.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/archerfire-duet-of-aces",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/gantaria/",
+              "type": "source-code"
+            },
+            {
+              "title":"Check the JS13k Entry",
+              "url":"http://js13kgames.com/entries/archerfire-duet-of-aces",
+              "type": "jam"
+            }
+          ],
+          "collaborators":[
+            "rybar"
+          ],
+          "year":2018,
+          "genre":[
+            "procedural",
+            "space-shooter"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "vector-art"
+          ]
+        },
+        {
+          "title":"Paladin's Quest LCD",
+          "image":"img/buttons/pqlcd.png",
+          "text":"Survive as deep as you can into the dungeon. An entry for LCD JAM 2018",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/paladins-quest-lcd",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/paladinquest",
+              "type": "source-code"
+            },
+            {
+              "title":"Check the Jam Entry",
+              "url":"https://itch.io/jam/lcd-jam/rate/254511",
+              "type": "jam"
+            }
+          ],
+          "collaborators":[
+            "gioram"
+          ],
+          "year":2018,
+          "genre":[
+            "procedural",
+            "roguelike"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "vector-art"
+          ]
+        },
+        {
+          "title":"Golf Over Africa",
+          "image":"img/buttons/goa.png",
+          "text":"Challenge your friends to conquer Africa in the ultimate XIX Century open tournament. An entry for LudumDare 41",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/golf-over-africa",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/golfoverafrica",
+              "type": "source-code"
+            },
+            {
+              "title":"Check the Jam Entry",
+              "url":"https://ldjam.com/events/ludum-dare/41/golf-on-africa",
+              "type": "jam"
+            }
+          ],
+          "year": 2018,
+          "genre":[
+            "golf",
+            "strategy",
+            "turn-based"
+          ],
+          "collaborators": [
+            "paulPereda",
+            "jucarave"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "vector-art"
+          ]
+        },
+        {
+          "title":"LUCK",
+          "image":"img/buttons/luck.png",
+          "text":"Return to the dungeons of Doom, full source code is 1024 bytes.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Read about it",
+              "url":"https://blog.slashie.net/category/luck/",
+              "type": "info"
+            },
+            {
+              "title":"Download as part of libjcsi",
+              "url":"https://slashie.net/libjcsi/",
+              "type": "download"
+            }
+          ],
+          "year":2008,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+            "java", "libjcsi"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        },
+        {
+          "title":"Roguelike in a tweet v1",
+          "image":"img/buttons/rogueTweet1.png",
+          "text":"Dive into the dungeons of Doom, full source code is 140 bytes.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Read about it",
+              "url":"https://blog.slashie.net/2015/07/03/roguelike-in-a-tweet/",
+              "type": "info"
+            },
+            {
+              "title":"Play Online",
+              "url":"http://slashwareint.com/mdc/",
+              "type": "play-online"
+            }
+          ],
+          "year":2015,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        },
+        {
+          "title":"Roguelike in a tweet v2",
+          "image":"img/buttons/rogueTweet2.png",
+          "text":"Dive into the dungeons of Doom, full source code is 280 bytes.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Read about it",
+              "url":"https://blog.slashie.net/2017/11/21/roguelike-in-a-tweet-2017-edition/",
+              "type": "info"
+            },
+            {
+              "title":"Play Online",
+              "url":"http://slashie.net/rogue280/",
+              "type": "play-online"
+            }
+          ],
+          "year":2017,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        },
+        {
+          "title":"Haunted Mansion",
+          "image":"img/buttons/hauntedMansion.png",
+          "text":"Escape from haunted mansion, a new one is generated everytime. An entry for 7DRLC 2018.",
+          "status":"public",
+          "activity":"stalled",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/haunted-mansion",
+              "type": "play-online"
+            },
+            {
+              "title":"Check the Entry",
+              "url":"https://itch.io/jam/7drl-challenge-2018/rate/233583",
+              "type": "jam"
+            }
+          ],
+          "collaborators":[
+            "gioram"
+          ],
+          "year":2018,
+          "genre":[
+            "procedural",
+            "exploration",
+            "point-and-click",
+            "real-time"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "illustrations"
+          ]
+        },
+        {
+          "title":"Dungeons and Dragons X",
+          "image":"img/buttons/dndx.png",
+          "text":"A remake of DND1, the predecessor to the Ultima series.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://slashie.net/dndx/",
+              "type": "play-online"
+            }
+          ],
+          "year":2014,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "teletype"
+          ]
+        },
+        {
+          "title":"DND1 JS",
+          "image":"img/buttons/dnd1.png",
+          "text":"A web accessible port of DND1, the predecessor to the Ultima series.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://slashie.net/dnd1/",
+              "type": "play-online"
+            }
+          ],
+          "year":2014,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "teletype"
+          ]
+        },
+        {
+          "title":"Life of Chuckles",
+          "image":"img/buttons/chuckles.png",
+          "text":"Live the life of Chuckles, as he strives to solve the every time more complex realities of his days. An entry for LudumDare 40",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/life-of-chuckles",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/lifeOfChuckles",
+              "type": "source-code"
+            }
+          ],
+          "year":2017,
+          "genre":[
+            "arcade",
+            "real-time"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "programmer-art"
+          ]
+        },
+        {
+          "title":"Rogue Program",
+          "image":"img/buttons/rogueProgram.png",
+          "text":"The ROGUE program has activated and is corrupting the characters on the AVRS system, transforming them into monsters. Our only hope is summoning the program manager to kill the process and keep the balance on the software. An entry for Github GameOff 2017",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/rogue-program",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/rogueprogram",
+              "type": "source-code"
+            }
+          ],
+          "year":2017,
+          "genre":[
+            "RPG",
+            "turn-based"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "character"
+          ]
+        },
+        {
+          "title":"Lost in Asterion",
+          "image":"img/buttons/asterion.png",
+          "origin": "An entry for js13k 2017",
+          "text":"While on a research mission under the Atlantic Ocean, your submarine is pulled into a whirlpool. Now you must try to find a way back to the surface exploring an underwater cavern system while helping a mysterious entity.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Check the Entry",
+              "url":"http://js13kgames.com/entries/lost-in-asterion",
+              "type": "jam"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/lostjs13k",
+              "type": "source-code"
+            }
+          ],
+          "year":2017,
+          "genre":[
+            "exploration",
+            "real-time"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "vector-art"
+          ]
+        },
+        {
+          "title":"Queen of Westeros",
+          "image":"img/buttons/qow.png",
+          "text":"A turn based strategy game where you have to conquer the strongholds of Westeros. Made in 1 day for the VP Jam",
+          "status":"beta",
+          "activity":"stalled",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://slashie.net/qow/",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/queenOfWesteros",
+              "type": "source-code"
+            }
+          ],
+          "collaborators":[
+            "raveneyex"
+          ],
+          "year":2017,
+          "genre":[
+            "turn-based",
+            "strategy"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "minimalistic"
+          ]
+        },
+        {
+          "title":"Monster Trainer RL",
+          "image":"img/buttons/mtrl.png",
+          "text":"Capture and train monsters and become a Monster Master by defeating the gym leaders in a procedurally generated world.",
+          "status":"beta",
+          "activity":"stalled",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slashie.net/mtrl/",
+              "type": "play-online"
+            },
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/monster-trainer-rl",
+              "type": "play-online"
+            },
+            {
+              "title":"Source code",
+              "url":"https://github.com/slashman/monster-trainer-rl",
+              "type": "source-code"
+            }
+          ],
+          "year":2017,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        },
+        {
+          "title":"Energy Radar",
+          "image":"img/buttons/energyRadar.png",
+          "text":"Find creatures around you, capture and train them.",
+          "status":"pre-alpha",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"Check out the blog",
+              "url":"https://blog.slashie.net/category/energy-radar/",
+              "type": "devlog"
+            }
+          ],
+          "year":2016,
+          "genre":[
+            "augmented-reality"
+          ],
+          "collaborators":[],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"ROGUElike ONE",
+          "image":"img/buttons/roguelikeone.png",
+          "text":"Infiltrate the Imperial data bank on the planet Scarif. To steal the blueprints of the Death Star and bring a new hope into the galaxy",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://slashware.net/roguelikeone/",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/rodney/tree/roguelikeOne",
+              "type": "source-code"
+            }
+          ],
+          "year":2016,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "pixel-art",
+            "terminal"
+          ]
+        },
+        {
+          "title":"EXODUS",
+          "image":"img/buttons/exodus.png",
+          "text":"Gather some friends in an open field and explore the dungeons as you engage in soft-combat.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/exodus",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/virtualdungeon",
+              "type": "source-code"
+            },
+            {
+              "title":"Devlog",
+              "url":"https://blog.slashie.net/category/exodus/",
+              "type": "devlog"
+            },
+            {
+              "title":"Android Version",
+              "url":"https://play.google.com/store/apps/details?id=co.slashware.exodus",
+              "type": "android"
+            }
+          ],
+          "year":2016,
+          "genre":[
+            "open-field"
+          ],
+          "technologies":[
+            "javascript",
+            "android"
+          ],
+          "artStyle":[
+            "minimalistic"
+          ]
+        },
+        {
+          "title":"Lorenzo",
+          "image":"img/buttons/lorenzo.png",
+          "text":"Escape the bullring and save your mother in this Atari 2600 looking game.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/lorenzo",
+              "type": "source-code"
+            },
+            {
+              "title":"Play Online",
+              "url":"http://slashie.net/lorenzo",
+              "type": "play-online"
+            }
+          ],
+          "year":2016,
+          "genre":[
+            "arcade"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ],
+          "collaborators": [
+            "ashtonMorris"
+          ]
+        },
+        {
+          "title":"Cat Cafe: Dessert Panic",
+          "image":"img/buttons/catCafe.png",
+          "text":"Survive one week feeding cats with delicious desserts.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://slash.itch.io/cat-cafe",
+              "type": "play-online"
+            },
+            {
+              "title":"Get it for Android",
+              "url":"https://play.google.com/store/apps/details?id=com.slashwareint.catcafe",
+              "type": "android"
+            },
+            {
+              "title":"Get it for iOS",
+              "url":"https://itunes.apple.com/us/app/cat-cafe-dessert-panic/id1140377961?ls=1&mt=8",
+              "type": "apple"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/catCafe",
+              "type": "source-code"
+            }
+          ],
+          "year":2016,
+          "genre":[
+            "arcade"
+          ],
+          "collaborators":[
+            "okuroy", "ashtonMorris"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Rise of Kramora",
+          "image":"img/buttons/rok.png",
+          "text":"Climb to the top of the Tower of Kramora using your smartwatch or smartphone. Take adventure with you everywhere!.",
+          "status":"public",
+          "activity":"stalled",
+          "buttons":[
+            {
+              "title":"Android Version",
+              "url":"https://play.google.com/store/apps/details?id=co.slashware.legendsofrelojiah",
+              "type": "android"
+            }
+          ],
+          "year":2016,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+            "gioram"
+          ],
+          "technologies":[
+            "java",
+            "android",
+            "android-wear"
+          ],
+          "artStyle":[
+            "illustrations"
+          ]
+        },
+        
+        {
+          "title":"Rodney",
+          "image":"img/buttons/rodney.png",
+          "text":"Slash your way to the bottom of the Dungeons of Doom, learn new skills and use tactics to survive.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://slashware.net/rodney",
+              "type": "play-online"
+            }
+          ],
+          "year":2013,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+            "jucarave"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "pixel-art",
+            "terminal"
+          ]
+        },
+        
+        {
+          "title":"Hope",
+          "image":"img/buttons/hope.png",
+          "text":"Survive in a deserted wasteland while looking for answers in your dreams.",
+          "status":"public",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/hope",
+              "type": "download"
+            }
+          ],
+          "year":2012,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+            "axelTheGod"
+          ],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Stygian Abyss",
+          "image":"img/buttons/stygian.png",
+          "text":"Find the Codex of Ultimate Wisdom in this fan made underworld inspired remake for the final dungeon of Ultima IV.",
+          "status":"beta",
+          "activity":"stalled",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://slashie.net/stygian/",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/jucarave/Stygian-Abyss",
+              "type": "source-code"
+            }
+          ],
+          "year":2015,
+          "genre":[
+            "real-time",
+            "dungeon-crawler"
+          ],
+          "collaborators":[
+            "jucarave"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "3d",
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Elite International Detective",
+          "image":"img/buttons/eliteInternationalDetective.png",
+          "text":"Travel around the world following the tracks of criminals.",
+          "status":"beta",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"Download",
+              "url":"https://github.com/slashman/elite-international-detective/releases/",
+              "type": "download"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/elite-international-detective/",
+              "type": "source-code"
+            }
+          ],
+          "year":2011,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        },
+        {
+          "title":"RULER",
+          "image":"img/buttons/ruler.png",
+          "text":"Play the ruler of one of seven tribes which destiny is to become civilizations, your goal is to make your people extend all along the land, and discover the marvels of science and technology.",
+          "status":"beta",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"Download Java Package",
+              "url":"downloads/ruler7DRL.zip",
+              "type": "download"
+            },
+            {
+              "title":"Source Code",
+              "url":"http://code.google.com/p/ruler-rl/",
+              "type": "source-code"
+            },
+            {
+              "title":"More Info...",
+              "url":"info/ruler.html",
+              "type": "info"
+            }
+          ],
+          "year":2010,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        },
+        {
+          "title":"Zelda Roguelike",
+          "subtitle":"The Rainbow Maiden",
+          "image":"img/buttons/zeldarl.png",
+          "text":"Explore a randomly generated overworld and dungeons. Save Hyrule.",
+          "status":"beta",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/zeldarl",
+              "type": "download"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/zeldarl",
+              "type": "source-code"
+            }
+          ],
+          "year":2007,
+          "years": [2007, 2022, 2023],
+          "lastUpdate": 2023,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        },
+        {
+          "title":"MegamanRL",
+          "image":"img/buttons/megamanrl.png",
+          "text":"A sidescrolling turn based game based on the Megaman series.",
+          "status":"beta",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/megamanrl",
+              "type": "info"
+            },
+            {
+              "title":"Download Java Package",
+              "url":"downloads/mmrl008.zip",
+              "type": "download"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/megamanrl",
+              "type": "source-code"
+            }
+          ],
+          "year":2008,
+          "genre":[
+            "turn-based",
+            "roguelike"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        },
+        {
+          "title":"SpriteGears (HTML5)",
+          "image":"img/buttons/spritegears.png",
+          "text":"A remake of SpriteGears in JavaScript.",
+          "status":"alpha",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/spritegears",
+              "type": "play-online"
+            },
+            {
+              "title":"Play Online  ",
+              "url":"http://slashware.net/scratchpad/spritegears/",
+              "type": "play-online"
+            }
+          ],
+          "year":2012,
+          "years": [2012, 2013],
+          "lastUpdate": 2013,
+          "genre":[
+            "turn-based"
+          ],
+          "collaborators":[
+            "jucarave"
+          ],
+          "technologies":[
+             "javascript"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"SpriteGears (Java)",
+          "image":"img/buttons/spritegears.png",
+          "text":"Assemble a squad of fighter spaceships and travel the universe looking for the SpriteGears.",
+          "status":"alpha",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/spritegears",
+              "type": "play-online"
+            },
+            {
+              "title":"Download",
+              "url":"downloads/spriteGears03.zip",
+              "type": "download"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/spritegears",
+              "type": "source-code"
+            }
+          ],
+          "year":2009,
+          "years":[2009, 2010],
+          "lastUpdate":2010,
+          "genre":[
+            "turn-based"
+          ],
+          "collaborators":[],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+
+        {
+          "title":"Canela",
+          "image":"img/buttons/catQuest.png",
+          "text":"You are a Cat who fell asleep a bit too much. You wake up to find yourself alone in the house. Where's everybody?",
+          "status":"beta",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/canela",
+              "type": "play-online"
+            },
+            {
+              "title":"Play Online",
+              "url":"http://slashwareint.com/catQuest/",
+              "type": "play-online"
+            }
+          ],
+          "year":2012,
+          "genre":[
+            "point-and-click",
+            "interactive-fiction"
+          ],
+          "collaborators":[
+            "jucarave",
+            "valnyr"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "illustrations"
+          ]
+        },
+        {
+          "title":"Kingdom of Elias",
+          "image":"img/buttons/koe.png",
+          "text":"A simple multiplayer strategy game",
+          "status":"pre-alpha",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://slashie.net/koe/",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/koe",
+              "type": "source-code"
+            }
+          ],
+          "year":2014,
+          "genre":[
+            "real-time-strategy"
+          ],
+          "collaborators":[
+            "mojitoking"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "minimalistic"
+          ]
+        },
+
+        {
+          "title":"LUNE",
+          "image":"img/buttons/lune.png",
+          "text":"A fun simple classic exploration RPG with procedural elements.",
+          "status":"pre-alpha",
+          "activity": "stalled",
+          "buttons":[
+            {
+              "title":"Check the Devlog",
+              "url":"http://blog.slashie.net/category/lune/",
+              "type": "devlog"
+            }
+          ],
+          "year":2015,
+          "genre":[
+            "turn-based",
+            "cRPG",
+            "roguelike"
+          ],
+          "collaborators":[
+            "jucarave",
+            "oryx"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        }
+      ]
+    },
+    {
+      "name":"Game Designs",
+      "text":"For some reason they never managed to be developed, although art and design was made.",
+      "id":"gameDesigns",
+      "sort":3,
+      "projects":[
+        {
+          "title":"Britannia Underworld",
+          "image":"img/buttons/buw.png",
+          "text":"An effort to recreate the adventures of the Avatar in the eight dungeons of Britannia, in first person view.",
+          "status":"pre-alpha",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"Check the Devlog",
+              "url":"http://blog.slashie.net/category/ultima/britannian-underworld/",
+              "type": "devlog"
+            }
+          ],
+          "year":2015,
+          "genre":[
+            "real-time",
+            "cRPG"
+          ],
+          "collaborators":[
+            "jucarave"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "3d"
+          ]
+        },
+        {
+          "title":"GearHead World",
+          "image":"img/buttons/ghw.png",
+          "text":"Browser based mecha combat on the GearHead universe.",
+          "status":"idea",
+          "activity": "stalled",
+          "buttons":[
+            {
+              "title":"Specs",
+              "url":"http://slashware.net/santiagoz.com/mb/fspec210206.htm",
+              "type": "info"
+            }
+          ],
+          "year":2012,
+          "genre":[
+            "persistent-browser-based-game"
+          ],
+          "collaborators":[
+            "denzi",
+            "jhewitt"
+          ],
+          "technologies":[
+
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"History - World Societies",
+          "image":"img/buttons/history.png",
+          "text":"A civ-like, with a focus on “realistic” growth models for the cities and very detailed technology trees.",
+          "status":"lost",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"Check the Devlog",
+              "url":"https://blog.slashie.net/2020/01/31/history-world-societies-project-from-2004/",
+              "type": "devlog"
+            }
+          ],
+          "year":2004,
+          "genre":[
+            "strategy"
+          ]
+        },
+        {
+          "title":"The Real Holy War",
+          "text":"A scenario for Age of Empires II where you lead a group of monks into a very bloody war.",
+          "image":"img/buttons/trhw.png",
+          "status":"public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/the-real-holy-war",
+              "type": "download"
+            },
+            {
+              "title":"Gameplay Video",
+              "url":"https://www.youtube.com/watch?v=89ATmndtmwo",
+              "type": "video"
+            }
+          ],
+          "year":2001,
+          "genre":[
+            "strategy"
+          ]
+        },
+        {
+          "title":"OfficeRL",
+          "text":"A QBasic roguelike where you have to survive in an office",
+          "status":"pre-alpha",
+          "image":"img/buttons/officerl.png",
+          "activity": "dead",
+          "buttons":[
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/officerl",
+              "type": "source-code"
+            }
+          ],
+          "year":2005,
+          "genre":[
+            "roguelike"
+          ]
+        },
+        {
+          "title":"Rebellion",
+          "text":"A historical sidescrolled themed in the XVII century Cartagena where you, as a slave, rebel against your master after he beats your wife.",
+          "status":"design",
+          "activity": "dead",
+          "buttons":[],
+          "year":2005,
+          "genre":[
+            "platformer"
+          ]
+        },
+        {
+          "title":"GREEKIE",
+          "text":"Design for a roguelike set in Greece legends",
+          "status":"design",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"Design Doc",
+              "url":"https://www.roguebasin.com/index.php/Project_GREEKIE",
+              "type": "source-code"
+            }
+          ],
+          "year":2005,
+          "genre":[
+            "roguelike"
+          ],
+          "collaborators":[
+            "ethaniel", "abcgi"
+          ],
+          "technologies":[],
+          "artStyle":[]
+        },
+        {
+          "title":"MechaBusiness",
+          "image":"img/buttons/mechabusiness.png",
+          "text":"A game about living in the world of GearHead",
+          "status":"idea",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"Specs",
+              "url":"http://slashware.net/santiagoz.com/mb/fspec210206.htm",
+              "type": "info"
+            }
+          ],
+          "year":2004,
+          "genre":[
+            "persistent-browser-based-game"
+          ],
+          "collaborators":[
+
+          ],
+          "technologies":[
+
+          ],
+          "artStyle":[
+            "illustrations"
+          ]
+        }
+      ]
+    },
+    {
+      "name":"Procedural Generators",
+      "text":"I enjoy making the computer generate worlds and stories",
+      "id":"procgens",
+      "sort":3,
+      "projects":[
+        {
+          "title":"StygianGen",
+          "image":"img/buttons/stygianGen.png",
+          "text":"Creates levels similar to Ultima Underworld.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/stygiangen",
+              "type": "source-code"
+            },
+            {
+              "title":"Online Demo",
+              "url":"http://slashie.net/stygianGen",
+              "type": "play-online"
+            }
+          ],
+          "year":2015,
+          "technologies":[
+            "javascript"
+          ]
+        },
+        {
+          "title":"Ultima Castle Generator",
+          "image":"img/buttons/castlegen.png",
+          "text":"Generates castle layouts similar to these of Ultima V.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"https://slash.itch.io/ultima-castle-generator",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/ultimaCastleGen",
+              "type": "source-code"
+            },
+            {
+              "title":"Detailed Steps Online",
+              "url":"https://slashie.net/ultimacastlegen/",
+              "type": "play-online"
+            }
+          ],
+          "year":2016,
+          "technologies":[
+            "javascript"
+          ]
+        }
+      ]
+    },
+    {
+      "name":"Engines",
+      "text":"",
+      "id":"engines",
+      "sort":5,
+      "projects":[
+        {
+          "title":"JSRL",
+          "image":"img/buttons/jsrl.png",
+          "text":"A very bare bones roguelike with a character based display, which you can use as a starting point to make your own.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Check the Demo",
+              "url":"http://slashie.net/jsrl/",
+              "type": "play-online"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/jsrl",
+              "type": "source-code"
+            }
+          ],
+          "year":2017,
+          "genre":[
+            "roguelike-engine",
+            "turn-based"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "collaborators": [
+            "wazoo"
+          ],
+          "artStyle":[
+            "character"
+          ]
+        },
+        {
+          "title":"ArthurianStudio",
+          "image":"img/buttons/arthurianStudio.png",
+          "text":"Create cRPG games similar to Ultima 6.",
+          "status":"beta",
+          "activity": "active",
+          "buttons":[
+            {
+              "title":"Download",
+              "url":"itchio",
+              "type": "download"
+            },
+            {
+              "title":"Website",
+              "url":"https://openarthuriancom.wordpress.com/",
+              "type": "website"
+            },
+            {
+              "title":"Source Code",
+              "url": "",
+              "type": "source-code"
+            }
+          ],
+          "collaborators":[
+            "gemini"
+          ],
+          "year":2026,
+          "years": [2026],
+          "lastUpdate": 2026,
+          "genre":[
+            "tools"
+          ],
+          "technologies":[
+            "vite", "reactjs", "typescript", "electron"
+          ],
+          "artStyle":[],
+          "effortMeasures": [
+            {
+              "type": "blogDays",
+              "period": "2026 First Half",
+              "days": 20
+            }
+          ]
+        },
+        {
+          "title":"OpenArthurianX6",
+          "image":"img/buttons/oax6.png",
+          "text":"Create cRPG games similar to Ultima 6.",
+          "status":"beta",
+          "activity": "active",
+          "buttons":[
+            {
+              "title":"Website",
+              "url":"https://openarthuriancom.wordpress.com/",
+              "type": "website"
+            },
+            {
+              "title":"Source Code",
+              "url": "https://github.com/slashman/OpenArthurianX6/",
+              "type": "source-code"
+            },
+            {
+              "title": "Demo",
+              "url": "https://openarthuriancom.wordpress.com/demo/",
+              "type": "play-online"
+            }
+          ],
+          "collaborators":[
+            "jucarave", "denzi"
+          ],
+          "year":2017,
+          "years": [2017, 2018, 2019, 2020, 2021, 2026],
+          "lastUpdate": 2026,
+          "genre":[
+            "turn-based",
+            "RPG"
+          ],
+          "technologies":[
+            "javascript", "typescript", "electron"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"SERF",
+          "subtitle":"Simple Extensible Roguelike Framework",
+          "text":"A roguelike engine to handle map display, actor queueing, and generic action handling. Powers Expedition, Hope and some other roguelikes.",
+          "status":"beta",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"Source Code",
+              "url":"http://code.google.com/p/serf-engine/",
+              "type": "source-code"
+            }
+          ],
+          "year":2008,
+          "years": [2008, 2009, 2010, 2011, 2012],
+          "lastUpdate": 2012,
+          "genre":[
+            "roguelike-engine"
+          ],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "pixel-art",
+            "terminal"
+          ]
+        },
+        {
+          "title":"Age of Dragon Engine",
+          "text":"An engine to create Ultima-like RPGs. It only managed to advance to a very early phase with a basic structure of classes, derived from Guardian Angel, inherited to CastlevaniaRL and beyond?",
+          "status":"alpha",
+          "activity":"stopped",
+          "buttons":[
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/ageofdragon",
+              "type": "source-code"
+            }
+          ],
+          "year":2004,
+          "genre":[
+            "rpg"
+          ],
+          "collaborators":[],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[]
+        }
+      ]
+    },
+    {
+      "name":"Libraries",
+      "text":"",
+      "id":"libraries",
+      "sort":5,
+      "projects":[
+        {
+          "title":"uniwin31",
+          "image":"img/buttons/uniwin31.png",
+          "text":"A collection of Unity UI elements to mimick Windows 3.1 UI",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/uniwin31",
+              "type": "source-code"
+            }
+          ],
+          "year":2025,
+          "genre":[
+            "tools"
+          ],
+          "technologies":[
+            "unity"
+          ]
+        },
+        {
+          "title":"Timezonrr",
+          "text":"This simple script allows you create a page with a list of events, converting their local time to any UTC variation.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/timezonrr",
+              "type": "source-code"
+            }
+          ],
+          "year":2021,
+          "genre":[
+            "tools"
+          ],
+          "technologies":[
+            "javascript"
+          ]
+        },
+        {
+          "title":"circularJS",
+          "text":"CircularJS is a library that serializes complex javascript objects with cyclic references, something that JSON.stringify can't do.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/circular",
+              "type": "source-code"
+            }
+          ],
+          "year":2014,
+          "genre":[
+            "serialization"
+          ],
+          "technologies":[
+            "javascript"
+          ]
+        },
+        {
+          "title":"JSTeletype",
+          "text":"With JSTTY you can simulate keyboard input as well as output in a teletype machine via a very simple API.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Source Code",
+              "url":"https://bitbucket.org/slash_slashware/jsteletype",
+              "type": "source-code"
+            }
+          ],
+          "tags":[
+            "display",
+            "stable",
+            "javascript"
+          ],
+          "year":2014,
+          "genre":[
+            "display"
+          ],
+          "technologies":[
+            "javascript"
+          ]
+        },
+        {
+          "title":"libjcsi",
+          "subtitle":"Java Console System Interface",
+          "text":"Console output in Java via either JCurses or Swing.",
+          "status":"beta",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"Source Code",
+              "url":"http://code.google.com/p/libjcsi/",
+              "type": "source-code"
+            },
+            {
+              "title":"More Info...",
+              "url":"libjcsi/",
+              "type": "info"
+            }
+          ],
+          "year":2007,
+          "genre":[
+            "display"
+          ],
+          "collaborators":[
+            "eben-howard"
+          ],
+          "technologies":[
+            "java"
+          ],
+          "artStyle":[
+            "terminal"
+          ]
+        }
+      ]
+    },
+    {
+      "name":"eLearning / advergames",
+      "text":"",
+      "id":"elearning",
+      "sort":4,
+      "projects":[
+        {
+          "title":"Trial of the SlashwareKnights",
+          "image":"img/buttons/swinduccion.png",
+          "text":"Learn how to be a good SlashwareKnight (Spanish).",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://slashware.net/induccion/",
+              "type": "play-online"
+            }
+          ],
+          "year":2012,
+          "genre":[
+            "educational"
+          ],
+          "collaborators":[
+            "axelTheGod",
+            "bombilloAmarillo"
+          ],
+          "technologies":[
+            "flash"
+          ],
+          "artStyle":[
+            "vector-art"
+          ]
+        },
+        {
+          "title":"Quadrigan Training",
+          "image":"img/buttons/quadriganTraining.png",
+          "text":"Learn how to use Quadrigan.com (Spanish)",
+          "status":"beta",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://slashware.net/scratchpad/quadriganTraining/",
+              "type": "play-online"
+            }
+          ],
+          "year":2013,
+          "genre":[
+            "educational"
+          ],
+          "collaborators":[
+            "axelTheGod",
+            "bombilloAmarillo"
+          ],
+          "technologies":[
+            "flash"
+          ],
+          "artStyle":[
+            "illustrations"
+          ]
+        },
+        {
+          "title":"Slashware Quest",
+          "image":"img/buttons/swQuest.png",
+          "text":"Learn about the services and products provided by Slashware Interactive over 2012-2013 (Spanish)",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Play Online",
+              "url":"http://quest.slashware.net/",
+              "type": "play-online"
+            }
+          ],
+          "year":2013,
+          "genre":[
+            "advergame"
+          ],
+          "collaborators":[
+            "axelTheGod",
+            "bombilloAmarillo"
+          ],
+          "technologies":[
+            "flash"
+          ],
+          "artStyle":[
+            "vector-art"
+          ]
+        }
+      ]
+    },
+    {
+      "name":"Audiovisual",
+      "text":"Mostly non-interactive stuff.",
+      "id":"demos",
+      "sort":7,
+      "projects":[
+        {
+          "title":"NovaMundi - Trailer",
+          "image":"img/buttons/trailer-chaquen.png",
+          "text":"Trailer for the Demo of NovaMundi.",
+          "isTrailer": true,
+          "status":"public",
+          "activity":"finished",
+          "collaborators":[
+            "quietgecko",
+            "simernio",
+            "nashMakado"
+          ],
+          "buttons":[
+            {
+              "title":"Watch in youtube",
+              "url":"https://www.youtube.com/watch?v=5d2VYEjyalo",
+              "type": "video"
+            }
+          ],
+          "year":2021,
+          "genre":[
+            "trailer"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "3d"
+          ]
+        },
+        {
+          "title":"NovaMundi: Echoes of the Emerald Jungle - Trailer",
+          "isTrailer": true,
+          "image":"img/buttons/trailer-echoes.png",
+          "text":"First released for the launch of the NovaMundi page on Steam. Tells the story of a party of adventurers lost in the Emerald Jungle.",
+          "status":"public",
+          "activity":"finished",
+          "collaborators":[
+            "nashMakado",
+            "quietgecko"
+          ],
+          "buttons":[
+            {
+              "title":"Watch in youtube",
+              "url":"https://www.youtube.com/watch?v=hXLItjif98M",
+              "type": "video"
+            }
+          ],
+          "year":2020,
+          "genre":[
+            "trailer"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "3d"
+          ]
+        },
+        {
+          "title":"Expedition: Children of Bachué Trailer",
+          "isTrailer": true,
+          "image":"img/buttons/trailer-pacanchique.png",
+          "text":"Expectative trailer for NovaMundi done at the end of the CREA Digital Project. Introduces the story of Pacanchique.",
+          "status":"public",
+          "activity":"finished",
+          "collaborators":[
+            "quietgecko", "voiceArtist"
+          ],
+          "buttons":[
+            {
+              "title":"Watch in youtube",
+              "url":"https://www.youtube.com/watch?v=aCFkSe4ix2M",
+              "type": "video"
+            }
+          ],
+          "year":2019,
+          "genre":[
+            "trailer"
+          ],
+          "technologies":[
+            "unity"
+          ],
+          "artStyle":[
+            "3d"
+          ]
+        },
+        {
+          "title":"Final Fantasy IV Intro Movie SFX",
+          "image":"img/buttons/ff4intro.png",
+          "text":"Adding sound effects to the FF4 intro video.",
+          "status": "idea",
+          "activity": "stalled",
+          "buttons":[
+            {
+              "title":"Read More",
+              "url":"https://blog.slashie.net/2020/05/05/final-fantasy-iv-trailer-sound-remake/",
+              "type": "website"
+            },
+            {
+              "title":"Spotting",
+              "url":"http://slashie.net/ff4intro/",
+              "type": "source-code"
+            }
+          ],
+          "year":2020,
+          "genre":[
+            "remaster"
+          ],
+          "technologies":[],
+          "artStyle":[
+            "music"
+          ]
+        },
+        {
+          "title":"Roguelike Celebration 2018 Unofficial Trailer",
+          "isTrailer": true,
+          "image":"img/buttons/roguelikecel18.png",
+          "text":"The speakers of the event in a retro megaman style.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Watch in youtube",
+              "url":"https://www.youtube.com/watch?v=qOUxUBO1bic",
+              "type": "video"
+            },
+            {
+              "title":"Source Code",
+              "url":"https://github.com/slashman/roguelikecel18",
+              "type": "source-code"
+            }
+          ],
+          "year":2018,
+          "genre":[
+            "demo"
+          ],
+          "technologies":[
+            "javascript",
+            "phaser"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"The Queen of the Iron Throne",
+          "image":"img/buttons/westeros-demo.png",
+          "text":"An imagining of the status of Westeros in the Game of Thrones series by the beginning on Season 7 as a computer game from the 80's.",
+          "status":"public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"See in youtube",
+              "url":"https://www.youtube.com/watch?v=59_wt6wnASQ",
+              "type": "video"
+            }
+          ],
+          "usesAssetsBy": [
+            "ashtonMorris"
+          ],
+          "year":2017,
+          "genre":[
+            "demo"
+          ],
+          "technologies":[
+            "javascript",
+            "phaser"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"The Last Winter",
+          "image":"img/buttons/gotSeason8.png",
+          "text":"An imagining of the status of Westeros in the Game of Thrones series by the beginning on Season 8 as a computer game from the 80's.",
+          "status":"public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"See in youtube",
+              "url":"https://www.youtube.com/watch?v=T72nkFHm3aw",
+              "type": "video"
+            }
+          ],
+          "usesAssetsBy": [
+            "ashtonMorris"
+          ],
+          "year":2019,
+          "genre":[
+            "demo"
+          ],
+          "technologies":[
+            "javascript",
+            "phaser"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Curse of Wallachia",
+          "image":"img/buttons/cow.png",
+          "text":"An imagining of the first episodes of the Netflix Castlevania series as a NES game.",
+          "status":"public",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"See in youtube",
+              "url":"https://www.youtube.com/watch?v=062WrJ5JQz4",
+              "type": "video"
+            }
+          ],
+          "year":2017,
+          "genre":[
+            "demo"
+          ],
+          "technologies":[
+            "javascript",
+            "phaser"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"HoBLotH IV Intro",
+          "image":"img/buttons/hobloth4.png",
+          "text":"An animated intro for an Ultima LARP event based on the Ultima IV intro.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"See live",
+              "url":"http://slashware.net/hobloth/4/intro/",
+              "type": "play-online"
+            },
+            {
+              "title":"See in youtube",
+              "url":"https://www.youtube.com/watch?v=GkVez5S4qxY",
+              "type": "video"
+            }
+          ],
+          "year":2017,
+          "genre":[
+            "demo"
+          ],
+          "technologies":[
+            "javascript",
+            "phaser"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        }
+      ]
+    },
+    {
+      "name":"Other Stuff",
+      "text":"",
+      "id":"weirdstuff",
+      "sort":8,
+      "projects":[
+        {
+          "title":"LRUMP",
+          "image":"img/buttons/lrump.png",
+          "text":"Tilemaps inspired by RPGs from the 80's",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Check it out",
+              "url":"https://slash.itch.io/lrump",
+              "type": "play-online"
+            },
+            {
+              "title":"Repository",
+              "url":"https://bitbucket.org/slash_slashware/lrump/",
+              "type": "source-code"
+            }
+          ],
+          "year":2013,
+          "genre":[
+            "map"
+          ],
+          "collaborators":[],
+          "technologies":[
+            "tiled"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Pixel Westeros",
+          "image":"img/buttons/pixelWesteros.png",
+          "text":"Navigate Westeros in this Google Maps powered retro map.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Check it out",
+              "url":"http://slashie.net/pixelWesteros/",
+              "type": "play-online"
+            }
+          ],
+          "year":2016,
+          "genre":[
+            "map"
+          ],
+          "collaborators":[],
+          "technologies":[
+            "javascript",
+            "google-maps"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Kyouryuu Teikoku",
+          "image":"img/buttons/savage.png",
+          "subtitle":"The Savage Empire SNES Japanese Translation",
+          "text":"I’m teaming up with Dungy Dragon (and his wife) to translate this SNES ROM into Engrish.",
+          "status":"pre-alpha",
+          "activity": "stalled",
+          "buttons":[
+            {
+              "title":"Check the devlog",
+              "url":"http://slashland.wordpress.com/category/savage-empire-snes/",
+              "type": "devlog"
+            }
+          ],
+          "year":2013,
+          "genre":[
+            "romhacking"
+          ],
+          "collaborators":[
+            "dungi-dragon"
+          ],
+          "technologies":[
+            "java"
+          ]
+        },
+        {
+          "title":"Final Fantasy Z GB",
+          "image":"img/buttons/ffzgb.png",
+          "text":"A simple GB GFX ROMHack I made back on highschool.",
+          "status":"lost",
+          "activity": "finished",
+          "buttons":[
+            {
+              "title":"itch.io",
+              "url":"https://slash.itch.io/ffzgb",
+              "type": "download"
+            },
+            {
+              "title":"Check Video",
+              "url":"https://www.youtube.com/watch?v=A4kyrSlh9Mw",
+              "type": "video"
+            }
+          ],
+          "year":2000,
+          "genre":[
+            "romhacking"
+          ]
+        },
+        {
+          "title":"Spanish translation for Final Fantasy - NES",
+          "image":"img/buttons/thingy.png",
+          "text":"Translated Final Fantasy to Spanish using thingy.exe (Lost in time).",
+          "status":"lost",
+          "activity": "finished",
+          "buttons":[],
+          "year":2000,
+          "genre":[
+            "romhacking"
+          ]
+        },
+        {
+          "title":"Ultima 7 Turn Based Combat",
+          "image":"img/buttons/u7tbc.png",
+          "text":"I’m contributing to Exult, trying to add turn based combat to Ultima 7.",
+          "status":"pre-alpha",
+          "activity": "stalled",
+          "buttons":[
+            {
+              "title":"Check the devlog",
+              "url":"http://blog.slashie.net/category/exult-turn-based-combat/",
+              "type": "devlog"
+            }
+          ],
+          "year":2016,
+          "genre":[
+            "cRPG"
+          ],
+          "collaborators":[
+            "dominus-dragon"
+          ],
+          "technologies":[
+            "exult",
+            "c++"
+          ]
+        },
+        {
+          "title":"Pixel World Watch",
+          "image":"img/buttons/pixelworld.png",
+          "text":"An AndroidWear watchface showing the sun and the moon crossing the sky in a fantasy land.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Get it for Android Wear",
+              "url":"https://play.google.com/store/apps/details?id=co.slashware.pixelworldwatch",
+              "type": "android"
+            }
+          ],
+          "year":2015,
+          "genre":[
+            "watchface"
+          ],
+          "collaborators":[],
+          "technologies":[
+            "java",
+            "android-wear"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Knights Watch",
+          "image":"img/buttons/kotrt.png",
+          "text":"An AndroidWear watchface showing twelve ancient knights on a round table.",
+          "status":"alpha",
+          "activity": "stopped",
+          "buttons":[
+            {
+              "title":"Check the devlog",
+              "url":"http://blog.slashie.net/category/knightswatch/",
+              "type": "devlog"
+            }
+          ],
+          "year":2015,
+          "genre":[
+            "watchface"
+          ],
+          "collaborators":[
+            "gioram"
+          ],
+          "technologies":[
+            "java",
+            "android-wear"
+          ],
+          "artStyle":[
+            "illustrations",
+            "3d-renders"
+          ]
+        }
+      ]
+    },
+    {
+      "name":"Web",
+      "text":"",
+      "id":"webthings",
+      "sort":6,
+      "projects":[
+        {
+          "title":"GamifyX",
+          "image":"img/buttons/gamifyx.png",
+          "text":"Create gamification programs integrated to your company tools!",
+          "status":"offline",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Check it out",
+              "url":"http://gamifyx.com",
+              "type": "website"
+            }
+          ],
+          "year":2012,
+          "years": [2012, 2013, 2014],
+          "lastUpdate":2014,
+          "genre":[
+            "productivity"
+          ],
+          "technologies":[
+            "java",
+            "javascript",
+            "mysql"
+          ],
+          "collaborators":[
+            "jucarave", "straust"
+          ],
+          "artStyle":[
+            "minimalistic"
+          ]
+        },
+        {
+          "title":"Project Picker",
+          "image":"img/buttons/pp.png",
+          "text":"Got many projects? Let this app decide what you should work in!",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Check it out",
+              "url":"http://slashie.net/pp",
+              "type": "website"
+            },
+            {
+              "title":"Source code",
+              "url":"https://github.com/slashman/projectpicker",
+              "type": "source-code"
+            }
+          ],
+          "year":2017,
+          "genre":[
+            "productivity"
+          ],
+          "technologies":[
+            "javascript",
+            "riot.js"
+          ],
+          "artStyle":[
+            "minimalistic"
+          ]
+        },
+        {
+          "title":"Temple of the Roguelike",
+          "image":"img/buttons/totr-blog.png",
+          "text":"Historically, one of the main news outlets for Roguelike games",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Visit",
+              "url":"https://blog.roguetemple.com",
+              "type": "website"
+            }
+          ],
+          "year":2007,
+          "years": [2007, 2019],
+          "lastUpdate": 2019,
+          "genre":[
+            "blog"
+          ],
+          "technologies":[
+            "wordpress",
+            "php"
+          ],
+          "artStyle":[
+            "minimalistic"
+          ]
+        },
+        {
+          "title":"Temple of the Roguelike - Forums",
+          "image":"img/buttons/totr-forums.png",
+          "text":"Historically, one of the main hubs for discussion of Roguelike games",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Visit",
+              "url":"https://forums.roguetemple.com",
+              "type": "website"
+            }
+          ],
+          "year":2007,
+          "years": [2007, 2020],
+          "lastUpdate": 2020,
+          "genre":[
+            "forums"
+          ],
+          "technologies":[
+            "smf",
+            "php"
+          ],
+          "artStyle":[
+            "minimalistic"
+          ]
+        },
+        {
+          "title":"The Roguebasin",
+          "image":"img/buttons/roguebasin.png",
+          "text": "A wiki which serves as the main depot of all information regarding roguelikes, including a collection of the existing projects and games, an encyclopedia of genre-related topics, a directory of developers and a collection of development tips and articles. I set up the initial versions, and have been involved as a mantainer during all of its life.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Visit",
+              "url":"http://roguebasin.com",
+              "type": "website"
+            },
+            {
+              "title":"About",
+              "url":"http://roguebasin.com/index.php?title=RogueBasin",
+              "type": "website"
+            }
+          ],
+          "year":2005,
+          "years": [2005, 2011],
+          "lastUpdate": 2011,
+          "genre":[
+            "wiki"
+          ],
+          "technologies":[
+            "mediawiki",
+            "php"
+          ],
+          "artStyle":[
+            "minimalistic"
+          ]
+        },
+        {
+          "title":"Slashie.net ReactJS",
+          "image":"img/buttons/slashie2017.png",
+          "text":"A collection of lots of crazy projects.",
+          "status":"public",
+          "activity":"active",
+          "buttons":[
+            {
+              "title":"You are already here!",
+              "url":"http://slashie.net/",
+              "type": "website"
+            }
+          ],
+          "year":2017,
+          "years":[2017, 2019, 2025],
+          "lastUpdate":2025,
+          "genre":[
+            "website"
+          ],
+          "technologies":[
+            "javascript",
+            "reactjs"
+          ],
+          "artStyle":[
+            "minimalistic"
+          ]
+        }
+      ]
+    },
+    {
+      "name":"Talks",
+      "text":"",
+      "id":"talks",
+      "sort":7,
+      "projects":[
+        {
+          "title":"Procedural Content Generation using JavaScript",
+          "image":"img/buttons/jsconf19.png",
+          "text":"A talk for JSConf Colombia 2019 in Medellín. An intro to procedural content generation and some advantages of using JavaScript for it.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Slides (Translated to English)",
+              "url":"https://slashie.net/talks/jsconfco19-en.pdf",
+              "type": "website"
+            },
+            {
+              "title":"Slides",
+              "url":"https://slashie.net/talks/jsconfco19.pdf",
+              "type": "website"
+            }
+          ],
+          "year":2019,
+          "genre":[
+            "procgen"
+          ],
+          "technologies":[
+            "javascript"
+          ],
+          "artStyle":[
+            "pixel-art"
+          ]
+        },
+        {
+          "title":"Celebrating Moria, a roguelike before the roguelikes",
+          "image":"img/buttons/roguecel22.png",
+          "text":"The year is 1981, over one decade before the concept of \"roguelike\" would come to exist. A young programming enthusiast called Robert Koeneke sets on a journey to create his very own version of rogue.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Recorded Talk",
+              "url":"https://www.youtube.com/watch?v=y6WCq0jYbHo",
+              "type": "video"
+            }
+          ],
+          "year":2022,
+          "genre":[
+            "history", "roguelike"
+          ],
+          "technologies":[],
+          "artStyle":[]
+        },
+        {
+          "title":"Roguelikes as automated Dungeon Masters: a historical overview",
+          "image":"img/buttons/roguecel18.png",
+          "text":"A talk for Roguelike Celebration 2018 in San Francisco. Let's look at the underlying intent behind rogue and the early roguelikes: to create tools that simulate the role of the \"dungeon master\" of a role-playing game session.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Recorded",
+              "url":"https://www.youtube.com/watch?v=ZMdxP7fO6wE",
+              "type": "video"
+            }
+          ],
+          "year":2018,
+          "genre":[
+            "history", "roguelike"
+          ],
+          "technologies":[],
+          "artStyle":[]
+        },
+        {
+          "title":"Conserving the classic roguelike definition, does it make any sense in 2017?",
+          "image":"img/buttons/roguecel17.png",
+          "text":"Keynote talk for Roguelike Celebration 2017 in San Francisco. How relevant is it to keep the concept of a traditional, turn-based roguelike? Should we just let the “roguelike” term evolve along with the games that use it?",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Recorded",
+              "url":"https://www.youtube.com/watch?v=wwc7pZqs9UA",
+              "type": "video"
+            }
+          ],
+          "year":2017,
+          "genre":[
+            "history", "roguelike"
+          ],
+          "technologies":[],
+          "artStyle":[]
+        },
+        {
+          "title":"Get your game done: Experiences through the development of 13 roguelikes",
+          "image":"img/buttons/roguecel16.png",
+          "text":"A talk for Roguelike Celebration 2016 in San Francisco. Let me guide you thru 13 years of developing roguelikes for the Seven Days Roguelike Challenge, and the things I have learned with every one of my entries.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Recorded",
+              "url":"https://www.youtube.com/watch?v=cDSTJ8keV3w",
+              "type": "video"
+            },
+            {
+              "title":"Slides",
+              "url":"https://slashland.files.wordpress.com/2016/09/get-your-game-done.pdf",
+              "type": "website"
+            }
+          ],
+          "year":2016,
+          "genre":[
+            "gamedev", "roguelike"
+          ],
+          "technologies":[],
+          "artStyle":[]
+        },
+        {
+          "title":"Social Gamification (Spanish)",
+          "image":"img/buttons/barcamp.png",
+          "text":"A talk for Barcamp Medellin 2014. Applying Gamification techniques to solve problems of the city.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Recorded",
+              "url":"https://www.youtube.com/watch?v=ZKj-XyYJ7PM",
+              "type": "video"
+            }
+          ],
+          "year":2014,
+          "genre":[
+            "gamification"
+          ],
+          "technologies":[],
+          "artStyle":[]
+        },
+        {
+          "title":"Gamification Techniques applied to social media (Spanish)",
+          "image":"img/buttons/smg.png",
+          "text":"A talk for Campus Party 2013 in Medellin. Fundamentals of gamification and using some of its elements in the Social Media field.",
+          "status":"public",
+          "activity":"finished",
+          "buttons":[
+            {
+              "title":"Slides",
+              "url":"https://slashie.net/talks/gamificacionMediosSociales.pdf",
+              "type": "website"
+            }
+          ],
+          "year":2013,
+          "genre":[
+            "gamification"
+          ],
+          "technologies":[],
+          "artStyle":[]
+        }
+      ]
+    },
+    {
+      "name": "People I've worked with",
+      "text": "",
+      "id": "collaborators",
+      "sort": 7,
+      "skipGrouping": true,
+      "projects": [
+        {
+          "key": "jucarave",
+          "title": "Jucarave",
+          "country": "co",
+          "image":"img/buttons/jucarave.png",
+          "skills": ["code", "pixel-art"],
+          "text": "Software engineer and indie dev. Longest running SlashwareKnight (SWK-09) and a long-time friend in the battle for indiegame success.",
+          "url": "https://delcodigo.com/"
+        },
+        {
+          "key": "denzi",
+          "title": "Denzi",
+          "country": "jp",
+          "image":"img/buttons/denzi.png",
+          "skills": ["pixel-art"],
+          "text": "Historically one of the main art contributors to Dungeon Crawl Stone Soup, dreams in pixels.",
+          "url": "http://d.hatena.ne.jp/Denzi/"
+        },
+        {
+          "key": "oryx",
+          "title": "Oryx",
+          "country": "us",
+          "image":"img/buttons/oryx.png",
+          "skills": ["pixel-art"],
+          "text": "Creator of many high quality tilesets.",
+          "url": "http://oryxdesignlab.com/"
+        },
+        {
+          "key": "ashtonMorris",
+          "title": "Ashton Morris",
+          "country": "us",
+          "skills": ["music"],
+          "image":"img/buttons/ashton.png",
+          "text": "Composer and Sound Designer",
+          "url": "http://www.ashtonmorris.com/"
+        },
+        {
+          "title": "Bombillo Amarillo",
+          "country": "co",
+          "skills": ["illustration"],
+          "key": "bombilloAmarillo",
+          "image":"img/buttons/bombilloAmarillo.png",
+          "text": "A colombian studio specialized in 2D mixed technique animation (Cut Out and Traditional Frame by Frame).",
+          "url": "https://bombilloamarillo.com/"
+        },
+        {
+          "title": "Okuroy",
+          "country": "co",
+          "skills": ["pixel-art"],
+          "image":"img/buttons/okuroy.png",
+          "key": "okuroy",
+          "text": "2D Animator and pixel artist.",
+          "url": "https://twitter.com/okuroy"
+        },
+        {
+          "title": "Valentina Zapata",
+          "country": "co",
+          "skills": ["illustration"],
+          "image":"img/buttons/valnyr.png",
+          "key": "valnyr",
+          "text": "Slashie's sister, a talented Artist and Publicist. Served Slashware as SWK-10 in the early 2010s doing illustrations and game design.",
+          "url": "https://www.behance.net/ValentinaZapata"
+        },
+        {
+          "title": "Giovanny Ramirez",
+          "country": "co",
+          "skills": ["illustration"],
+          "image":"img/buttons/gioram.png",
+          "key": "gioram",
+          "text": "Character modeller and sculptor.",
+          "url": "https://www.artstation.com/gio_ram"
+        },
+        {
+          "title": "Rybar",
+          "country": "us",
+          "skills": ["music"],
+          "key": "rybar",
+          "image":"img/buttons/rybar.png",
+          "text": "Full time graphic designer, front-end web developer and game designer.",
+          "url" : "https://github.com/Rybar"
+        },
+        {
+          "title": "RaveneyeX",
+          "country": "co",
+          "skills": ["code"],
+          "key": "raveneyex",
+          "image":"img/buttons/raven.png",
+          "text": "A glitch of existence. Programmer, idle illustrator.",
+          "url": "https://twitter.com/HumoBinario"
+        },
+        {
+          "title": "Mark Honnor",
+          "country": "nz",
+          "skills": ["pixel-art"],
+          "key": "cosmicMenace",
+          "image":"img/buttons/mark.png",
+          "text": "Solo game developer living in a shed in the forest.",
+          "url": "https://twitter.com/CosmicMenace"
+        },
+        {
+          "title": "Gustavo Guevara",
+          "country": "co",
+          "skills": ["code"],
+          "key": "mojitoking",
+          "image":"img/buttons/mojito.jpg",
+          "text": "Master of the universe, destroyer of worlds, wise sage, strategist of war.",
+          "url": "https://github.com/gaguevaras"
+        },
+        {
+          "title": "QuietGecko",
+          "country": "co",
+          "skills": ["music"],
+          "key": "quietgecko",
+          "image":"img/buttons/quietgecko.jpg",
+          "text": "Music Composer, Sound Designer, Interactive Media and Game Audio Passionate.",
+          "url": "https://quietgecko.itch.io/"
+        },
+        {
+          "title": "Simernio",
+          "country": "co",
+          "skills": ["illustration", "3d"],
+          "key": "simernio",
+          "image":"img/buttons/simernio.jpg",
+          "text": "Graphic designer, illustrator and 3D artist. Enjoys video games, board games and Bonsai. He was part of Slashware in the late 2010s and early 2020s, as SWK-11.",
+          "url": "https://www.behance.net/davidflorez"
+        },
+        {
+          "title": "Mateo Robayo",
+          "country": "co",
+          "skills": ["pixel-art", "illustration", "code"],
+          "key": "mapedorr",
+          "image":"img/buttons/mapedorr.png",
+          "text": "Make games and pixel art. Loves Jazz. Draws things.",
+          "url": "https://mapedorr.itch.io/"
+        },
+        {
+          "title": "Giovanny Beltrán",
+          "country": "co",
+          "skills": ["code"],
+          "key": "agar3s",
+          "image":"img/buttons/agar3s.png",
+          "text": "A software engineer working on indie games, his speciality is browser based games.",
+          "url": "http://agar3s.games/"
+        },
+        {
+          "title": "Manuel Gómez Aquaquiña",
+          "country": "co",
+          "skills": ["writer"],
+          "key": "aguaquiña",
+          "image":"img/buttons/aguaquina.jpg",
+          "text": "Muiysca descendant from Pachavita, Boyacá. A researcher of culture, linguistics and history.",
+          "url": "https://corpocosmogonias.wixsite.com/cosmogonias/nosotros"
+        },
+        {
+          "title": "Esteban Martinez \"Stoltverd\"",
+          "country": "co",
+          "skills": ["writer", "design"],
+          "key": "stoltverd",
+          "image":"img/buttons/stoltverd.jpg",
+          "text": "He joined Slashware in the early 2020s era, serving as game designer and writer as SWK-12. After his departure we continued doing cool projects together.",
+          "url": "https://www.linkedin.com/in/stoltverd/"
+        },
+        {
+          "title": "Camilo Fique",
+          "country": "co",
+          "skills": ["music"],
+          "key": "Camilo Fique",
+          "image":"img/buttons/fique.jpg",
+          "text": "Realizar obras audiovisuales y compartir mi música es una oportunidad para investigar, para estar abierto y conectarme con otras maneras de ver la realidad.",
+          "url": "https://linktr.ee/duityors"
+        },
+        {
+          "title": "Laura Rubio",
+          "country": "co",
+          "skills": ["illustration"],
+          "key": "inkiluanna",
+          "image":"img/buttons/inkiluanna.jpg",
+          "text": "I always have an innate curiosity about the world, and I am passionate about learning, improving and growing professionally as an artist.​​​​​​​",
+          "url": "https://inkiluanna.myportfolio.com/"
+        },
+        {
+          "title": "Aguahervida",
+          "country": "co",
+          "skills": ["pixel-art"],
+          "key": "aguahervida",
+          "image":"img/buttons/aguahervida.png",
+          "text": "My preferred number of color count is 4-8 but I can do pixels from 1-bit to hi-bit either way.",
+          "url": "https://aguahervida.co/"
+        },
+        {
+          "title": "Oscar Granados",
+          "country": "co",
+          "skills": ["illustration"],
+          "key": "Oscar Creart",
+          "image":"img/buttons/oscarCreart.jpg",
+          "text": "Seguro mi arte hablara mejor de mi.",
+          "url": "https://www.oscarcreart.com/"
+        },
+        {
+          "title": "wazoo",
+          "country": "ca",
+          "skills": ["code"],
+          "key": "wazoo",
+          "image":"img/buttons/wazoo.jpg",
+          "text": "Fullstack Developer by day, Gamedev enthusiast by night.",
+          "url": "https://twitter.com/eyuzwa"
+        },
+        {
+          "title": "Cesar Gutierrez",
+          "country": "co",
+          "skills": ["illustration"],
+          "key": "cesarart",
+          "image":"img/buttons/cesart.png",
+          "text": "My versatile style allows me to adapt to different styles and genres, whether it's creating adorable and colorful characters for children's books or stylized and dark characters for comics and video games.",
+          "url": "https://cesdugor.artstation.com/"
+        },
+        {
+          "title": "Santiago Martínez Sóliman",
+          "country": "co",
+          "skills": ["music"],
+          "key": "soliman",
+          "image":"img/buttons/soliman.jpg",
+          "text": "Making human music for human beings.",
+          "url": "https://soundcloud.com/solimancontilde"
+        },
+        {
+          "title": "Juan Pedreros Azra",
+          "country": "co",
+          "skills": ["sound"],
+          "key": "azra",
+          "image":"img/buttons/azra.jpg",
+          "text": "Conquistando el mundo con la imagen y lo sonoro.",
+          "url": "https://www.instagram.com/juanpedrerosav_azra/"
+        },
+        {
+          "title": "Armyboy",
+          "country": "co",
+          "skills": ["illustration"],
+          "key": "armyboy",
+          "image":"img/buttons/armyboy.jpg",
+          "text": "Art Director, 2D and 3D animator, entrepreneur. PS2 was the console he enjoyed the most.",
+          "url": "https://www.deviantart.com/armycom"
+        },
+        {
+          "title": "Juan Camilo Alcaraz",
+          "country": "co",
+          "skills": ["illustration"],
+          "key": "alzarac",
+          "image":"img/buttons/alzarac.jpg",
+          "text": "3D Technical Artist / Generalist. Prince of Persia (DOS) speedrunner",
+          "url": "https://www.artstation.com/alzarac"
+        },
+        {
+          "title": "Dintimusic",
+          "country": "co",
+          "skills": ["music"],
+          "key": "dintimusic",
+          "image":"img/buttons/dinti.jpg",
+          "text": "Ritmos, máquinas y un \"ser humano\"",
+          "url": "https://www.instagram.com/dintimusic/"
+        },
+        {
+          "title": "Glenn Wichman",
+          "country": "us",
+          "skills": ["pixel-art"],
+          "key": "glennWichman",
+          "image":"img/buttons/glenn.jpg",
+          "text": "Creator of Rogue, Mavis Beacon Teaches Typing, and more",
+          "url": "https://www.linkedin.com/in/mindcountry/"
+        },
+        {
+          "title": "Kevin Parra",
+          "country": "co",
+          "skills": ["pixel-art"],
+          "key": "kevinParra",
+          "image":"img/buttons/kevinParra.jpg",
+          "text": "I am passionate about art and game development.",
+          "url": "https://kevin-parra.itch.io/"
+        },
+        {
+          "title": "Mauricio Betancourt",
+          "country": "co",
+          "skills": ["code"],
+          "key": "mauroBetancourt",
+          "image":"img/buttons/maurox.jpg",
+          "text": "Co-founder of IndieLevel Studio, tech designer and indiedev dreamer.",
+          "url": "https://www.linkedin.com/in/mauricio-betancourt-hurtado-9362b697/"
+        },
+        {
+          "title": "Sara Rios Ochoa",
+          "country": "co",
+          "skills": ["illustration"],
+          "key": "saraRios",
+          "image":"img/buttons/sarar.jpg",
+          "text": "I specialize in crafting user-centered designs that blend usability with visual appeal.",
+          "url": "https://www.behance.net/sarariosochoa"
+        },
+        {
+          "title": "Randy Greenback",
+          "country": "us",
+          "skills": ["design"],
+          "key": "randy",
+          "image":"img/buttons/randy.jpg",
+          "text": "The only thing we need to be aggressive in doing is looking for opportunities to help others.",
+          "url": "https://x.com/Randygbk"
+        },
+        {
+          "title": "Alexander \"AxelTheGod\" Henao",
+          "country": "co",
+          "skills": ["illustration", "code"],
+          "key": "axelTheGod",
+          "image":"img/buttons/swk08.png",
+          "text": "We worked together creating Flash games in the early 2010s, during his time in Slashware as SWK-08.",
+          "url": "https://www.behance.net/alexhenaof"
+        },
+        {
+          "title": "Stuart \"straust\" García",
+          "country": "co",
+          "skills": ["code"],
+          "key": "straust",
+          "image":"img/buttons/swk05.png",
+          "text": "Although his alleigance to Slashware (As SWK-05) was mostly for the web development side of things, he participated in the development of some web games.",
+          "url": "https://www.linkedin.com/in/straust/"
+        }
+      ]
+    }
+  ]
+}
