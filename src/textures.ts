@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import type { Project, Floor } from './types';
 import { TAG_FAMILY, type TagFamily, genreColor } from './tags';
 import { YEAR_DESCRIPTIONS, yearImagePath } from './yearContent';
+import { DATA_BASE } from './config';
 
 let maxAniso = 4;
 export function setAnisotropy(n: number) { maxAniso = n; }
@@ -89,6 +90,55 @@ export function fallbackPaintingTexture(title: string): THREE.CanvasTexture {
   return tuneTexture(new THREE.CanvasTexture(canvas));
 }
 
+/** A simple blocky default face (eyes + smile) for an NPC that has no picture. */
+export function faceTexture(seed: string): THREE.CanvasTexture {
+  const { canvas, ctx } = makeCanvas(256, 256);
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) % 360;
+  ctx.fillStyle = `hsl(${h}, 42%, 62%)`;
+  ctx.fillRect(0, 0, 256, 256);
+  ctx.fillStyle = '#1c1c1c';
+  ctx.beginPath(); ctx.ellipse(92, 104, 15, 22, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(164, 104, 15, 22, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#1c1c1c';
+  ctx.lineWidth = 12;
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(128, 150, 46, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+  return tuneTexture(new THREE.CanvasTexture(canvas));
+}
+
+/** Load an image and cover-fit it onto a square canvas (so it maps cleanly onto a cube face). */
+export function squareImageTexture(url: string): Promise<THREE.CanvasTexture | null> {
+  return loadHTMLImage(url).then((img) => {
+    if (!img) return null;
+    const { canvas, ctx } = makeCanvas(256, 256);
+    drawCover(ctx, img, 0, 0, 256, 256);
+    return tuneTexture(new THREE.CanvasTexture(canvas));
+  });
+}
+
+/** A floating name tag rendered above an NPC. */
+export function nameTagTexture(name: string): THREE.CanvasTexture {
+  const W = 512, H = 128;
+  const { canvas, ctx } = makeCanvas(W, H);
+  ctx.font = 'bold 52px Georgia, serif';
+  const tw = Math.min(W - 24, ctx.measureText(name).width + 60);
+  ctx.fillStyle = 'rgba(14,12,20,0.82)';
+  roundRect(ctx, (W - tw) / 2, 24, tw, 80, 20);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(224,178,86,0.7)';
+  ctx.lineWidth = 3;
+  roundRect(ctx, (W - tw) / 2, 24, tw, 80, 20);
+  ctx.stroke();
+  ctx.fillStyle = '#f0e7cf';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  let t = name;
+  while (ctx.measureText(t).width > tw - 40 && t.length > 2) t = t.slice(0, -1);
+  ctx.fillText(t === name ? t : t + '…', W / 2, 66);
+  return tuneTexture(new THREE.CanvasTexture(canvas));
+}
+
 /** Load a project image through the dev proxy; resolves to null on failure. */
 export function loadImageTexture(url: string): Promise<THREE.Texture | null> {
   return new Promise((resolve) => {
@@ -99,6 +149,22 @@ export function loadImageTexture(url: string): Promise<THREE.Texture | null> {
       () => resolve(null),
     );
   });
+}
+
+/**
+ * Dev days shown on a placard: summed from effortMeasures when present, otherwise
+ * derived from the category (games1 → 50, games2 → 20, games3 → 10). Null (shown
+ * as nothing) for any other case.
+ */
+function devDays(p: Project): number | null {
+  const em = p.effortMeasures;
+  if (em && em.length) return em.reduce((sum, m) => sum + (m.days ?? 0), 0);
+  switch (p.categoryId) {
+    case 'games1': return 50;
+    case 'games2': return 20;
+    case 'games3': return 10;
+    default: return null;
+  }
 }
 
 /** The museum wall placard: title, meta, description and colour-coded tag pills. */
@@ -124,11 +190,16 @@ export function placardTexture(p: Project): THREE.CanvasTexture {
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
 
-  // category eyebrow
-  if (p.category) {
+  // eyebrow: dev days, plus a "continued" marker on floors where the project was
+  // developed but not started
+  const dd = devDays(p);
+  const eyebrow: string[] = [];
+  if (dd != null) eyebrow.push(`${dd} DEV DAYS`);
+  if (p.revisited) eyebrow.push('CONTINUED');
+  if (eyebrow.length) {
     ctx.fillStyle = '#e0b256';
     ctx.font = 'bold 22px Georgia, serif';
-    ctx.fillText(p.category.toUpperCase(), padX, y);
+    ctx.fillText(eyebrow.join('   ·   '), padX, y);
     y += 12;
   }
 
@@ -301,6 +372,35 @@ export function buttonLabelTexture(color: string, glyph: string, verb: string, t
   return tuneTexture(new THREE.CanvasTexture(canvas));
 }
 
+/** A carved plaque sign hung above a doorway (e.g. "Smaller Projects"). */
+export function doorSignTexture(text: string): THREE.CanvasTexture {
+  const W = 768, H = 220;
+  const { canvas, ctx } = makeCanvas(W, H);
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#3a3222');
+  g.addColorStop(1, '#241e14');
+  ctx.fillStyle = g;
+  roundRect(ctx, 8, 8, W - 16, H - 16, 16);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(224,178,86,0.7)';
+  ctx.lineWidth = 5;
+  roundRect(ctx, 8, 8, W - 16, H - 16, 16);
+  ctx.stroke();
+  ctx.fillStyle = '#e9d9ac';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = 'bold 74px Georgia, serif';
+  let t = text;
+  while (ctx.measureText(t).width > W - 150 && t.length > 4) t = t.slice(0, -1);
+  ctx.fillText(t, W / 2, H / 2);
+  // flanking arrows
+  ctx.fillStyle = '#e0b256';
+  ctx.font = 'bold 64px Georgia, serif';
+  ctx.fillText('❯', W - 70, H / 2 + 2);
+  ctx.fillText('❮', 70, H / 2 + 2);
+  return tuneTexture(new THREE.CanvasTexture(canvas));
+}
+
 /** Big directional sign texture for the elevator core. */
 export function signTexture(lines: string[]): THREE.CanvasTexture {
   const W = 512, H = 512;
@@ -329,7 +429,7 @@ export function signTexture(lines: string[]): THREE.CanvasTexture {
 function resolveImg(image?: string): string | null {
   if (!image) return null;
   if (/^https?:\/\//i.test(image)) return image;
-  return '/slashie/' + image.replace(/^\//, '');
+  return DATA_BASE + image.replace(/^\//, '');
 }
 function loadHTMLImage(url: string): Promise<HTMLImageElement | null> {
   return new Promise((res) => {
@@ -479,13 +579,20 @@ export function yearInfoTexture(floor: Floor): THREE.CanvasTexture {
   if (desc) {
     ctx.fillStyle = '#e9e1cb';
     ctx.font = 'italic 28px Georgia, serif';
-    y = wrapText(ctx, '“' + desc + '”', padX, y, leftW, 37, 6) + 8;
+    y = wrapText(ctx, '“' + desc + '”', padX, y, leftW, 37, 4) + 10;
   }
+  const started = floor.projects.filter((p) => !p.revisited);
+  const continued = floor.projects.filter((p) => p.revisited);
   ctx.fillStyle = '#a49d89';
   ctx.font = '23px Georgia, serif';
-  const intro = `${floor.projects.length} work${floor.projects.length === 1 ? '' : 's'} begun here: `
-    + floor.projects.map((p) => p.title).join(' · ') + '.';
-  wrapText(ctx, intro, padX, Math.min(y + 6, H - 70), leftW, 30, 3);
+  const begun = `${started.length} work${started.length === 1 ? '' : 's'} begun here`
+    + (started.length ? ': ' + started.map((p) => p.title).join(' · ') + '.' : '.');
+  y = wrapText(ctx, begun, padX, y + 6, leftW, 30, 2) + 8;
+  if (continued.length) {
+    ctx.fillStyle = '#8f8874';
+    ctx.font = 'italic 22px Georgia, serif';
+    wrapText(ctx, 'Also worked on this year: ' + continued.map((p) => p.title).join(' · ') + '.', padX, y, leftW, 29, 2);
+  }
 
   // ---- right column: aggregated tag families ----
   ctx.fillStyle = '#c9c0a8';

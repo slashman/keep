@@ -24,6 +24,9 @@ export class UI {
   private video = el('div', 'overlay hidden');
   private videoWrap = el('div', 'frame-wrap');
   private videoTitle = el('div', 'vtitle');
+  private dialog = el('div');
+  private dialogName = el('div', 'dname');
+  private dialogText = el('div', 'dtext');
   private curtain = el('div');
 
   // callbacks wired by main
@@ -37,6 +40,8 @@ export class UI {
     this.floorLabel.id = 'floorLabel';
     this.help.id = 'help';
     this.curtain.id = 'curtain';
+    this.elevator.id = 'elevator'; // without these ids every #elevator / #video CSS rule is dead
+    this.video.id = 'video';
     this.help.innerHTML =
       '<span class="key">W A S D</span> move &nbsp; <span class="key">Mouse</span> look &nbsp; ' +
       '<span class="key">Shift</span> run<br>' +
@@ -51,7 +56,23 @@ export class UI {
     this.buildLoading();
     this.buildElevator();
     this.buildVideo();
+    this.buildDialog();
   }
+
+  // ---------- NPC dialog blurb ----------
+  private buildDialog() {
+    this.dialog.id = 'dialog';
+    const hint = el('div', 'dhint', '<span class="key">E</span> close');
+    this.dialog.append(this.dialogName, this.dialogText, hint);
+    document.body.append(this.dialog);
+  }
+  showDialog(name: string, text?: string) {
+    this.dialogName.textContent = name;
+    this.dialogText.textContent = text && text.trim() ? text : 'We worked together on the Keep.';
+    this.dialog.classList.add('show');
+  }
+  hideDialog() { this.dialog.classList.remove('show'); }
+  get dialogOpen() { return this.dialog.classList.contains('show'); }
 
   // ---------- loading ----------
   private buildLoading() {
@@ -79,9 +100,6 @@ export class UI {
     btn.addEventListener('click', () => this.onStart?.());
     this.start.append(
       el('h1', 'title', 'The Slashie Keep'),
-      el('div', 'subtitle',
-        'A castle where every floor is a year and every room a project from ' +
-        '<b>slashie.net</b>. Wander the halls, read the placards, pull the levers.'),
       btn,
       el('div', 'controls-legend',
         '<span><b>W A S D</b> move</span><span><b>Mouse</b> look</span>' +
@@ -121,8 +139,8 @@ export class UI {
     close.addEventListener('click', () => this.onCloseOverlay?.());
     panel.append(
       close,
-      el('h2', undefined, '🔮 The Orb — Floor Directory'),
-      el('div', 'hint', 'The orb can carry you to any year. Each floor gathers the projects begun that year — choose your destination.'),
+      el('h2', undefined, '🔮 The Orb'),
+      el('div', 'hint', 'The orb can carry you to any year. Each realm gathers the projects start on and worked during that year — choose your destination.'),
       this.floorGrid,
     );
     this.elevator.append(panel);

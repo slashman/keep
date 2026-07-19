@@ -1,11 +1,14 @@
 import { defineConfig } from 'vite';
 
-// slashie.net does not send CORS headers, so a browser cannot fetch its JSON
-// or use its images as WebGL textures directly. In dev we proxy everything
-// under /slashie to https://slashie.net so it all becomes same-origin.
-export default defineConfig({
+// Production is deployed at https://slashie.net/keep, so the built app's own assets
+// are served under /keep/. The data + images live at the slashie.net root, which is
+// same-origin in production (no CORS/proxy needed) and reached via the proxy in dev.
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/keep/' : '/',
   server: {
     proxy: {
+      // Dev only: slashie.net sends no CORS headers, so route /slashie → slashie.net
+      // server-side to make its JSON and images same-origin during development.
       '/slashie': {
         target: 'https://slashie.net',
         changeOrigin: true,
@@ -14,4 +17,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));

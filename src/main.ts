@@ -1,8 +1,9 @@
 import * as THREE from 'three';
-import { loadData, buildFloors } from './data';
-import type { Floor, ProjectButton } from './types';
+import { loadData, buildFloors, getCollaborators, collaboratorsForFloor } from './data';
+import type { Floor, ProjectButton, Collaborator } from './types';
 import { PlayerControls } from './controls';
 import { InteractionManager } from './interaction';
+import { TouchControls } from './touch';
 import { buildFloor, type FloorBuild } from './floor';
 import { setAnisotropy } from './textures';
 import { youtubeId } from './tags';
@@ -22,12 +23,23 @@ scene.fog = new THREE.Fog(0x07060b, 16, 78);
 
 const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 200);
 
+const isTouch = window.matchMedia('(pointer: coarse)').matches;
 const controls = new PlayerControls(camera, canvas);
+controls.touch = isTouch;
 const interaction = new InteractionManager(camera);
 const ui = new UI();
+if (isTouch) document.body.classList.add('touch');
+
+/** Shared interaction trigger (E key, click, on-screen button, or tap). */
+function interact() {
+  if (ui.dialogOpen) { ui.hideDialog(); return; }
+  if (controls.isLocked && interaction.focused) interaction.activate();
+}
+const touchUI: TouchControls | null = isTouch ? new TouchControls(controls, canvas, interact) : null;
 
 // ---------- state ----------
 let floors: Floor[] = [];
+let collab: Map<string, Collaborator> = new Map();
 let dataSource = 'live';
 let currentYear = 0;
 let current: FloorBuild | null = null;
@@ -43,7 +55,8 @@ function mountFloor(year: number) {
   const build = buildFloor(floor, {
     onButton: handleButton,
     onElevator: openElevator,
-  });
+    onNpc: handleNpc,
+  }, collaboratorsForFloor(floor, collab));
   scene.add(build.group);
   current = build;
   currentYear = floor.year;
@@ -76,7 +89,12 @@ function handleButton(btn: ProjectButton) {
   }
 }
 
+function handleNpc(person: { name: string; text?: string }) {
+  ui.showDialog(person.name, person.text);
+}
+
 function openElevator() {
+  ui.hideDialog();
   ui.populateFloors(floors, currentYear);
   ui.showElevator();
   controls.enabled = false;
@@ -84,6 +102,7 @@ function openElevator() {
 }
 
 function openVideo(id: string, title: string) {
+  ui.hideDialog();
   ui.showVideo(id, title);
   controls.enabled = false;
   controls.unlock();
@@ -107,17 +126,20 @@ ui.onPickFloor = (year) => travelTo(year);
 ui.onCloseOverlay = () => closeOverlay();
 
 canvas.addEventListener('pointerdown', () => {
+  if (isTouch) return; // touch is handled by TouchControls
   if (ui.anyOverlayOpen) return;
+  if (ui.dialogOpen) { ui.hideDialog(); return; }
   if (!controls.isLocked) { controls.enabled = true; controls.lock(); return; }
   if (interaction.focused) interaction.activate();
 });
 
 window.addEventListener('keydown', (e) => {
-  if (e.code === 'KeyE' && controls.isLocked && interaction.focused) {
+  if (e.code === 'KeyE') {
     e.preventDefault();
-    interaction.activate();
+    interact();
   } else if (e.code === 'Escape') {
-    if (ui.videoOpen) { ui.hideVideo(); resumeLock(); }
+    if (ui.dialogOpen) ui.hideDialog();
+    else if (ui.videoOpen) { ui.hideVideo(); resumeLock(); }
     else if (ui.elevatorOpen) { ui.hideElevator(); resumeLock(); }
   }
 });
@@ -126,18 +148,24 @@ controls.onLockChange = (locked) => {
   document.body.classList.toggle('locked', locked);
   if (locked) {
     ui.hideStart();
-  } else if (!ui.anyOverlayOpen) {
-    // cursor released (Esc, or a link stole focus) → offer to resume
-    ui.setPrompt(null);
-    ui.showStart(
-      'You have stepped out to the cursor. The Keep awaits your return.',
-      'Resume exploring',
-    );
+    touchUI?.enable();
+  } else {
+    touchUI?.disable();
+    if (!ui.anyOverlayOpen) {
+      // released (Esc / link / menu) → offer to resume
+      ui.setPrompt(null);
+      ui.showStart(
+        isTouch ? 'Paused. The Keep awaits your return.'
+          : 'You have stepped out to the cursor. The Keep awaits your return.',
+        'Resume exploring',
+      );
+    }
   }
 };
 
 interaction.onFocusChange = (item) => {
   ui.setPrompt(item ? item.label : null);
+  if (ui.dialogOpen) ui.hideDialog(); // walking/looking away closes the blurb
 };
 
 window.addEventListener('resize', () => {
@@ -154,7 +182,7 @@ function animate() {
   const dt = Math.min(clock.getDelta(), 0.05);
   elapsed += dt;
   controls.update(dt);
-  current?.update?.(elapsed);
+  current?.update?.(elapsed, camera.position);
   if (controls.isLocked && !ui.anyOverlayOpen) {
     interaction.update();
   } else if (ui.anyOverlayOpen) {
@@ -169,6 +197,7 @@ async function boot() {
   const { data, source } = await loadData();
   dataSource = source;
   ui.setProgress(0.5, source === 'live' ? 'Chronicle received.' : 'Using bundled snapshot.');
+  collab = getCollaborators(data);
   floors = buildFloors(data);
   if (!floors.length) { ui.setProgress(1, 'No dated projects found.'); return; }
   ui.setProgress(0.8, `Raising ${floors.length} floors…`);

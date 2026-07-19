@@ -1,23 +1,26 @@
 import * as THREE from 'three';
-import type { Floor, Project, ProjectButton } from './types';
+import type { Floor, Project, ProjectButton, Person } from './types';
 import type { CollisionWorld, Rect } from './controls';
 import { buttonStyle, genreColor } from './tags';
+import { placeNpcs, type NpcUpdater } from './npc';
+import { DATA_BASE } from './config';
 import {
   placardTexture, titlePlaqueTexture, bannerTexture, buttonLabelTexture,
-  fallbackPaintingTexture, loadImageTexture,
+  fallbackPaintingTexture, loadImageTexture, doorSignTexture,
   yearTapestryTexture, yearInfoTexture,
 } from './textures';
 
 export interface Interactable {
   mesh: THREE.Object3D;
   label: string;
-  kind: 'button' | 'elevator';
+  kind: 'button' | 'elevator' | 'npc';
   action: () => void;
 }
 
 export interface FloorHandlers {
   onButton: (btn: ProjectButton) => void;
   onElevator: () => void;
+  onNpc: (person: Person) => void;
 }
 
 export interface FloorBuild {
@@ -25,7 +28,7 @@ export interface FloorBuild {
   interactables: Interactable[];
   world: CollisionWorld;
   spawn: { x: number; z: number; yaw: number };
-  update?: (t: number) => void; // per-frame animation (the magic orb)
+  update?: (t: number, playerPos: THREE.Vector3) => void; // orb animation + NPCs staring
   dispose: () => void;
 }
 
@@ -43,7 +46,6 @@ const CW = 4.5;                // corridor half-width (walls at ±CW)
 const CORRIDOR_FIRST_Z = 8.5;  // z of the first corridor row
 const ROW_SPACING = 5.2;       // spacing between corridor rows
 const BACK_PAD = 3.8;          // gap between last corridor row and the tapestry wall
-const CORRIDOR_MAX = 6;        // projects the corridor holds before overflowing to halls
 const MARGIN = 1.05;           // player standoff from display walls
 const PLACARD_SIDE = 2.2;      // placard offset along the wall
 const DOOR = { z0: 2.0, z1: 4.4, height: 3.6 };
@@ -55,14 +57,30 @@ const HALL_FIRST = 3.0;        // x-distance of the first hall row from the corr
 const HALL_SPACING = 5.0;
 const HALL_END_PAD = 4.0;      // clears the back-most placard (fans out PLACARD_SIDE + half-width ≈ 3.2)
 
-export function buildFloor(floor: Floor, handlers: FloorHandlers): FloorBuild {
+/**
+ * "Big" projects get the main corridor. A project is big if its logged dev effort
+ * exceeds 20 days; when no effortMeasures data exists, fall back to membership of
+ * the Big Games (games1) or +1 Month Game Projects (games2) categories.
+ */
+function isBigProject(p: Project): boolean {
+  const em = p.effortMeasures;
+  if (em && em.length) {
+    const days = em.reduce((sum, m) => sum + (m.days ?? 0), 0);
+    return days > 20;
+  }
+  return p.categoryId === 'games1' || p.categoryId === 'games2';
+}
+
+export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person[] = []): FloorBuild {
   const group = new THREE.Group();
   const interactables: Interactable[] = [];
   const regions: Rect[] = [];
+  const updaters: NpcUpdater[] = [];
 
-  // split projects: corridor first, remainder divided between the two halls
-  const corridorPs = floor.projects.slice(0, CORRIDOR_MAX);
-  const rest = floor.projects.slice(CORRIDOR_MAX);
+  // The main corridor is reserved for big projects; everything else overflows to
+  // the two side halls, split evenly between them.
+  const corridorPs = floor.projects.filter(isBigProject);
+  const rest = floor.projects.filter((p) => !isBigProject(p));
   const half = Math.ceil(rest.length / 2);
   const leftPs = rest.slice(0, half);
   const rightPs = rest.slice(half);
@@ -100,6 +118,14 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers): FloorBuild {
     addWall(x, z0, x, DOOR.z0, CEIL);
     addWall(x, DOOR.z1, x, z1, CEIL);
     addWall(x, DOOR.z0, x, DOOR.z1, CEIL - DOOR.height, DOOR.height); // lintel above the door
+    // "Smaller Projects" sign on the lintel, facing into the corridor
+    const sign = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.4, 0.69),
+      new THREE.MeshBasicMaterial({ map: doorSignTexture('Smaller Projects'), transparent: true }),
+    );
+    sign.position.set(x - Math.sign(x) * 0.11, (DOOR.height + CEIL) / 2, (DOOR.z0 + DOOR.z1) / 2);
+    sign.rotation.y = Math.atan2(-Math.sign(x), 0);
+    group.add(sign);
   };
 
   // ---------- corridor shell ----------
@@ -133,6 +159,7 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers): FloorBuild {
 
   // ---------- magic orb + corridor displays + tapestry ----------
   const orbUpdate = buildOrb(group, interactables, handlers);
+  updaters.push((t) => orbUpdate(t));
   placeRun(group, interactables, corridorPs, { ox: 0, oz: CORRIDOR_FIRST_Z, dirx: 0, dirz: 1, perpx: 1, perpz: 0, half: CW, spacing: ROW_SPACING }, handlers);
   buildYearWall(group, floor, CL);
 
@@ -143,13 +170,18 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers): FloorBuild {
   if (leftPs.length) buildHall(group, interactables, leftPs, -1, handlers, regions, addFloorCeil, addWall);
   if (rightPs.length) buildHall(group, interactables, rightPs, 1, handlers, regions, addFloorCeil, addWall);
 
+  // ---------- collaborator NPCs, scattered across the walkable rooms ----------
+  placeNpcs(group, regions, excluders, people, updaters, (mesh, person) => {
+    interactables.push({ mesh, label: `Inspect ${person.name}`, kind: 'npc', action: () => handlers.onNpc(person) });
+  });
+
   const world: CollisionWorld = { regions, excluders };
   return {
     group,
     interactables,
     world,
     spawn: { x: 0, z: 5.6, yaw: Math.PI }, // step in beside the orb, tapestry dead ahead
-    update: orbUpdate,
+    update: (t, playerPos) => { for (const u of updaters) u(t, playerPos); },
     dispose: () => disposeObject(group),
   };
 }
@@ -444,7 +476,7 @@ function attachProjectImage(p: Project, mat: THREE.MeshBasicMaterial) {
 function resolveImageUrl(image?: string): string | null {
   if (!image) return null;
   if (/^https?:\/\//i.test(image)) return image;
-  return '/slashie/' + image.replace(/^\//, '');
+  return DATA_BASE + image.replace(/^\//, '');
 }
 
 // ---- procedural stone texture ----

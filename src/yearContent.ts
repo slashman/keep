@@ -1,6 +1,7 @@
 // Per-year descriptions are only present in slashie.net’s (hash-named) JS bundle,
 // not in projects.json, so this is a snapshot extracted from that bundle.
-// The year IMAGES, however, live at stable URLs and are loaded live via the proxy.
+// The year IMAGES, however, live at stable URLs and are loaded live (via DATA_BASE).
+import { DATA_BASE } from './config';
 
 export const YEAR_DESCRIPTIONS: Record<number, string> = {
   "1995": "Mother buys a 486. Kid Santi experiments with MS Paint creating ski jump \"games\" where you moved a \"sprite\" down a slope and made it jump.",
@@ -63,5 +64,5 @@ export function yearImagePath(year: number): string | null {
   "2025": "img/years/2025.jpg",
   "2026": "img/years/2026.jpg"
 };
-  return map[year] ? "/slashie/" + map[year] : null;
+  return map[year] ? DATA_BASE + map[year] : null;
 }

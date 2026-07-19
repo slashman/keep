@@ -8,10 +8,11 @@ export interface CollisionWorld {
   excluders: { x: number; z: number; r: number }[];
 }
 
-const EYE_HEIGHT = 1.7;
+const EYE_HEIGHT = 2.5;
 const SPEED = 4.2;
 const SPRINT = 8.4;
 const SENS = 0.0022;
+const TOUCH_SENS = 0.006; // radians per pixel of swipe
 const PITCH_LIMIT = Math.PI / 2 - 0.08;
 
 /** Hand-rolled pointer-lock first-person controller (WASD + mouse look + collision). */
@@ -22,6 +23,10 @@ export class PlayerControls {
   private keys = new Set<string>();
   private locked = false;
   enabled = true; // toggled off while a menu/video overlay is open
+  touch = false;  // touch device: no pointer lock — joystick + swipe drive things instead
+  private touchActive = false;
+  private moveX = 0; // joystick strafe (−1..1)
+  private moveY = 0; // joystick forward (−1..1)
   world: CollisionWorld = { regions: [{ minX: -5, maxX: 5, minZ: -5, maxZ: 5 }], excluders: [] };
   onLockChange?: (locked: boolean) => void;
 
@@ -34,10 +39,36 @@ export class PlayerControls {
     window.addEventListener('keyup', this.onKeyUp);
   }
 
-  get isLocked() { return this.locked; }
+  // On touch there is no pointer lock; "locked" means the game is running.
+  get isLocked() { return this.touch ? this.touchActive : this.locked; }
 
-  lock() { this.dom.requestPointerLock(); }
-  unlock() { if (document.pointerLockElement) document.exitPointerLock(); }
+  lock() {
+    if (this.touch) {
+      if (!this.touchActive) { this.touchActive = true; this.onLockChange?.(true); }
+    } else {
+      this.dom.requestPointerLock();
+    }
+  }
+  unlock() {
+    if (this.touch) {
+      if (this.touchActive) { this.touchActive = false; this.moveX = this.moveY = 0; this.onLockChange?.(false); }
+    } else if (document.pointerLockElement) {
+      document.exitPointerLock();
+    }
+  }
+
+  /** Joystick input from the touch UI: x = strafe, y = forward, each −1..1. */
+  setMove(x: number, y: number) { this.moveX = x; this.moveY = y; }
+
+  /** Apply a look delta (pixels) from a touch swipe. */
+  applyLook(dx: number, dy: number) {
+    if (!this.isLocked || !this.enabled) return;
+    this.euler.setFromQuaternion(this.camera.quaternion);
+    this.euler.y -= dx * TOUCH_SENS;
+    this.euler.x -= dy * TOUCH_SENS;
+    this.euler.x = Math.max(-PITCH_LIMIT, Math.min(PITCH_LIMIT, this.euler.x));
+    this.camera.quaternion.setFromEuler(this.euler);
+  }
 
   /** Place the player and aim along a yaw (radians). */
   setPose(x: number, z: number, yaw: number) {
@@ -65,13 +96,15 @@ export class PlayerControls {
   private onKeyUp = (e: KeyboardEvent) => { this.keys.delete(e.code); };
 
   update(dt: number) {
-    if (!this.locked || !this.enabled) return;
+    if (!this.isLocked || !this.enabled) return;
     let f = 0, s = 0;
     if (this.keys.has('KeyW') || this.keys.has('ArrowUp')) f += 1;
     if (this.keys.has('KeyS') || this.keys.has('ArrowDown')) f -= 1;
     if (this.keys.has('KeyD') || this.keys.has('ArrowRight')) s += 1;
     if (this.keys.has('KeyA') || this.keys.has('ArrowLeft')) s -= 1;
-    if (f === 0 && s === 0) return;
+    f += this.moveY; s += this.moveX; // analog joystick (touch)
+    const mag = Math.min(1, Math.hypot(f, s));
+    if (mag < 0.001) return;
 
     const speed = (this.keys.has('ShiftLeft') || this.keys.has('ShiftRight')) ? SPRINT : SPEED;
     // horizontal forward/right from current yaw
@@ -82,8 +115,9 @@ export class PlayerControls {
     let dx = (-sin * f + cos * s);
     let dz = (-cos * f - sin * s);
     const len = Math.hypot(dx, dz) || 1;
-    dx = (dx / len) * speed * dt;
-    dz = (dz / len) * speed * dt;
+    const step = speed * mag * dt; // analog magnitude scales speed
+    dx = (dx / len) * step;
+    dz = (dz / len) * step;
 
     // Move each axis independently, accepting it only if the destination is
     // walkable. This lets the player slide along walls and pass through the

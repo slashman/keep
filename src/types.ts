@@ -11,6 +11,13 @@ export interface ProjectButton {
   type: ButtonType | string;
 }
 
+export interface EffortMeasure {
+  type: string;
+  period?: string;
+  days?: number;
+  ref?: string;
+}
+
 export interface Project {
   title: string;
   subtitle?: string;
@@ -28,8 +35,11 @@ export interface Project {
   artStyle?: string[];
   client?: string;
   weeksOfWork?: number;
+  effortMeasures?: EffortMeasure[];
   origin?: string;
-  category?: string; // injected: parent category name
+  category?: string;   // injected: parent category name
+  categoryId?: string; // injected: parent category id (e.g. "games1")
+  revisited?: boolean; // injected: on a floor for a year it was developed but not started
 }
 
 export interface Category {
@@ -41,6 +51,27 @@ export interface Category {
 
 export interface ProjectsData {
   projects: Category[];
+}
+
+/** An entry in the "People I've worked with" category. */
+export interface Collaborator {
+  key: string;
+  title: string;
+  image?: string;
+  country?: string;
+  skills?: string[];
+  text?: string;
+  url?: string;
+}
+
+/** A resolved person to represent as an NPC on a floor. */
+export interface Person {
+  key: string;
+  name: string;
+  image?: string;
+  text?: string;
+  scale?: number;     // body size multiplier (default 1)
+  priority?: boolean; // always placed, never dropped by the NPC cap
 }
 
 // A single explorable level of the Keep.

@@ -1,0 +1,20 @@
+# CORS for the Slashie Keep — deploy this ON slashie.net (Apache / Bluehost).
+#
+# Where: append to (or create) the .htaccess file in your web root
+#        (public_html/.htaccess on Bluehost). This is NOT part of the Keep app —
+#        it lives on the slashie.net server.
+#
+# What it does: lets browsers on other origins (the Keep app) read the JSON and
+# use the images as WebGL textures. These are public, read-only static assets,
+# so a wildcard origin is fine and there is no preflight (simple GET requests).
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(json|png|jpe?g|gif|webp|svg)$">
+    Header always set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+</IfModule>
+
+# After deploying, verify from a terminal:
+#   curl -sI -H "Origin: https://example.com" https://slashie.net/data/projects.json | grep -i access-control
+#   curl -sI -H "Origin: https://example.com" https://slashie.net/img/buttons/jucarave.png | grep -i access-control
+# Both should print:  access-control-allow-origin: *
