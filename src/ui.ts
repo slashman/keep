@@ -100,6 +100,7 @@ export class UI {
     btn.addEventListener('click', () => this.onStart?.());
     this.start.append(
       el('h1', 'title', 'The Slashie Keep'),
+      el('div', 'subtitle', ''),
       btn,
       el('div', 'controls-legend',
         '<span><b>W A S D</b> move</span><span><b>Mouse</b> look</span>' +
@@ -108,8 +109,12 @@ export class UI {
     document.body.append(this.start);
   }
   showStart(subtitle?: string, cta?: string) {
-    if (subtitle) (this.start.querySelector('.subtitle') as HTMLElement).innerHTML = subtitle;
-    if (cta) (this.start.querySelector('.cta') as HTMLElement).textContent = cta;
+    const sub = this.start.querySelector('.subtitle') as HTMLElement | null;
+    if (sub) sub.innerHTML = subtitle ?? '';
+    if (cta) {
+      const btn = this.start.querySelector('.cta') as HTMLElement | null;
+      if (btn) btn.textContent = cta;
+    }
     this.start.classList.remove('hidden');
   }
   hideStart() { this.start.classList.add('hidden'); }
