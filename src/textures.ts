@@ -10,8 +10,13 @@ export function setAnisotropy(n: number) { maxAniso = n; }
 function tuneTexture<T extends THREE.Texture>(t: T): T {
   t.colorSpace = THREE.SRGBColorSpace;
   t.anisotropy = maxAniso;
-  t.minFilter = THREE.LinearMipmapLinearFilter;
+  // These canvases are non-power-of-two (660×900, 1680×480, …). Mipmap
+  // minification (LinearMipmapLinear) needs a full mip chain built from a
+  // NPOT source, which Firefox renders blank where Chrome tolerates it.
+  // LinearFilter needs no mipmaps and keeps text crisp when read up close.
+  t.minFilter = THREE.LinearFilter;
   t.magFilter = THREE.LinearFilter;
+  t.generateMipmaps = false;
   t.needsUpdate = true;
   return t;
 }
@@ -434,6 +439,9 @@ function resolveImg(image?: string): string | null {
 function loadHTMLImage(url: string): Promise<HTMLImageElement | null> {
   return new Promise((res) => {
     const im = new Image();
+    // Request CORS so drawing the image onto a canvas doesn't taint it — a
+    // tainted canvas throws SecurityError when uploaded as a WebGL texture.
+    im.crossOrigin = 'anonymous';
     im.onload = () => res(im);
     im.onerror = () => res(null);
     im.src = url;
