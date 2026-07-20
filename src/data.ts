@@ -44,15 +44,22 @@ export function getCollaborators(data: ProjectsData): Map<string, Collaborator> 
   return map;
 }
 
-/** Hand-authored NPCs (not in the data) that appear from a given year onwards. */
-const CUSTOM_PEOPLE: Array<Person & { since: number }> = [
+/**
+ * Hand-authored NPCs (not in the data) that appear from a given year onwards.
+ * `birthYear` marks someone born within the timeline: on their birth-year floor
+ * they appear as a baby in a cradle, then grow a little taller each year after.
+ */
+const CUSTOM_PEOPLE: Array<
+  Person & { since: number; birthYear?: number; babyImage?: string }
+> = [
   {
     key: 'adri', name: 'Adri', text: 'The Queen of Slashware',
     image: `${ASSET_BASE}people/adri.png`, priority: true, since: 2007,
   },
   {
     key: 'gaby', name: 'Gaby', text: "slashie's daughter and gameplay designer",
-    image: `${ASSET_BASE}people/gaby.png`, scale: 0.72, priority: true, since: 2017,
+    image: `${ASSET_BASE}people/gaby.png`, babyImage: `${ASSET_BASE}people/gaby-baby.png`,
+    priority: true, since: 2017, birthYear: 2017,
   },
 ];
 
@@ -71,10 +78,22 @@ export function collaboratorsForFloor(floor: Floor, collab: Map<string, Collabor
     people.push({ key, name: c.title ?? key, image: c.image, text: c.text });
   }
   for (const cp of CUSTOM_PEOPLE) {
-    if (floor.year >= cp.since) {
-      const { since: _since, ...person } = cp;
-      people.push(person);
+    if (floor.year < cp.since) continue;
+    const { since: _since, birthYear, babyImage, ...person } = cp;
+    if (birthYear != null) {
+      const age = floor.year - birthYear;
+      person.age = age;
+      if (age <= 0) {
+        // birth year: a baby in a cradle, with the baby photo and a fitting blurb
+        person.baby = true;
+        if (babyImage) person.image = babyImage;
+        person.text = "slashie's newborn daughter";
+      } else {
+        // grows from toddler toward full height over roughly a decade
+        person.scale = Math.min(1, 0.55 + age * 0.045);
+      }
     }
+    people.push(person);
   }
   return people;
 }

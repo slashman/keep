@@ -41,6 +41,8 @@ export function placeNpcs(
   const priority = people.filter((p) => p.priority);
   const others = shuffle(people.filter((p) => !p.priority));
   const chosen = [...priority, ...others].slice(0, Math.max(MAX_NPCS, priority.length));
+  // place babies (cradles) first so they claim a quiet corner before the walkers spread out
+  chosen.sort((a, b) => (b.baby ? 1 : 0) - (a.baby ? 1 : 0));
   const placed: { x: number; z: number }[] = [];
   // NPCs may wander anywhere walkable (including through doorways), not just their spawn room
   const walkable = (x: number, z: number) =>
@@ -48,6 +50,22 @@ export function placeNpcs(
     && regions.some((r) => x >= r.minX && x <= r.maxX && z >= r.minZ && z <= r.maxZ);
 
   for (const person of chosen) {
+    // a baby is static, tucked into a cradle in a corner — no wandering updater
+    if (person.baby) {
+      const spot = sampleCorner(rooms, excluders, placed);
+      if (!spot) continue;
+      placed.push(spot);
+      const cradle = buildCradle(person);
+      cradle.position.set(spot.x, 0, spot.z);
+      cradle.rotation.y = Math.atan2(-spot.x, -spot.z); // open side faces the room
+      group.add(cradle);
+      const hit = new THREE.Mesh(new THREE.BoxGeometry(1.9, 1.7, 1.1), new THREE.MeshBasicMaterial({ visible: false }));
+      hit.position.y = 0.85;
+      cradle.add(hit);
+      registerNpc(hit, person);
+      continue;
+    }
+
     const pos = samplePosition(rooms, excluders, placed);
     if (!pos) continue;
     placed.push(pos);
@@ -141,6 +159,109 @@ function samplePosition(
     return { x, z };
   }
   return null;
+}
+
+/** A quiet corner of the biggest room for a static prop (e.g. a cradle). */
+function sampleCorner(
+  rooms: Rect[],
+  excluders: { x: number; z: number; r: number }[],
+  placed: { x: number; z: number }[],
+): { x: number; z: number } | null {
+  const room = rooms.reduce((a, b) =>
+    (b.maxX - b.minX) * (b.maxZ - b.minZ) > (a.maxX - a.minX) * (a.maxZ - a.minZ) ? b : a);
+  const inset = 1.1;
+  const corners = [
+    { x: room.minX + inset, z: room.minZ + inset },
+    { x: room.maxX - inset, z: room.minZ + inset },
+    { x: room.minX + inset, z: room.maxZ - inset },
+    { x: room.maxX - inset, z: room.maxZ - inset },
+  ];
+  for (const c of corners) {
+    if (excluders.some((e) => (c.x - e.x) ** 2 + (c.z - e.z) ** 2 < (e.r + 0.9) ** 2)) continue;
+    if (placed.some((p) => (c.x - p.x) ** 2 + (c.z - p.z) ** 2 < NPC_SPACING ** 2)) continue;
+    return c;
+  }
+  return null;
+}
+
+/** A wooden rocking cradle with a swaddled baby (used for a person on their birth year). */
+function buildCradle(person: Person): THREE.Group {
+  const g = new THREE.Group();
+  g.scale.setScalar(person.scale ?? 1);
+  const wood = (c: string) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.7, metalness: 0.05 });
+  const woodC = '#6b4a2b', woodD = '#553a22';
+
+  // A big, tall cradle. Furniture dimensions are scaled up; the baby below is kept
+  // small so she looks tiny inside it. Bed height (top of the bedding) ≈ 1.28.
+  // two tall curved rockers the cradle rests on
+  for (const sz of [-0.36, 0.36]) {
+    const rocker = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.055, 8, 24, Math.PI), wood(woodD));
+    rocker.rotation.z = Math.PI; // flip the arc into a rocker (bowl) shape
+    rocker.position.set(0, 0.62, sz);
+    g.add(rocker);
+  }
+  // legs lifting the basket high off the rockers
+  const railMat = wood(woodC);
+  for (const sx of [-0.78, 0.78]) for (const sz of [-0.36, 0.36]) {
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.62, 0.1), railMat);
+    leg.position.set(sx, 0.86, sz);
+    g.add(leg);
+  }
+  // basket floor
+  const basket = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.14, 0.84), wood(woodC));
+  basket.position.set(0, 1.14, 0);
+  g.add(basket);
+  // rails — the head-end rail is lower so the baby's face peeks over
+  for (const sz of [-0.42, 0.42]) {
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.42, 0.08), railMat);
+    rail.position.set(0, 1.4, sz);
+    g.add(rail);
+  }
+  const foot = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.5, 0.84), railMat);
+  foot.position.set(-0.85, 1.44, 0); g.add(foot);
+  const headRail = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.24, 0.84), railMat);
+  headRail.position.set(0.85, 1.31, 0); g.add(headRail);
+
+  // bedding + pillow
+  const bedding = new THREE.Mesh(new THREE.BoxGeometry(1.56, 0.14, 0.74),
+    new THREE.MeshStandardMaterial({ color: '#f4e6ea', roughness: 0.95 }));
+  bedding.position.set(0, 1.24, 0); g.add(bedding);
+  const pillow = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.1, 0.46),
+    new THREE.MeshStandardMaterial({ color: '#ffd7e6', roughness: 0.95 }));
+  pillow.position.set(0.5, 1.32, 0); g.add(pillow);
+
+  // swaddled bundle — kept small, resting on the bedding
+  const swaddle = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.14, 0.34),
+    new THREE.MeshStandardMaterial({ color: '#ffb6cf', roughness: 0.9 }));
+  swaddle.position.set(0.06, 1.36, 0); g.add(swaddle);
+
+  // head — the baby lies on its back, so the photo shows on the top and sides (skin underneath)
+  const faceMat = new THREE.MeshBasicMaterial({ map: faceTexture(person.key) });
+  const skinMat = new THREE.MeshStandardMaterial({ color: '#e6b98f', roughness: 0.85 });
+  // BoxGeometry material order: +x, -x, +y, -y, +z, -z
+  const head = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.3),
+    [faceMat, faceMat, faceMat, skinMat, faceMat, faceMat]);
+  head.position.set(0.42, 1.42, 0);
+  head.rotation.z = -0.45; // tilt back against the pillow so the face reads to a standing viewer
+  g.add(head);
+
+  // swap in the real baby photo when it loads
+  const url = resolvePersonImage(person.image);
+  if (url) {
+    squareImageTexture(url).then((tex) => {
+      if (tex) { faceMat.map = tex; faceMat.needsUpdate = true; }
+    });
+  }
+
+  // floating name tag
+  const tag = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.2, 0.3),
+    new THREE.MeshBasicMaterial({ map: nameTagTexture(person.name), transparent: true }),
+  );
+  tag.position.set(0, 1.95, 0);
+  g.add(tag);
+
+  return g;
 }
 
 function buildNpc(person: Person): THREE.Group {

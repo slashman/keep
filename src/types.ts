@@ -72,6 +72,8 @@ export interface Person {
   text?: string;
   scale?: number;     // body size multiplier (default 1)
   priority?: boolean; // always placed, never dropped by the NPC cap
+  age?: number;       // for people born within the timeline: years since birth on this floor
+  baby?: boolean;     // age 0 → shown static in a cradle, not a walking NPC
 }
 
 // A single explorable level of the Keep.
