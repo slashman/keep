@@ -34,12 +34,14 @@ npm run preview   # serve the production build
 
 ## How it works
 
-- **Data** comes live from `https://slashie.net/data/projects.json`, the same source
-  slashie.net uses. Because that host sends no CORS headers, the Vite dev server
+- **Data** comes live from slashie.net — `data/projects.json` (projects),
+  `data/years.json` (per-year blurbs + images) and `data/friends.json`
+  (collaborators). Because that host sends no CORS headers, the Vite dev server
   proxies everything under `/slashie` → `https://slashie.net` so the JSON *and* the
   project images become same-origin (a browser can't otherwise use cross-origin
-  images as WebGL textures). A bundled snapshot in `public/projects.fallback.json`
-  is used automatically if the live fetch fails.
+  images as WebGL textures). There is **no bundled snapshot** — the client ships no
+  hardcoded content. `projects.json` is required (an unreachable host shows an error);
+  a missing `years.json`/`friends.json` just drops year blurbs / collaborator NPCs.
 - **Floors = years.** Projects are grouped by their `year` field. A floor also
   includes projects **developed but not started** that year — derived from each
   project's `years` array — shown after the started ones and marked *CONTINUED* on

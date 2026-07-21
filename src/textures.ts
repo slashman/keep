@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import type { Project, Floor } from './types';
 import { TAG_FAMILY, type TagFamily, genreColor } from './tags';
-import { YEAR_DESCRIPTIONS, yearImagePath } from './yearContent';
+import { yearText, yearImagePath } from './yearContent';
 import { DATA_BASE } from './config';
 
 let maxAniso = 4;
@@ -582,7 +582,7 @@ export function yearInfoTexture(floor: Floor): THREE.CanvasTexture {
   ctx.font = 'bold 38px Georgia, serif';
   ctx.fillText(`The Chronicle of ${floor.year}`, padX, 62);
 
-  const desc = YEAR_DESCRIPTIONS[floor.year];
+  const desc = yearText(floor.year);
   let y = 100;
   if (desc) {
     ctx.fillStyle = '#e9e1cb';

@@ -32,18 +32,27 @@ Adding a project — or a whole new year — to `projects.json` "just works":
   CORS needed**. The proxy remains for `npm run dev` only. See README → "Deploying".
 - **Still open only if you move off slashie.net:** hosting the app on a *different*
   origin would reintroduce the CORS requirement (the `deploy/slashie-net.htaccess` header
-  + `crossOrigin` on loaders).
+  + `crossOrigin` on loaders — `loadHTMLImage()` in `src/textures.ts` already sets
+  `crossOrigin='anonymous'` so cross-origin images don't taint the tapestry canvas).
+- **Dev-only bot-challenge cookie (fragile).** slashie.net guards every URL with a JS
+  cookie challenge: the first hit returns `409` + an inline `<script>` that sets
+  `humans_21909=1` and reloads. The dev proxy presents that solved cookie
+  (`headers: { Cookie: 'humans_21909=1' }` in `vite.config.ts`) so proxied `fetch`/image
+  requests don't loop on 409. **If the host rotates the cookie name/value, `npm run dev`
+  409s again** — re-grab it with `curl -D - https://slashie.net/data/projects.json`. Prod
+  is unaffected (the browser loads the site document and solves the challenge itself).
 
-### 2. Snapshotted data that goes stale
-- **`src/yearContent.ts` — year descriptions.** Scraped from slashie.net's *minified JS
-  bundle* (they are **not** in `projects.json`). New years' blurbs won't appear until the
-  file is re-scraped/regenerated. Most fragile piece — depends on the bundle's
-  minification shape.
-- **`yearImagePath()` snapshot map (in `src/yearContent.ts`).** A hardcoded map of which
-  years have `img/years/YYYY.jpg`. A new year's tapestry image exists live but won't be
-  used because the map doesn't list it (falls back to the project-image montage).
-- **`public/projects.fallback.json`.** Frozen copy, used only when the live fetch fails —
-  but then it silently serves old data.
+### 2. Snapshotted data — RESOLVED ✅ (client ships zero hardcoded content)
+- **Year blurbs + images** come live from `data/years.json`
+  (`{ years: { "YYYY": { text, imageURL } } }`), applied via `applyYearsData()` in
+  `src/yearContent.ts`. The old scraped `YEAR_DESCRIPTIONS` map **and** the
+  `yearImagePath()` snapshot map are gone — new years now flow in automatically.
+- **Collaborators** come live from `data/friends.json` (`loadFriends()` in `src/data.ts`),
+  replacing the old `projects.json` "collaborators" category lookup.
+- **`public/projects.fallback.json` deleted.** `loadData()` fetches `projects.json` and
+  **throws if unreachable** (boot shows "Could not reach slashie.net"). `years.json` /
+  `friends.json` are best-effort — a missing one just drops year blurbs / collaborator
+  NPCs; the app never serves stale bundled data.
 
 ### 3. Category-id coupling
 - **Where:** `isBigProject()` in `src/floor.ts` and `devDays()` in `src/textures.ts`
@@ -53,33 +62,34 @@ Adding a project — or a whole new year — to `projects.json` "just works":
 
 ### 4. Hand-authored content
 - **Custom NPCs** (Gaby, Adri) and their local images live in `src/data.ts`
-  (`CUSTOM_PEOPLE`) + `public/people/`. Intentionally manual; low risk.
+  (`CUSTOM_PEOPLE`) + `public/people/`. Intentionally manual; low risk. These are the
+  only client-side content left — not a snapshot (they aren't on the server). Gaby uses
+  `birthYear` to appear as a baby-in-a-cradle on 2017 and grow taller each year after.
+  To go fully data-driven, add them to `friends.json` (with `birthYear`) and drop
+  `CUSTOM_PEOPLE`.
 
 ---
 
 ## 🎯 Highest-leverage fixes (require slashie.net changes — you own it)
 
 - [ ] **Add CORS to slashie.net** (`Access-Control-Allow-Origin: *` on `/data/*` and
-  `/img/*`). Eliminates the dev proxy entirely, makes the app deployable and fully live.
-  Single highest-value change.
-- [ ] **Publish per-year content as real data** — e.g. `/data/years.json`
-  (`{ year: { description, image } }`) instead of burying it in the JS bundle. The app
-  then fetches it live like `projects.json`, so **new years' descriptions/images flow in
-  automatically**, retiring the scrape and both snapshots.
+  `/img/*`). Eliminates the dev proxy (and its bot-challenge cookie hack) entirely, makes
+  the app deployable from any origin. Single highest-value change still open.
+- [x] **Publish per-year content + collaborators as real data** — `data/years.json` and
+  `data/friends.json` now exist and are fetched live like `projects.json`, so new years'
+  descriptions/images and new collaborators flow in automatically. Retired the year-bundle
+  scrape and **all** snapshots.
 
 ---
 
 ## 🔧 Quick wins (no site changes needed)
 
-- [ ] **Derive the year-image path from the year** — use `/slashie/img/years/${year}.jpg`
-  directly and let a 404 fall back to the montage. Removes the snapshot map; new years'
-  tapestries work automatically.
 - [ ] **Name the category-id / threshold constants** in one place with a comment, so the
   coupling is visible and easy to update.
 - [ ] **Add a dev warning** logging projects skipped for missing `year` or unknown
   category, so drift is noticeable during development.
-- [ ] **Commit `scripts/scrape-year-content.mjs`** so regenerating `yearContent.ts` is one
-  documented command (until `years.json` exists).
+- [x] **Live year images + retire the scrape** — done via `years.json` (`imageURL` per
+  year); the snapshot map and `scrape-year-content.mjs` are no longer needed.
 
 ---
 
@@ -91,5 +101,6 @@ Adding a project — or a whole new year — to `projects.json` "just works":
       (static files with real extensions serve fine; add an exclude if needed).
 - [ ] Load `https://slashie.net/keep/` and verify live data + project/year/collaborator
       images all render (they're same-origin, so no CORS/taint concerns).
-- [ ] Periodically refresh `public/projects.fallback.json` so the offline fallback isn't
-      too stale.
+- [ ] Verify `data/projects.json`, `data/years.json` and `data/friends.json` are reachable
+      from the deploy — there is **no offline fallback**; if `projects.json` is unreachable
+      the app shows an error instead of rendering.

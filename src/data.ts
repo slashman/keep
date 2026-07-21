@@ -1,23 +1,18 @@
 import type { Project, ProjectsData, Floor, Collaborator, Person } from './types';
 import { DATA_BASE, ASSET_BASE } from './config';
+import { applyYearsData } from './yearContent';
 
-const LIVE_URL = `${DATA_BASE}data/projects.json`;
-const FALLBACK_URL = `${ASSET_BASE}projects.fallback.json`;
+const PROJECTS_URL = `${DATA_BASE}data/projects.json`;
+const YEARS_URL = `${DATA_BASE}data/years.json`;
+const FRIENDS_URL = `${DATA_BASE}data/friends.json`;
 
-/** Fetch the live data via the dev proxy, falling back to the bundled snapshot. */
-export async function loadData(): Promise<{ data: ProjectsData; source: 'live' | 'fallback' }> {
-  try {
-    const res = await fetch(LIVE_URL, { cache: 'no-cache' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = (await res.json()) as ProjectsData;
-    if (!data?.projects?.length) throw new Error('empty');
-    return { data, source: 'live' };
-  } catch (err) {
-    console.warn('[data] live fetch failed, using bundled snapshot:', err);
-    const res = await fetch(FALLBACK_URL);
-    const data = (await res.json()) as ProjectsData;
-    return { data, source: 'fallback' };
-  }
+/** Fetch the live projects from slashie.net. Throws if unreachable — there is no bundled copy. */
+export async function loadData(): Promise<ProjectsData> {
+  const res = await fetch(PROJECTS_URL, { cache: 'no-cache' });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = (await res.json()) as ProjectsData;
+  if (!data?.projects?.length) throw new Error('empty projects.json');
+  return data;
 }
 
 /** Flatten every category into a single project list, tagging each with its category name. */
@@ -33,13 +28,34 @@ export function flattenProjects(data: ProjectsData): Project[] {
   return out;
 }
 
-/** Build a key → collaborator lookup from the "People I've worked with" category. */
-export function getCollaborators(data: ProjectsData): Map<string, Collaborator> {
+/**
+ * Fetch live per-year descriptions/images from years.json. Non-fatal: on failure the
+ * year panels simply render without a blurb or photo (no bundled snapshot to fall back to).
+ */
+export async function loadYearContent(): Promise<void> {
+  try {
+    const res = await fetch(YEARS_URL, { cache: 'no-cache' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    applyYearsData(await res.json());
+  } catch (err) {
+    console.warn('[data] years.json unavailable; year panels will show no blurb/image:', err);
+  }
+}
+
+/**
+ * Live collaborator lookup from friends.json. Non-fatal: on failure the floors just show
+ * no collaborator NPCs (the hand-authored people below still appear).
+ */
+export async function loadFriends(): Promise<Map<string, Collaborator>> {
   const map = new Map<string, Collaborator>();
-  const cat = data.projects.find((c) => c.id === 'collaborators');
-  for (const c of cat?.projects ?? []) {
-    const col = c as unknown as Collaborator;
-    if (col.key) map.set(col.key, col);
+  try {
+    const res = await fetch(FRIENDS_URL, { cache: 'no-cache' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = (await res.json()) as { groups?: Array<{ id?: string; projects?: Collaborator[] }> };
+    const group = json.groups?.find((g) => g.id === 'collaborators') ?? json.groups?.[0];
+    for (const c of group?.projects ?? []) if (c?.key) map.set(c.key, c);
+  } catch (err) {
+    console.warn('[data] friends.json unavailable; no collaborator NPCs this session:', err);
   }
   return map;
 }

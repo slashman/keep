@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { loadData, buildFloors, getCollaborators, collaboratorsForFloor } from './data';
+import { loadData, loadFriends, loadYearContent, buildFloors, collaboratorsForFloor } from './data';
 import type { Floor, ProjectButton, Collaborator } from './types';
 import { PlayerControls } from './controls';
 import { InteractionManager } from './interaction';
@@ -40,7 +40,6 @@ const touchUI: TouchControls | null = isTouch ? new TouchControls(controls, canv
 // ---------- state ----------
 let floors: Floor[] = [];
 let collab: Map<string, Collaborator> = new Map();
-let dataSource = 'live';
 let currentYear = 0;
 let current: FloorBuild | null = null;
 
@@ -63,7 +62,7 @@ function mountFloor(year: number) {
   controls.world = build.world;
   controls.setPose(build.spawn.x, build.spawn.z, build.spawn.yaw);
   interaction.setItems(build.interactables);
-  ui.setFloorLabel(floor.year, floor.projects.length, floors.length, dataSource);
+  ui.setFloorLabel(floor.year, floor.projects.length, floors.length);
 }
 
 async function travelTo(year: number) {
@@ -194,10 +193,16 @@ function animate() {
 // ---------- boot ----------
 async function boot() {
   ui.setProgress(0.1, 'Fetching the chronicle from slashie.net…');
-  const { data, source } = await loadData();
-  dataSource = source;
-  ui.setProgress(0.5, source === 'live' ? 'Chronicle received.' : 'Using bundled snapshot.');
-  collab = getCollaborators(data);
+  // projects are required; collaborators (friends.json) and year content are best-effort
+  let data: Awaited<ReturnType<typeof loadData>>;
+  try {
+    [data, collab] = await Promise.all([loadData(), loadFriends(), loadYearContent()]);
+  } catch (err) {
+    console.error('[boot] could not load projects.json:', err);
+    ui.setProgress(1, 'Could not reach slashie.net — please try again later.');
+    return;
+  }
+  ui.setProgress(0.5, 'Chronicle received.');
   floors = buildFloors(data);
   if (!floors.length) { ui.setProgress(1, 'No dated projects found.'); return; }
   ui.setProgress(0.8, `Raising ${floors.length} floors…`);

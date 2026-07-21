@@ -120,11 +120,10 @@ export class UI {
   hideStart() { this.start.classList.add('hidden'); }
 
   // ---------- HUD ----------
-  setFloorLabel(year: number, count: number, total: number, source: string) {
+  setFloorLabel(year: number, count: number, total: number) {
     this.floorLabel.innerHTML =
       `<div class="yr">${year}</div>` +
-      `<div class="sub">${count} project${count === 1 ? '' : 's'} · ` +
-      `${total} floors · data: ${source}</div>`;
+      `<div class="sub">${count} project${count === 1 ? '' : 's'} · ${total} floors</div>`;
   }
   setPrompt(text: string | null) {
     if (text) {
