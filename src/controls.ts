@@ -29,6 +29,9 @@ export class PlayerControls {
   private moveY = 0; // joystick forward (−1..1)
   world: CollisionWorld = { regions: [{ minX: -5, maxX: 5, minZ: -5, maxZ: 5 }], excluders: [] };
   onLockChange?: (locked: boolean) => void;
+  // Movement read out for the audio engine (footstep cadence).
+  movedDistance = 0; // world units actually travelled last frame
+  sprinting = false;
 
   constructor(camera: THREE.PerspectiveCamera, dom: HTMLElement) {
     this.camera = camera;
@@ -96,6 +99,7 @@ export class PlayerControls {
   private onKeyUp = (e: KeyboardEvent) => { this.keys.delete(e.code); };
 
   update(dt: number) {
+    this.movedDistance = 0;
     if (!this.isLocked || !this.enabled) return;
     let f = 0, s = 0;
     if (this.keys.has('KeyW') || this.keys.has('ArrowUp')) f += 1;
@@ -104,9 +108,10 @@ export class PlayerControls {
     if (this.keys.has('KeyA') || this.keys.has('ArrowLeft')) s -= 1;
     f += this.moveY; s += this.moveX; // analog joystick (touch)
     const mag = Math.min(1, Math.hypot(f, s));
-    if (mag < 0.001) return;
+    if (mag < 0.001) { this.sprinting = false; return; }
 
-    const speed = (this.keys.has('ShiftLeft') || this.keys.has('ShiftRight')) ? SPRINT : SPEED;
+    this.sprinting = this.keys.has('ShiftLeft') || this.keys.has('ShiftRight');
+    const speed = this.sprinting ? SPRINT : SPEED;
     // horizontal forward/right from current yaw
     this.euler.setFromQuaternion(this.camera.quaternion);
     const yaw = this.euler.y;
@@ -123,11 +128,13 @@ export class PlayerControls {
     // walkable. This lets the player slide along walls and pass through the
     // doorways where regions overlap.
     const pos = this.camera.position;
+    const x0 = pos.x, z0 = pos.z;
     const nx = pos.x + dx;
     if (this.walkable(nx, pos.z)) pos.x = nx;
     const nz = pos.z + dz;
     if (this.walkable(pos.x, nz)) pos.z = nz;
     pos.y = EYE_HEIGHT;
+    this.movedDistance = Math.hypot(pos.x - x0, pos.z - z0);
   }
 
   private walkable(x: number, z: number): boolean {

@@ -30,6 +30,7 @@ npm run preview   # serve the production build
 | Look | Mouse (click to lock the pointer) |
 | Run | `Shift` |
 | Interact (levers / elevator) | `E` or click |
+| Mute / unmute sound | `M` |
 | Release cursor / close a menu | `Esc` |
 
 ## How it works

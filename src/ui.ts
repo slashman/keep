@@ -28,6 +28,8 @@ export class UI {
   private dialogName = el('div', 'dname');
   private dialogText = el('div', 'dtext');
   private curtain = el('div');
+  private toast = el('div');
+  private toastTimer = 0;
 
   // callbacks wired by main
   onStart?: () => void;
@@ -40,16 +42,18 @@ export class UI {
     this.floorLabel.id = 'floorLabel';
     this.help.id = 'help';
     this.curtain.id = 'curtain';
+    this.toast.id = 'toast';
     this.elevator.id = 'elevator'; // without these ids every #elevator / #video CSS rule is dead
     this.video.id = 'video';
     this.help.innerHTML =
       '<span class="key">W A S D</span> move &nbsp; <span class="key">Mouse</span> look &nbsp; ' +
       '<span class="key">Shift</span> run<br>' +
       '<span class="key">E</span> / <span class="key">Click</span> interact &nbsp; ' +
+      '<span class="key">M</span> mute &nbsp; ' +
       '<span class="key">Esc</span> release cursor';
 
     document.body.append(
-      this.crosshair, this.prompt, this.floorLabel, this.help, this.curtain,
+      this.crosshair, this.prompt, this.floorLabel, this.help, this.curtain, this.toast,
     );
 
     this.buildStart();
@@ -104,7 +108,7 @@ export class UI {
       btn,
       el('div', 'controls-legend',
         '<span><b>W A S D</b> move</span><span><b>Mouse</b> look</span>' +
-        '<span><b>E</b> / <b>Click</b> interact</span><span><b>Esc</b> menu</span>'),
+        '<span><b>E</b> / <b>Click</b> interact</span><span><b>M</b> mute</span><span><b>Esc</b> menu</span>'),
     );
     document.body.append(this.start);
   }
@@ -191,6 +195,14 @@ export class UI {
     this.video.classList.add('hidden');
   }
   get videoOpen() { return !this.video.classList.contains('hidden'); }
+
+  // ---------- transient toast ----------
+  flash(msg: string, ms = 1400) {
+    this.toast.textContent = msg;
+    this.toast.classList.add('show');
+    clearTimeout(this.toastTimer);
+    this.toastTimer = window.setTimeout(() => this.toast.classList.remove('show'), ms);
+  }
 
   // ---------- travel curtain ----------
   async fade(on: boolean, ms = 450): Promise<void> {

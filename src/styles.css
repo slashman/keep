@@ -150,6 +150,26 @@ body.locked #floorLabel, body.ready #floorLabel { opacity: 1; }
 #floorLabel .yr { font-size: 26px; font-weight: 800; color: var(--gold); letter-spacing: 1px; }
 #floorLabel .sub { font-size: 12px; opacity: 0.75; }
 
+/* ---------- Transient toast (top-center) ---------- */
+#toast {
+  position: fixed;
+  left: 50%;
+  top: 22px;
+  transform: translate(-50%, -8px);
+  padding: 8px 16px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  z-index: 9;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+
 /* ---------- Help (bottom-left) ---------- */
 #help {
   position: fixed;

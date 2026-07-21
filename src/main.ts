@@ -8,6 +8,7 @@ import { buildFloor, type FloorBuild } from './floor';
 import { setAnisotropy } from './textures';
 import { youtubeId } from './tags';
 import { UI } from './ui';
+import { AudioEngine } from './audio';
 
 // ---------- renderer / scene ----------
 const canvas = document.getElementById('app') as HTMLCanvasElement;
@@ -28,7 +29,14 @@ const controls = new PlayerControls(camera, canvas);
 controls.touch = isTouch;
 const interaction = new InteractionManager(camera);
 const ui = new UI();
+const audio = new AudioEngine();
 if (isTouch) document.body.classList.add('touch');
+
+/** Wake the audio context and its ambient bed — call from user-gesture paths. */
+function startAudio() {
+  audio.resume();
+  audio.startAmbient();
+}
 
 /** Shared interaction trigger (E key, click, on-screen button, or tap). */
 function interact() {
@@ -63,6 +71,7 @@ function mountFloor(year: number) {
   controls.setPose(build.spawn.x, build.spawn.z, build.spawn.yaw);
   interaction.setItems(build.interactables);
   ui.setFloorLabel(floor.year, floor.projects.length, floors.length);
+  audio.resetSteps(); // teleport shouldn't count as travelled distance
 }
 
 async function travelTo(year: number) {
@@ -72,6 +81,7 @@ async function travelTo(year: number) {
   // requesting it after the awaited fade would be rejected by the browser.
   controls.enabled = true;
   controls.lock();
+  audio.teleport();
   await ui.fade(true);
   mountFloor(year);
   await ui.fade(false);
@@ -120,12 +130,13 @@ function resumeLock() {
 }
 
 // ---------- input ----------
-ui.onStart = () => { ui.hideStart(); controls.enabled = true; controls.lock(); };
+ui.onStart = () => { ui.hideStart(); startAudio(); controls.enabled = true; controls.lock(); };
 ui.onPickFloor = (year) => travelTo(year);
 ui.onCloseOverlay = () => closeOverlay();
 
 canvas.addEventListener('pointerdown', () => {
   if (isTouch) return; // touch is handled by TouchControls
+  startAudio();
   if (ui.anyOverlayOpen) return;
   if (ui.dialogOpen) { ui.hideDialog(); return; }
   if (!controls.isLocked) { controls.enabled = true; controls.lock(); return; }
@@ -136,6 +147,8 @@ window.addEventListener('keydown', (e) => {
   if (e.code === 'KeyE') {
     e.preventDefault();
     interact();
+  } else if (e.code === 'KeyM') {
+    ui.flash(audio.toggleMute() ? '🔇 Muted' : '🔊 Sound on');
   } else if (e.code === 'Escape') {
     if (ui.dialogOpen) ui.hideDialog();
     else if (ui.videoOpen) { ui.hideVideo(); resumeLock(); }
@@ -183,6 +196,7 @@ function animate() {
   controls.update(dt);
   current?.update?.(elapsed, camera.position);
   if (controls.isLocked && !ui.anyOverlayOpen) {
+    audio.footsteps(controls.movedDistance, controls.sprinting);
     interaction.update();
   } else if (ui.anyOverlayOpen) {
     ui.setPrompt(null);
