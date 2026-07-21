@@ -248,7 +248,7 @@ function buildCradle(person: Person): THREE.Group {
   // swap in the real baby photo when it loads
   const url = resolvePersonImage(person.image);
   if (url) {
-    squareImageTexture(url).then((tex) => {
+    squareImageTexture(url, person.portraitLeftMargin).then((tex) => {
       if (tex) { faceMat.map = tex; faceMat.needsUpdate = true; }
     });
   }
@@ -307,7 +307,7 @@ function buildNpc(person: Person): THREE.Group {
   // swap in the real picture when it loads
   const url = resolvePersonImage(person.image);
   if (url) {
-    squareImageTexture(url).then((tex) => {
+    squareImageTexture(url, person.portraitLeftMargin).then((tex) => {
       if (tex) { faceMat.map = tex; faceMat.needsUpdate = true; }
     });
   }

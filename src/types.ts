@@ -62,6 +62,7 @@ export interface Collaborator {
   skills?: string[];
   text?: string;
   url?: string;
+  portraitLeftMargin?: number; // 0..1: crop a full-height square from this x fraction instead of centring
 }
 
 /** A resolved person to represent as an NPC on a floor. */
@@ -74,6 +75,7 @@ export interface Person {
   priority?: boolean; // always placed, never dropped by the NPC cap
   age?: number;       // for people born within the timeline: years since birth on this floor
   baby?: boolean;     // age 0 → shown static in a cradle, not a walking NPC
+  portraitLeftMargin?: number; // 0..1: portrait x-crop offset (see squareImageTexture); undefined → centred
 }
 
 // A single explorable level of the Keep.

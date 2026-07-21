@@ -91,7 +91,7 @@ export function collaboratorsForFloor(floor: Floor, collab: Map<string, Collabor
   for (const key of keys) {
     const c = collab.get(key);
     if (!c) continue; // skip refs with no collaborator entry
-    people.push({ key, name: c.title ?? key, image: c.image, text: c.text });
+    people.push({ key, name: c.title ?? key, image: c.image, text: c.text, portraitLeftMargin: c.portraitLeftMargin });
   }
   for (const cp of CUSTOM_PEOPLE) {
     if (floor.year < cp.since) continue;

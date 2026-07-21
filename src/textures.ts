@@ -112,12 +112,23 @@ export function faceTexture(seed: string): THREE.CanvasTexture {
   return tuneTexture(new THREE.CanvasTexture(canvas));
 }
 
-/** Load an image and cover-fit it onto a square canvas (so it maps cleanly onto a cube face). */
-export function squareImageTexture(url: string): Promise<THREE.CanvasTexture | null> {
+/**
+ * Load an image and fit it onto a square canvas (so it maps cleanly onto a cube face).
+ * By default the square is centre-cropped (cover-fit). If `leftMargin` (0..1) is given,
+ * the square is instead the full image height taken from x = width * leftMargin, y = 0 —
+ * letting a wide group photo pick out one person's portrait.
+ */
+export function squareImageTexture(url: string, leftMargin?: number): Promise<THREE.CanvasTexture | null> {
   return loadHTMLImage(url).then((img) => {
     if (!img) return null;
     const { canvas, ctx } = makeCanvas(256, 256);
-    drawCover(ctx, img, 0, 0, 256, 256);
+    if (leftMargin != null) {
+      const side = Math.min(img.width, img.height); // a square as tall as the image
+      const sx = Math.max(0, Math.min(img.width * leftMargin, img.width - side));
+      ctx.drawImage(img, sx, 0, side, side, 0, 0, 256, 256);
+    } else {
+      drawCover(ctx, img, 0, 0, 256, 256);
+    }
     return tuneTexture(new THREE.CanvasTexture(canvas));
   });
 }
