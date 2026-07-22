@@ -8,5 +8,12 @@
 // ASSET_BASE — this app's OWN bundled/public assets (the fallback snapshot, the
 //   custom NPC photos in public/people). Vite serves these under its `base`, which
 //   is "/keep/" in the production build and "/" in dev — exactly BASE_URL.
-export const DATA_BASE = import.meta.env.DEV ? '/slashie/' : '/';
 export const ASSET_BASE = import.meta.env.BASE_URL;
+
+// Prod: data/images live under /keep via server symlinks (keep/data → ../data,
+//   keep/img → ../img), so the same base as our own assets — the browser's
+//   bot-challenge cookie (path=/keep) already covers them.
+// Dev: there are no symlinks and no browser to solve the challenge, so route
+//   through the Vite proxy (/slashie → slashie.net) which injects the cookie
+//   server-side. See vite.config.ts.
+export const DATA_BASE = import.meta.env.DEV ? '/slashie/' : ASSET_BASE;
