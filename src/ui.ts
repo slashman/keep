@@ -27,6 +27,7 @@ export class UI {
   private dialog = el('div');
   private dialogName = el('div', 'dname');
   private dialogText = el('div', 'dtext');
+  private dialogProjects = el('div', 'dprojects');
   private curtain = el('div');
   private toast = el('div');
   private toastTimer = 0;
@@ -67,12 +68,28 @@ export class UI {
   private buildDialog() {
     this.dialog.id = 'dialog';
     const hint = el('div', 'dhint', '<span class="key">E</span> close');
-    this.dialog.append(this.dialogName, this.dialogText, hint);
+    this.dialog.append(this.dialogName, this.dialogText, this.dialogProjects, hint);
     document.body.append(this.dialog);
   }
-  showDialog(name: string, text?: string) {
+  showDialog(name: string, text?: string, projects: string[] = []) {
     this.dialogName.textContent = name;
-    this.dialogText.textContent = text && text.trim() ? text : 'We worked together on the Keep.';
+    const greetings = ['Hello', 'Hi there', 'Greetings', 'Hey'];
+    const greeting = greetings[name.charCodeAt(0) % greetings.length];
+    const desc = (text ?? '').trim().replace(/[.!]+$/, '');
+    this.dialogText.textContent = desc
+      ? `${greeting}, I am ${name}, ${desc}.`
+      : `${greeting}, I am ${name}. We worked together on the Keep.`;
+    this.dialogProjects.replaceChildren();
+    if (projects.length) {
+      this.dialogProjects.append(el('div', 'dplabel', 'Worked on this year'));
+      const list = el('ul', 'dplist');
+      for (const title of projects) {
+        const li = el('li');
+        li.textContent = title;
+        list.append(li);
+      }
+      this.dialogProjects.append(list);
+    }
     this.dialog.classList.add('show');
   }
   hideDialog() { this.dialog.classList.remove('show'); }

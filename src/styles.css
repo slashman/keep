@@ -347,6 +347,13 @@ body.locked #help, body.ready #help { opacity: 0.9; }
 #dialog.show { opacity: 1; transform: translate(-50%, 0); }
 #dialog .dname { color: var(--gold); font-size: 20px; font-weight: 800; letter-spacing: 0.4px; margin-bottom: 6px; }
 #dialog .dtext { font-size: 15px; line-height: 1.55; color: var(--ink); }
+#dialog .dprojects { margin-top: 12px; }
+#dialog .dprojects:empty { display: none; }
+#dialog .dplabel {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--gold); opacity: 0.85; margin-bottom: 5px;
+}
+#dialog .dplist { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.5; color: var(--ink); }
 #dialog .dhint { margin-top: 12px; font-size: 12px; opacity: 0.7; text-align: right; }
 #dialog .dhint .key {
   display: inline-block; min-width: 16px; padding: 0 6px; text-align: center;

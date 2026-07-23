@@ -20,7 +20,7 @@ export interface Interactable {
 export interface FloorHandlers {
   onButton: (btn: ProjectButton) => void;
   onElevator: () => void;
-  onNpc: (person: Person) => void;
+  onNpc: (person: Person, projects: string[]) => void;
 }
 
 export interface FloorBuild {
@@ -172,7 +172,11 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
 
   // ---------- collaborator NPCs, scattered across the walkable rooms ----------
   placeNpcs(group, regions, excluders, people, updaters, (mesh, person) => {
-    interactables.push({ mesh, label: `Inspect ${person.name}`, kind: 'npc', action: () => handlers.onNpc(person) });
+    // projects this collaborator worked on during this year (floor)
+    const projects = floor.projects
+      .filter((p) => (p.collaborators ?? []).includes(person.key))
+      .map((p) => p.title);
+    interactables.push({ mesh, label: `Talk with ${person.name}`, kind: 'npc', action: () => handlers.onNpc(person, projects) });
   });
 
   const world: CollisionWorld = { regions, excluders };

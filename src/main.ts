@@ -98,8 +98,8 @@ function handleButton(btn: ProjectButton) {
   }
 }
 
-function handleNpc(person: { name: string; text?: string }) {
-  ui.showDialog(person.name, person.text);
+function handleNpc(person: { name: string; text?: string }, projects: string[] = []) {
+  ui.showDialog(person.name, person.text, projects);
 }
 
 function openElevator() {
