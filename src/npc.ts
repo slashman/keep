@@ -9,6 +9,7 @@ const NPC_SPACING = 1.5;      // minimum distance between NPCs
 const STARE_DIST = 4.0;       // within this range an NPC stops and faces the player
 const WALK_SPEED = 0.55;      // metres/second while wandering
 const TURN_RATE = 7;          // how quickly an NPC swings to face its target heading
+const NPC_RADIUS = 0.45;      // body half-width; kept out of walls by probing this far ahead
 
 export type NpcUpdater = (t: number, playerPos: THREE.Vector3) => void;
 
@@ -112,7 +113,10 @@ function updateNpc(
     if (s.retarget <= 0) { s.heading = Math.random() * Math.PI * 2; s.retarget = 2 + Math.random() * 3; }
     const nx = s.x + Math.sin(s.heading) * WALK_SPEED * dt;
     const nz = s.z + Math.cos(s.heading) * WALK_SPEED * dt;
-    if (walkable(nx, nz)) {
+    // probe a body-radius ahead so the NPC's front stops at the wall, not its centre
+    const px = nx + Math.sin(s.heading) * NPC_RADIUS;
+    const pz = nz + Math.cos(s.heading) * NPC_RADIUS;
+    if (walkable(nx, nz) && walkable(px, pz)) {
       s.x = nx; s.z = nz;
       npc.position.x = nx; npc.position.z = nz;
       moving = true;
