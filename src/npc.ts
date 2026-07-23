@@ -134,11 +134,19 @@ function updateNpc(
   else if (npc.position.y !== 0) { npc.position.y = Math.max(0, npc.position.y - dt * 0.3); }
 
   // swing the arms in opposition while walking, easing back to rest when stopped
-  const arms = (npc.userData as { arms?: { left: THREE.Object3D; right: THREE.Object3D } }).arms;
-  if (arms) {
-    const swing = moving ? Math.sin(s.phase) * 0.5 : 0;
-    arms.left.rotation.x = approachAngle(arms.left.rotation.x, swing, dt * 10);
-    arms.right.rotation.x = approachAngle(arms.right.rotation.x, -swing, dt * 10);
+  const ud = npc.userData as {
+    arms?: { left: THREE.Object3D; right: THREE.Object3D };
+    legs?: { left: THREE.Object3D; right: THREE.Object3D };
+  };
+  const swing = moving ? Math.sin(s.phase) * 0.5 : 0;
+  if (ud.arms) {
+    ud.arms.left.rotation.x = approachAngle(ud.arms.left.rotation.x, swing, dt * 10);
+    ud.arms.right.rotation.x = approachAngle(ud.arms.right.rotation.x, -swing, dt * 10);
+  }
+  // legs stride opposite to the arm on the same side (left arm forward → left leg back)
+  if (ud.legs) {
+    ud.legs.left.rotation.x = approachAngle(ud.legs.left.rotation.x, -swing, dt * 10);
+    ud.legs.right.rotation.x = approachAngle(ud.legs.right.rotation.x, swing, dt * 10);
   }
 }
 
@@ -275,12 +283,17 @@ function buildNpc(person: Person): THREE.Group {
   const pants = colorFromKey(person.key + '·legs', 35, 32);
   const mk = (c: string) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.85, metalness: 0.05 });
 
-  // legs
-  for (const sx of [-0.2, 0.2]) {
+  // legs on hip pivots (so they swing from the hip, not the middle)
+  const legs: { left: THREE.Group; right: THREE.Group } = { left: new THREE.Group(), right: new THREE.Group() };
+  for (const side of ['left', 'right'] as const) {
+    const pivot = legs[side];
+    pivot.position.set(side === 'left' ? -0.2 : 0.2, 0.9, 0); // hip height (top of the leg)
     const leg = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.9, 0.32), mk(pants));
-    leg.position.set(sx, 0.45, 0);
-    g.add(leg);
+    leg.position.set(0, -0.45, 0); // hang below the pivot, feet on the floor
+    pivot.add(leg);
+    g.add(pivot);
   }
+  g.userData.legs = legs;
   // torso
   const torso = new THREE.Mesh(new THREE.BoxGeometry(0.85, 1.0, 0.42), mk(shirt));
   torso.position.set(0, 1.4, 0);
