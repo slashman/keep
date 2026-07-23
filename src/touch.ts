@@ -102,7 +102,13 @@ export class TouchControls {
       } else if (t.identifier === this.lookId) {
         const quickTap = Date.now() - this.tapStart < 250 && this.tapMoved < 14;
         this.lookId = null;
-        if (quickTap) this.onInteract();
+        if (quickTap) {
+          // Suppress the browser's synthesized mouse click for this tap: otherwise
+          // it lands on whatever overlay button (e.g. a floor button) the orb tap
+          // just rendered under the finger, instantly travelling to some year.
+          e.preventDefault();
+          this.onInteract();
+        }
       }
     }
   };
