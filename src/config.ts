@@ -17,3 +17,13 @@ export const ASSET_BASE = import.meta.env.BASE_URL;
 //   through the Vite proxy (/slashie → slashie.net) which injects the cookie
 //   server-side. See vite.config.ts.
 export const DATA_BASE = import.meta.env.DEV ? '/slashie/' : ASSET_BASE;
+
+// EMBED_CHECK_URL — the server-side header check that reports whether a link can be
+// shown inside the in-app popup iframe (see public/embeddable.php). It ships beside
+// the app under /keep in production. Vite can't run PHP in dev, so we route to the
+// deployed copy through the /keep-api proxy (see vite.config.ts); if it isn't
+// deployed yet the client's fetch just fails and the popup falls back to attempting
+// the frame anyway.
+export const EMBED_CHECK_URL = import.meta.env.DEV
+  ? '/keep-api/embeddable.php'
+  : `${ASSET_BASE}embeddable.php`;

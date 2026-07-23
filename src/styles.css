@@ -326,6 +326,61 @@ body.locked #help, body.ready #help { opacity: 0.9; }
 #video iframe { width: 100%; height: 100%; border: 0; }
 #video .vtitle { color: var(--gold); font-weight: 700; letter-spacing: 0.5px; }
 
+/* ---------- Web-page popup (devlog / source code / links) ---------- */
+#web { background: rgba(3, 2, 6, 0.95); }
+#web .web-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(1100px, 92vw);
+  max-width: 92vw;
+}
+#web .web-bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+#web .vtitle { color: var(--gold); font-weight: 700; letter-spacing: 0.5px; }
+#web .web-open {
+  flex: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold);
+  text-decoration: none;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+#web .web-open:hover { opacity: 1; text-decoration: underline; }
+#web .frame-wrap {
+  position: relative;
+  width: 100%;
+  height: min(78vh, 820px);
+  background: #fff;
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 20px 80px rgba(0,0,0,0.7);
+}
+#web iframe { width: 100%; height: 100%; border: 0; }
+#web .web-msg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 32px;
+  text-align: center;
+  background: var(--panel); /* covers the white frame while a message/loader shows */
+  color: var(--ink);
+}
+#web .web-msg-title { color: var(--gold); font-weight: 700; font-size: 18px; }
+#web .web-msg-body { font-size: 14px; opacity: 0.82; max-width: 460px; line-height: 1.55; }
+#web .web-msg-body b { color: var(--ink); opacity: 1; }
+#web .web-msg-cta { margin-top: 6px; text-decoration: none; }
+
 /* ---------- NPC dialog blurb ---------- */
 #dialog {
   position: fixed;

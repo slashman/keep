@@ -22,6 +22,16 @@ export default defineConfig(({ command }) => ({
         headers: { Cookie: 'humans_21909=1' },
         rewrite: (path) => path.replace(/^\/slashie/, ''),
       },
+      // Dev only: the PHP embeddable-check lives under /keep on slashie.net (Vite
+      // can't execute PHP locally), so route /keep-api → slashie.net/keep with the
+      // same bot-challenge cookie. Requires embeddable.php to be deployed there.
+      '/keep-api': {
+        target: 'https://slashie.net',
+        changeOrigin: true,
+        secure: true,
+        headers: { Cookie: 'humans_21909=1' },
+        rewrite: (path) => path.replace(/^\/keep-api/, '/keep'),
+      },
     },
   },
 }));

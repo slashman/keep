@@ -93,8 +93,7 @@ function handleButton(btn: ProjectButton) {
   if (vid && btn.type === 'video') {
     openVideo(vid, btn.title);
   } else {
-    window.open(btn.url, '_blank', 'noopener,noreferrer');
-    // opening a tab drops pointer lock; the resume prompt will appear
+    openWeb(btn.url, btn.title);
   }
 }
 
@@ -117,9 +116,17 @@ function openVideo(id: string, title: string) {
   controls.unlock();
 }
 
+function openWeb(url: string, title: string) {
+  ui.hideDialog();
+  ui.showWeb(url, title);
+  controls.enabled = false;
+  controls.unlock();
+}
+
 function closeOverlay() {
   ui.hideElevator();
   ui.hideVideo();
+  ui.hideWeb();
   resumeLock();
 }
 
@@ -152,6 +159,7 @@ window.addEventListener('keydown', (e) => {
   } else if (e.code === 'Escape') {
     if (ui.dialogOpen) ui.hideDialog();
     else if (ui.videoOpen) { ui.hideVideo(); resumeLock(); }
+    else if (ui.webOpen) { ui.hideWeb(); resumeLock(); }
     else if (ui.elevatorOpen) { ui.hideElevator(); resumeLock(); }
   }
 });

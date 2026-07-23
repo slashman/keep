@@ -1,4 +1,5 @@
 import type { Floor } from './types';
+import { EMBED_CHECK_URL } from './config';
 
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K, cls?: string, html?: string,
@@ -24,6 +25,11 @@ export class UI {
   private video = el('div', 'overlay hidden');
   private videoWrap = el('div', 'frame-wrap');
   private videoTitle = el('div', 'vtitle');
+  private web = el('div', 'overlay hidden');
+  private webWrap = el('div', 'frame-wrap');
+  private webTitle = el('div', 'vtitle');
+  private webLink = el('a', 'web-open');
+  private webToken = 0; // invalidates a pending embeddable-check if the popup changes
   private dialog = el('div');
   private dialogName = el('div', 'dname');
   private dialogText = el('div', 'dtext');
@@ -46,6 +52,7 @@ export class UI {
     this.toast.id = 'toast';
     this.elevator.id = 'elevator'; // without these ids every #elevator / #video CSS rule is dead
     this.video.id = 'video';
+    this.web.id = 'web';
     this.help.innerHTML =
       '<span class="key">W A S D</span> move &nbsp; <span class="key">Mouse</span> look &nbsp; ' +
       '<span class="key">Shift</span> run &nbsp; <span class="key">Space</span> jump<br>' +
@@ -61,6 +68,7 @@ export class UI {
     this.buildLoading();
     this.buildElevator();
     this.buildVideo();
+    this.buildWeb();
     this.buildDialog();
   }
 
@@ -213,6 +221,75 @@ export class UI {
   }
   get videoOpen() { return !this.video.classList.contains('hidden'); }
 
+  // ---------- web-page popup (devlog / source code / links) ----------
+  private buildWeb() {
+    const close = el('button', 'close-x', '×');
+    close.addEventListener('click', () => this.onCloseOverlay?.());
+    this.webLink.target = '_blank';
+    this.webLink.rel = 'noopener noreferrer';
+    this.webLink.textContent = 'Open in new tab ↗';
+    const bar = el('div', 'web-bar');
+    bar.append(this.webTitle, this.webLink);
+    const col = el('div', 'web-col');
+    col.append(bar, this.webWrap);
+    this.web.append(close, col);
+    document.body.append(this.web);
+  }
+  showWeb(url: string, title: string) {
+    this.webTitle.textContent = title;
+    this.webLink.href = url;
+    this.web.classList.remove('hidden');
+    void this.renderWebFrame(url, ++this.webToken);
+  }
+  // Many sites (GitHub, Steam, stores, wordpress.com…) refuse to be framed. We ask
+  // the server-side header check first and, if it says no, show a message instead of
+  // a dead "refused to connect" page. If the check is unavailable we optimistically
+  // try the frame — the header "Open in new tab" link is always there as a fallback.
+  private async renderWebFrame(url: string, token: number) {
+    this.webWrap.replaceChildren(this.webMessage('Loading…'));
+    let embeddable = true;
+    try {
+      const res = await fetch(`${EMBED_CHECK_URL}?url=${encodeURIComponent(url)}`);
+      if (res.ok) embeddable = (await res.json())?.embeddable !== false;
+    } catch {
+      /* check unavailable → optimistically attempt the frame */
+    }
+    if (token !== this.webToken) return; // popup was closed or replaced while awaiting
+    if (embeddable) {
+      const frame = document.createElement('iframe');
+      frame.src = url;
+      frame.referrerPolicy = 'no-referrer';
+      this.webWrap.replaceChildren(frame);
+    } else {
+      this.webWrap.replaceChildren(this.webBlockedMessage(url));
+    }
+  }
+  private webMessage(text: string): HTMLElement {
+    return el('div', 'web-msg', `<div class="web-msg-body">${text}</div>`);
+  }
+  private webBlockedMessage(url: string): HTMLElement {
+    let host = 'This site';
+    try { host = new URL(url).hostname.replace(/^www\./, ''); } catch { /* keep default */ }
+    const wrap = el('div', 'web-msg');
+    wrap.append(
+      el('div', 'web-msg-title', '🔒 This page can’t be shown here'),
+      el('div', 'web-msg-body',
+        `<b>${host}</b> doesn’t allow being embedded in another site. Open it in a new tab to view it.`),
+    );
+    const cta = el('a', 'cta web-msg-cta', 'Open in new tab ↗');
+    cta.href = url;
+    cta.target = '_blank';
+    cta.rel = 'noopener noreferrer';
+    wrap.append(cta);
+    return wrap;
+  }
+  hideWeb() {
+    this.webToken++; // cancel any in-flight check
+    this.webWrap.replaceChildren(); // stop any loading / media
+    this.web.classList.add('hidden');
+  }
+  get webOpen() { return !this.web.classList.contains('hidden'); }
+
   // ---------- transient toast ----------
   flash(msg: string, ms = 1400) {
     this.toast.textContent = msg;
@@ -227,5 +304,5 @@ export class UI {
     await new Promise((r) => setTimeout(r, ms));
   }
 
-  get anyOverlayOpen() { return this.elevatorOpen || this.videoOpen; }
+  get anyOverlayOpen() { return this.elevatorOpen || this.videoOpen || this.webOpen; }
 }
