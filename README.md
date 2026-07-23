@@ -1,4 +1,4 @@
-# The Slashie Keep 🏰
+# Slashie's Keep 🏰
 
 A first-person, WASD-explorable castle/museum of the projects on
 [slashie.net](https://slashie.net). Every **floor is a year**, every **room is a

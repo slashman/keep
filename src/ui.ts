@@ -101,7 +101,7 @@ export class UI {
     bar.append(this.bar);
     this.loadingMsg.id = 'loadingMsg';
     this.loading.append(
-      el('h1', 'title', 'The Slashie Keep'),
+      el('h1', 'title', 'Slashie\'s Keep'),
       el('div', 'subtitle', 'Raising the castle walls…'),
       bar,
       this.loadingMsg,
@@ -120,7 +120,7 @@ export class UI {
     const btn = el('button', 'cta', 'Enter the Keep');
     btn.addEventListener('click', () => this.onStart?.());
     this.start.append(
-      el('h1', 'title', 'The Slashie Keep'),
+      el('h1', 'title', 'Slashie\'s Keep'),
       el('div', 'subtitle', ''),
       btn,
       el('div', 'controls-legend',
