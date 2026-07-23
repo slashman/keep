@@ -48,7 +48,7 @@ export class UI {
     this.video.id = 'video';
     this.help.innerHTML =
       '<span class="key">W A S D</span> move &nbsp; <span class="key">Mouse</span> look &nbsp; ' +
-      '<span class="key">Shift</span> run<br>' +
+      '<span class="key">Shift</span> run &nbsp; <span class="key">Space</span> jump<br>' +
       '<span class="key">E</span> / <span class="key">Click</span> interact &nbsp; ' +
       '<span class="key">M</span> mute &nbsp; ' +
       '<span class="key">Esc</span> release cursor';

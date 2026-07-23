@@ -11,6 +11,8 @@ export interface CollisionWorld {
 const EYE_HEIGHT = 2.5;
 const SPEED = 4.2;
 const SPRINT = 8.4;
+const GRAVITY = 22;      // m/s² pulling the player back down
+const JUMP_SPEED = 7;    // initial upward velocity on jump (≈1.1 m peak)
 const SENS = 0.0022;
 const TOUCH_SENS = 0.006; // radians per pixel of swipe
 const PITCH_LIMIT = Math.PI / 2 - 0.08;
@@ -32,6 +34,8 @@ export class PlayerControls {
   // Movement read out for the audio engine (footstep cadence).
   movedDistance = 0; // world units actually travelled last frame
   sprinting = false;
+  private velY = 0;           // vertical velocity (jump/gravity)
+  private spaceWasDown = false; // edge-detect Space so holding it doesn't auto-bounce
 
   constructor(camera: THREE.PerspectiveCamera, dom: HTMLElement) {
     this.camera = camera;
@@ -76,6 +80,7 @@ export class PlayerControls {
   /** Place the player and aim along a yaw (radians). */
   setPose(x: number, z: number, yaw: number) {
     this.camera.position.set(x, EYE_HEIGHT, z);
+    this.velY = 0;
     this.euler.set(0, yaw, 0);
     this.camera.quaternion.setFromEuler(this.euler);
   }
@@ -101,6 +106,22 @@ export class PlayerControls {
   update(dt: number) {
     this.movedDistance = 0;
     if (!this.isLocked || !this.enabled) return;
+
+    // ---- vertical: jump + gravity (runs even when standing still) ----
+    const pos = this.camera.position;
+    const grounded = pos.y <= EYE_HEIGHT + 1e-3;
+    const spaceDown = this.keys.has('Space');
+    if (spaceDown && !this.spaceWasDown && grounded) this.velY = JUMP_SPEED;
+    this.spaceWasDown = spaceDown;
+    if (grounded && this.velY <= 0) {
+      pos.y = EYE_HEIGHT;
+      this.velY = 0;
+    } else {
+      this.velY -= GRAVITY * dt;
+      pos.y += this.velY * dt;
+      if (pos.y <= EYE_HEIGHT) { pos.y = EYE_HEIGHT; this.velY = 0; }
+    }
+
     let f = 0, s = 0;
     if (this.keys.has('KeyW') || this.keys.has('ArrowUp')) f += 1;
     if (this.keys.has('KeyS') || this.keys.has('ArrowDown')) f -= 1;
@@ -127,13 +148,11 @@ export class PlayerControls {
     // Move each axis independently, accepting it only if the destination is
     // walkable. This lets the player slide along walls and pass through the
     // doorways where regions overlap.
-    const pos = this.camera.position;
     const x0 = pos.x, z0 = pos.z;
     const nx = pos.x + dx;
     if (this.walkable(nx, pos.z)) pos.x = nx;
     const nz = pos.z + dz;
     if (this.walkable(pos.x, nz)) pos.z = nz;
-    pos.y = EYE_HEIGHT;
     this.movedDistance = Math.hypot(pos.x - x0, pos.z - z0);
   }
 
