@@ -31,6 +31,7 @@ html, body {
 #touch.show { opacity: 1; }
 /* when hidden, don't let the (invisible) joystick/button swallow touches, e.g. the orb menu */
 #touch:not(.show) #joystick,
+#touch:not(.show) #touchJump,
 #touch:not(.show) #touchInteract { pointer-events: none; }
 #joystick {
   position: absolute;
@@ -71,6 +72,23 @@ html, body {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
 }
 #touchInteract:active { transform: scale(0.94); }
+/* jump — sits above the interact button, the way into a painting on touch */
+#touchJump {
+  position: absolute;
+  right: 38px;
+  bottom: calc(max(46px, env(safe-area-inset-bottom, 0px)) + 104px);
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(143, 216, 255, 0.8);
+  color: #06131c;
+  font: 700 30px Georgia, serif;
+  border: none;
+  pointer-events: auto;
+  touch-action: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+}
+#touchJump:active { transform: scale(0.94); }
 
 /* on touch, hide keyboard-oriented hints and lift the dialog above the controls */
 body.touch #help, body.touch .controls-legend { display: none; }

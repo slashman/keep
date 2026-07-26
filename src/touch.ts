@@ -11,6 +11,7 @@ export class TouchControls {
   private joy = document.createElement('div');
   private thumb = document.createElement('div');
   private btn = document.createElement('button');
+  private jumpBtn = document.createElement('button');
 
   private joyId: number | null = null;
   private joyCx = 0;
@@ -33,7 +34,10 @@ export class TouchControls {
     this.joy.appendChild(this.thumb);
     this.btn.id = 'touchInteract';
     this.btn.textContent = 'E';
-    this.root.append(this.joy, this.btn);
+    this.jumpBtn.id = 'touchJump';
+    this.jumpBtn.textContent = '⤒';
+    this.jumpBtn.setAttribute('aria-label', 'Jump');
+    this.root.append(this.joy, this.btn, this.jumpBtn);
     document.body.appendChild(this.root);
 
     this.joy.addEventListener('touchstart', this.onJoyStart, { passive: false });
@@ -41,6 +45,11 @@ export class TouchControls {
       e.preventDefault();
       e.stopPropagation();
       this.onInteract();
+    }, { passive: false });
+    this.jumpBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.controls.jump();
     }, { passive: false });
     canvas.addEventListener('touchstart', this.onLookStart, { passive: true });
     // Passive: we never preventDefault here (canvas/joystick use touch-action:none to

@@ -114,6 +114,27 @@ export function collaboratorsForFloor(floor: Floor, collab: Map<string, Collabor
   return people;
 }
 
+/**
+ * The people credited on one project, for that project's own room. Unlike a floor,
+ * a room shows *only* its own collaborators — nobody wanders in from another project.
+ */
+export function collaboratorsForProject(p: Project, collab: Map<string, Collaborator>): Person[] {
+  const people: Person[] = [];
+  for (const key of new Set(p.collaborators ?? [])) {
+    const c = collab.get(key);
+    if (c) {
+      people.push({ key, name: c.title ?? key, image: c.image, text: c.text, portraitLeftMargin: c.portraitLeftMargin });
+      continue;
+    }
+    const custom = CUSTOM_PEOPLE.find((cp) => cp.key === key);
+    if (custom) {
+      const { since: _since, birthYear: _birthYear, babyImage: _babyImage, ...person } = custom;
+      people.push(person);
+    }
+  }
+  return people;
+}
+
 /** Group projects into floors keyed by their start year (descending: newest on top). */
 export function buildFloors(data: ProjectsData): Floor[] {
   const projects = flattenProjects(data);

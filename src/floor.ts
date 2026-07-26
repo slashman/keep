@@ -1,31 +1,34 @@
 import * as THREE from 'three';
-import type { Floor, Project, ProjectButton, Person } from './types';
+import type { Floor, Project, Person } from './types';
 import type { CollisionWorld, Rect } from './controls';
-import { buttonStyle, genreColor } from './tags';
+import { genreColor } from './tags';
 import { placeNpcs, type NpcUpdater } from './npc';
-import { DATA_BASE } from './config';
+import { buildPortalGate, setGateMap, type PortalGate } from './portal';
 import {
-  placardTexture, titlePlaqueTexture, bannerTexture, buttonLabelTexture,
-  fallbackPaintingTexture, loadImageTexture, doorSignTexture,
+  gatePlaqueTexture, bannerTexture,
+  fallbackPaintingTexture, doorSignTexture, attachProjectArt,
   yearTapestryTexture, yearInfoTexture,
 } from './textures';
 
 export interface Interactable {
   mesh: THREE.Object3D;
   label: string;
-  kind: 'button' | 'elevator' | 'npc';
+  kind: 'button' | 'elevator' | 'npc' | 'portal';
   action: () => void;
 }
 
 export interface FloorHandlers {
-  onButton: (btn: ProjectButton) => void;
   onElevator: () => void;
   onNpc: (person: Person, projects: string[]) => void;
+  /** Dive through a project's gate into its own room. */
+  onEnterProject: (p: Project, gate: PortalGate) => void;
 }
 
+/** One mounted place — a year's floor, or a single project's room. */
 export interface FloorBuild {
   group: THREE.Group;
   interactables: Interactable[];
+  portals: PortalGate[];
   world: CollisionWorld;
   spawn: { x: number; z: number; yaw: number };
   update?: (t: number, playerPos: THREE.Vector3) => void; // orb animation + NPCs staring
@@ -33,21 +36,23 @@ export interface FloorBuild {
 }
 
 /**
- * A wall slot a display is mounted on: the anchor point on the wall surface (ax,az),
- * the inward normal (nx,nz) pointing into the room, and the run direction (dirx,dirz)
- * used to decide which way to fan the placard.
+ * A wall slot a gate is mounted on: the anchor point on the wall surface (ax,az)
+ * and the inward normal (nx,nz) pointing into the room.
  */
-interface Slot { ax: number; az: number; nx: number; nz: number; dirx: number; dirz: number; }
+interface Slot { ax: number; az: number; nx: number; nz: number; }
 
 // ---- layout constants ----
 const CEIL = 6.2;
-const PAINT_Y = 3.25;
+const GATE_Y = 3.15;           // height of the centre of a project gate
+const GATE_W = 2.8;
+const GATE_H = 2.3;            // mouth bottom sits at chin height — you must jump in
 const CW = 4.5;                // corridor half-width (walls at ±CW)
 const CORRIDOR_FIRST_Z = 8.5;  // z of the first corridor row
 const ROW_SPACING = 5.2;       // spacing between corridor rows
 const BACK_PAD = 3.8;          // gap between last corridor row and the tapestry wall
 const MARGIN = 1.05;           // player standoff from display walls
-const PLACARD_SIDE = 2.2;      // placard offset along the wall
+const ALCOVE_HALF = 1.3;       // half-width of the run-up notch (the mouth's own half-width is 1.4)
+const ALCOVE_NEAR = 0.45;      // how close to the wall that notch lets you stand
 const DOOR = { z0: 2.0, z1: 4.4, height: 3.6 };
 const ELEV = { x: 0, z: 3.2, r: 0.9 }; // the orb's spot (small excluder so you can walk right up)
 const ORB_Y = 2.0;
@@ -55,7 +60,7 @@ const ORB_Y = 2.0;
 const HALL_DEPTH = 8;          // z-extent of a side hall
 const HALL_FIRST = 3.0;        // x-distance of the first hall row from the corridor wall
 const HALL_SPACING = 5.0;
-const HALL_END_PAD = 4.0;      // clears the back-most placard (fans out PLACARD_SIDE + half-width ≈ 3.2)
+const HALL_END_PAD = 2.6;      // clears the back-most gate (its arch runs out to ≈1.7)
 
 /**
  * "Big" projects get the main corridor. A project is big if its logged dev effort
@@ -74,6 +79,7 @@ function isBigProject(p: Project): boolean {
 export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person[] = []): FloorBuild {
   const group = new THREE.Group();
   const interactables: Interactable[] = [];
+  const portals: PortalGate[] = [];
   const regions: Rect[] = [];
   const updaters: NpcUpdater[] = [];
 
@@ -138,7 +144,7 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
   const trimMat = new THREE.MeshStandardMaterial({ color: '#3a2f14', roughness: 0.6, metalness: 0.4 });
   for (const s of [-1, 1]) {
     const trim = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.3, CL), trimMat);
-    trim.position.set(s * (CW - 0.06), 0.15, CL / 2);
+    trim.position.set(s * (CW - 0.16), 0.15, CL / 2); // flush with the wall face at CW−0.1
     group.add(trim);
   }
 
@@ -160,15 +166,16 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
   // ---------- magic orb + corridor displays + tapestry ----------
   const orbUpdate = buildOrb(group, interactables, handlers);
   updaters.push((t) => orbUpdate(t));
-  placeRun(group, interactables, corridorPs, { ox: 0, oz: CORRIDOR_FIRST_Z, dirx: 0, dirz: 1, perpx: 1, perpz: 0, half: CW, spacing: ROW_SPACING }, handlers);
+  const ctx: RunCtx = { group, inter: interactables, portals, regions, handlers };
+  placeRun(ctx, corridorPs, { ox: 0, oz: CORRIDOR_FIRST_Z, dirx: 0, dirz: 1, perpx: 1, perpz: 0, half: CW, spacing: ROW_SPACING });
   buildYearWall(group, floor, CL);
 
   regions.push({ minX: -CW + MARGIN, maxX: CW - MARGIN, minZ: 0.6, maxZ: CL - 0.6 });
   const excluders = [{ x: ELEV.x, z: ELEV.z, r: ELEV.r }];
 
   // ---------- side halls (only if they hold projects) ----------
-  if (leftPs.length) buildHall(group, interactables, leftPs, -1, handlers, regions, addFloorCeil, addWall);
-  if (rightPs.length) buildHall(group, interactables, rightPs, 1, handlers, regions, addFloorCeil, addWall);
+  if (leftPs.length) buildHall(ctx, leftPs, -1, addFloorCeil, addWall);
+  if (rightPs.length) buildHall(ctx, rightPs, 1, addFloorCeil, addWall);
 
   // ---------- collaborator NPCs, scattered across the walkable rooms ----------
   placeNpcs(group, regions, excluders, people, updaters, (mesh, person) => {
@@ -183,9 +190,13 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
   return {
     group,
     interactables,
+    portals,
     world,
     spawn: { x: 0, z: 5.6, yaw: Math.PI }, // step in beside the orb, tapestry dead ahead
-    update: (t, playerPos) => { for (const u of updaters) u(t, playerPos); },
+    update: (t, playerPos) => {
+      for (const u of updaters) u(t, playerPos);
+      for (const g of portals) g.update(t);
+    },
     dispose: () => disposeObject(group),
   };
 }
@@ -194,10 +205,17 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
 
 interface RunCfg { ox: number; oz: number; dirx: number; dirz: number; perpx: number; perpz: number; half: number; spacing: number; }
 
-/** Place a set of projects as alternating displays on two facing walls of a run. */
-function placeRun(
-  group: THREE.Group, inter: Interactable[], ps: Project[], cfg: RunCfg, handlers: FloorHandlers,
-) {
+/** Everything a run of displays needs to register itself with the floor. */
+interface RunCtx {
+  group: THREE.Group;
+  inter: Interactable[];
+  portals: PortalGate[];
+  regions: Rect[];
+  handlers: FloorHandlers;
+}
+
+/** Place a set of projects as alternating gates on two facing walls of a run. */
+function placeRun(ctx: RunCtx, ps: Project[], cfg: RunCfg) {
   ps.forEach((p, i) => {
     const s = i % 2 === 0 ? 1 : -1;          // which of the two walls
     const row = Math.floor(i / 2);
@@ -208,20 +226,18 @@ function placeRun(
       az: cz + cfg.perpz * cfg.half * s,
       nx: -cfg.perpx * s,
       nz: -cfg.perpz * s,
-      dirx: cfg.dirx,
-      dirz: cfg.dirz,
     };
-    buildDisplayAt(group, inter, p, slot, handlers);
+    buildDisplayAt(ctx, p, slot);
   });
 }
 
 /** Build one side hall extending outward (sign −1 = left, +1 = right) from the elevator. */
 function buildHall(
-  group: THREE.Group, inter: Interactable[], ps: Project[], sign: number, handlers: FloorHandlers,
-  regions: Rect[],
+  ctx: RunCtx, ps: Project[], sign: number,
   addFloorCeil: (r: Rect) => void,
   addWall: (ax: number, az: number, bx: number, bz: number, h?: number, y0?: number) => void,
 ) {
+  const { group, regions } = ctx;
   const rows = Math.ceil(ps.length / 2);
   const HL = HALL_FIRST + (rows - 1) * HALL_SPACING + HALL_END_PAD; // hall length in x
   const innerX = sign * CW;             // door side — shared wall with the corridor
@@ -235,10 +251,10 @@ function buildHall(
   // the inner (shared) wall is the corridor side wall, already built with a door
 
   // displays run outward along x, alternating between the north (z=HALL_DEPTH) and south (z=0) walls
-  placeRun(group, inter, ps, {
+  placeRun(ctx, ps, {
     ox: sign * (CW + HALL_FIRST), oz: HALL_DEPTH / 2, dirx: sign, dirz: 0,
     perpx: 0, perpz: 1, half: HALL_DEPTH / 2, spacing: HALL_SPACING,
-  }, handlers);
+  });
 
   // warm lamp
   const lamp = new THREE.PointLight(0xffcf8a, 22, 16, 2);
@@ -359,12 +375,17 @@ function buildYearWall(group: THREE.Group, floor: Floor, backZ: number) {
 
 // ---------------------------------------------------------------------------
 
-/** Build a full project display (frame, painting, banner, plaque, placard, lectern) at a slot. */
-function buildDisplayAt(group: THREE.Group, interactables: Interactable[], p: Project, slot: Slot, handlers: FloorHandlers) {
+/**
+ * Build one project's wall display: the gate itself (a portal into the project's
+ * own room), its banner, title plaque and museum placard — plus the notch in the
+ * collision map that lets the player walk right up and leap in.
+ */
+function buildDisplayAt(ctx: RunCtx, p: Project, slot: Slot) {
+  const { group, inter, portals, regions, handlers } = ctx;
   const yaw = Math.atan2(slot.nx, slot.nz);      // plane normal → slot inward normal
   const alx = -slot.nz, alz = slot.nx;           // unit vector along the wall
-  // which way along the wall to fan the placard (toward the run direction / into the room)
-  const sgn = Math.sign(alx * slot.dirx + alz * slot.dirz) || 1;
+  // the wall is 0.2 thick and centred on the slot: its inner face is 0.1 in
+  const face = 0.1;
 
   const place = (mesh: THREE.Object3D, out: number, side: number, y: number) => {
     mesh.position.set(
@@ -375,117 +396,69 @@ function buildDisplayAt(group: THREE.Group, interactables: Interactable[], p: Pr
     mesh.rotation.y = yaw;
   };
 
-  // frame + painting
-  const frame = new THREE.Mesh(
-    new THREE.BoxGeometry(3.15, 2.45, 0.12),
-    new THREE.MeshStandardMaterial({ color: '#2a2110', metalness: 0.5, roughness: 0.35 }),
-  );
-  place(frame, 0.02, 0, PAINT_Y);
-  group.add(frame);
-
-  const paintMat = new THREE.MeshBasicMaterial({ map: fallbackPaintingTexture(p.title) });
-  const painting = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 2.1), paintMat);
-  place(painting, 0.16, 0, PAINT_Y);
-  group.add(painting);
-  attachProjectImage(p, paintMat);
-
-  // genre banner + rod
+  // ---- the gate ----
   const primaryGenre = p.genre?.[0];
+  const gate = buildPortalGate(group, {
+    key: p.title,
+    x: slot.ax + slot.nx * face,
+    y: GATE_Y,
+    z: slot.az + slot.nz * face,
+    yaw,
+    width: GATE_W,
+    height: GATE_H,
+    map: fallbackPaintingTexture(p.title),
+    tint: new THREE.Color(genreColor(primaryGenre)),
+    rune: true,
+    enter: () => handlers.onEnterProject(p, gate),
+  });
+  attachProjectArt(p, (tex) => setGateMap(gate, tex));
+  portals.push(gate);
+  inter.push({
+    mesh: gate.surface,
+    label: `Leap into “${p.title}”`,
+    kind: 'portal',
+    action: () => handlers.onEnterProject(p, gate),
+  });
+
+  // The run-up notch: a shallow bay in front of the gate that overlaps the room's
+  // own walkable rect, so the player can step in, leap, and step back out. Slots
+  // are axis-aligned, so two opposite corners describe the whole rectangle.
+  const cx = (out: number, sd: number) => slot.ax + slot.nx * out + alx * sd;
+  const cz = (out: number, sd: number) => slot.az + slot.nz * out + alz * sd;
+  const [n, f, h] = [ALCOVE_NEAR, MARGIN + 0.1, ALCOVE_HALF];
+  regions.push({
+    minX: Math.min(cx(n, -h), cx(f, h)), maxX: Math.max(cx(n, -h), cx(f, h)),
+    minZ: Math.min(cz(n, -h), cz(f, h)), maxZ: Math.max(cz(n, -h), cz(f, h)),
+  });
+
+  // genre banner + rod, hung in front of the arch
   const banner = new THREE.Mesh(
     new THREE.PlaneGeometry(0.85, 1.9),
     new THREE.MeshBasicMaterial({ map: bannerTexture(primaryGenre, genreColor(primaryGenre)), transparent: true }),
   );
-  place(banner, 0.06, 0, 5.15);
+  place(banner, 0.3, 0, 5.15);  // clear of the arch's top rail, which juts out 0.23
   group.add(banner);
   const rodMat = new THREE.MeshStandardMaterial({ color: '#4a3d18', metalness: 0.7, roughness: 0.3 });
   const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.05, 8), rodMat);
   rod.rotation.z = Math.PI / 2;
-  place(rod, 0.06, 0, 6.08);
+  place(rod, 0.3, 0, 6.08);
   group.add(rod);
 
-  // title plaque
+  // Name and dev days, on the lintel below the mouth. That's all a gate says —
+  // the full placard lives inside the project's room.
+  // 0.13 clears the wall's inner face (the wall is a 0.2-thick box centred on the
+  // slot, so anything at out < 0.1 is buried inside it); 1.28 clears the low rail.
   const plaque = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.2, 0.52),
-    new THREE.MeshBasicMaterial({ map: titlePlaqueTexture(p.title), transparent: true }),
+    new THREE.PlaneGeometry(2.4, 0.825),
+    new THREE.MeshBasicMaterial({ map: gatePlaqueTexture(p), transparent: true }),
   );
-  place(plaque, 0.05, 0, 1.95);
+  place(plaque, 0.13, 0, 1.28);
   group.add(plaque);
-
-  // info placard (fanned to the side) + backboard
-  const side = PLACARD_SIDE * sgn;
-  const back = new THREE.Mesh(
-    new THREE.BoxGeometry(2.2, 2.93, 0.08),
-    new THREE.MeshStandardMaterial({ color: '#0c0a14', roughness: 0.9 }),
-  );
-  place(back, 0.39, side, 2.35);
-  group.add(back);
-  const placard = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.0, 2.73),
-    new THREE.MeshBasicMaterial({ map: placardTexture(p) }),
-  );
-  place(placard, 0.45, side, 2.35);
-  group.add(placard);
-
-  // lectern of buttons
-  const buttons = (p.buttons ?? []).filter((b) => b.url).slice(0, 6);
-  if (!buttons.length) return;
-
-  const woodMat = new THREE.MeshStandardMaterial({ color: '#241b0e', roughness: 0.7, metalness: 0.2 });
-  const base = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.5, 0.5), woodMat);
-  place(base, 0.55, 0, 0.25);
-  group.add(base);
-  const board = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.5, 0.12), woodMat);
-  place(board, 0.68, 0, 1.15);
-  group.add(board);
-
-  buttons.forEach((btn, k) => {
-    const col = k % 2;
-    const rowIdx = Math.floor(k / 2);
-    const bside = col === 0 ? -0.5 : 0.5;
-    const by = 1.55 - rowIdx * 0.4;
-    const style = buttonStyle(btn.type);
-    const body = new THREE.Mesh(
-      new THREE.BoxGeometry(0.94, 0.3, 0.07),
-      new THREE.MeshStandardMaterial({ color: style.color, roughness: 0.4, metalness: 0.3, emissive: style.color, emissiveIntensity: 0.15 }),
-    );
-    place(body, 0.78, bside, by);
-    group.add(body);
-    const label = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.9, 0.28),
-      new THREE.MeshBasicMaterial({ map: buttonLabelTexture(style.color, style.glyph, style.verb, btn.title), transparent: true }),
-    );
-    place(label, 0.82, bside, by);
-    label.userData.pulse = body;
-    group.add(label);
-
-    interactables.push({ mesh: label, label: `${style.verb}: ${btn.title}`, kind: 'button', action: () => handlers.onButton(btn) });
-  });
-}
-
-// ---------------------------------------------------------------------------
-
-function attachProjectImage(p: Project, mat: THREE.MeshBasicMaterial) {
-  const url = resolveImageUrl(p.image);
-  if (!url) return;
-  loadImageTexture(url).then((tex) => {
-    if (tex) {
-      const old = mat.map;
-      mat.map = tex;
-      mat.needsUpdate = true;
-      old?.dispose();
-    }
-  });
-}
-
-function resolveImageUrl(image?: string): string | null {
-  if (!image) return null;
-  if (/^https?:\/\//i.test(image)) return image;
-  return DATA_BASE + image.replace(/^\//, '');
 }
 
 // ---- procedural stone texture ----
 const _stoneCache = new Map<string, THREE.Texture>();
-function stoneTexture(a: string, b: string): THREE.Texture {
+export function stoneTexture(a: string, b: string): THREE.Texture {
   const src = _stoneCache.get(a + b) ?? makeStone(a, b);
   _stoneCache.set(a + b, src);
   const t = src.clone();
@@ -535,6 +508,10 @@ export function disposeObject(obj: THREE.Object3D) {
         const anyM = m as any;
         for (const k of ['map', 'normalMap', 'roughnessMap', 'emissiveMap']) {
           if (anyM[k]) anyM[k].dispose();
+        }
+        // portal membranes carry their art in a uniform instead of `.map`
+        for (const u of Object.values(anyM.uniforms ?? {}) as { value?: unknown }[]) {
+          if (u?.value instanceof THREE.Texture) u.value.dispose();
         }
         m.dispose();
       }

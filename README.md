@@ -1,10 +1,11 @@
 # Slashie's Keep 🏰
 
 A first-person, WASD-explorable castle/museum of the projects on
-[slashie.net](https://slashie.net). Every **floor is a year**, every **room is a
-project** started that year, complete with a painting, a museum placard, colour-coded
-tag banners, and levers that open the project online — or play its YouTube videos
-right inside the Keep.
+[slashie.net](https://slashie.net). Every **floor is a year**, and every project
+hangs on its wall as a **rippling portal**: walk up to the painting, **jump**, and
+you are pulled through — Super Mario 64 style — into that project's own room, with
+its artwork wall-sized, its museum placard, and a dais of levers that open the
+project online or play its YouTube videos right inside the Keep.
 
 Built with **three.js + TypeScript + Vite**.
 
@@ -29,6 +30,7 @@ npm run preview   # serve the production build
 | Move | `W` `A` `S` `D` (or arrows) |
 | Look | Mouse (click to lock the pointer) |
 | Run | `Shift` |
+| Jump (and enter a painting) | `Space` |
 | Interact (levers / elevator) | `E` or click |
 | Mute / unmute sound | `M` |
 | Release cursor / close a menu | `Esc` |
@@ -65,12 +67,25 @@ npm run preview   # serve the production build
   genres/tech/collaborators. The per-year *descriptions* live only inside
   slashie.net's hash-named JS bundle, so they're snapshotted into
   `src/yearContent.ts`; the *images* are loaded live.
-- **Each project room** shows:
-  - a **painting** — the project's `image` (procedural fallback when missing),
-  - a **placard** — title, subtitle, description, status/activity/client/effort,
-  - a **hanging banner** coloured by the project's primary genre,
-  - **colour-coded tag pills** — 🟡 genre · 🔵 technologies · 🟣 collaborators · 🌸 art style,
-  - a **lectern of levers**, one per button in the data.
+- **Each project's wall slot** is a **gate**, not a frame:
+  - a stone arch whose mouth holds a **living membrane** — the project's `image`
+    (procedural fallback when missing) rendered through a shader that makes it
+    breathe, shimmer at the rim, and burst into concentric rings when entered,
+  - a **hanging banner** coloured by the project's primary genre, and a spare
+    **plaque** on the lintel giving only the project's name and its dev days —
+    everything else waits inside,
+  - a glowing **rune on the floor** marking the run-up. The mouth starts at chin
+    height, so walking into it just bumps the sill: **step onto the rune and jump**
+    (or press `E` / tap the gate) and you go through.
+- **Behind the gate is the project's room.** The dive plays out in the world —
+  the surface ripples, the camera is dragged in and the lens widens — and you land
+  in a chamber holding the project's artwork **wall-sized**, the full museum
+  **placard** (title, subtitle, description, status/activity/client/effort and
+  colour-coded tag pills — 🟡 genre · 🔵 technologies · 🟣 collaborators · 🌸 art
+  style), its genre banner, and a raised **dais** ringed with **levers**, one per
+  button in the data, under a floating shard tinted by the project's genre. Only
+  the people credited on *that* project stand in the room. The gate you came
+  through is behind you: turn around and leap back to the year floor.
 - **Collaborator NPCs.** The people worked with each year (from each project's
   `collaborators`, resolved against the *People I've worked with* category) appear as
   simple blocky, Roblox-style characters scattered around the floor. Each has a cube
@@ -90,7 +105,9 @@ src/
   types.ts        data model
   controls.ts     hand-rolled pointer-lock FPS controller + collision
   interaction.ts  center-screen raycaster: focus, prompt, activation
-  floor.ts        builds one year's hall: shell, lighting, elevator, displays
+  floor.ts        builds one year's hall: shell, lighting, elevator, gates
+  portal.ts       the gate itself: rippling-membrane shader, splash rings, trigger volume
+  room.ts         builds the room behind a gate: mural, placard, dais of levers, way home
   textures.ts     canvas-drawn paintings, placards, banners, button labels
   tags.ts         tag family colours + YouTube id extraction
   ui.ts           all HTML overlays (start, loading, elevator, video, HUD)

@@ -155,6 +155,16 @@ export function nameTagTexture(name: string): THREE.CanvasTexture {
   return tuneTexture(new THREE.CanvasTexture(canvas));
 }
 
+/**
+ * Hand a project's own artwork to `apply` as soon as it loads. Callers show the
+ * procedural fallback meanwhile, so this is a no-op for imageless projects.
+ */
+export function attachProjectArt(p: Project, apply: (tex: THREE.Texture) => void) {
+  const url = resolveImg(p.image);
+  if (!url) return;
+  loadImageTexture(url).then((tex) => { if (tex) apply(tex); });
+}
+
 /** Load a project image through the dev proxy; resolves to null on failure. */
 export function loadImageTexture(url: string): Promise<THREE.Texture | null> {
   return new Promise((resolve) => {
@@ -318,6 +328,48 @@ export function titlePlaqueTexture(title: string): THREE.CanvasTexture {
   while (ctx.measureText(t).width > W - 60 && t.length > 4) t = t.slice(0, -1);
   if (t !== title) t = t.slice(0, -1) + '…';
   ctx.fillText(t, W / 2, H / 2 + 4);
+  return tuneTexture(new THREE.CanvasTexture(canvas));
+}
+
+/**
+ * The plaque under a project's gate. Deliberately spare — the name and how many
+ * days went into it; everything else waits inside the room.
+ */
+export function gatePlaqueTexture(p: Project): THREE.CanvasTexture {
+  const W = 640, H = 220;
+  const { canvas, ctx } = makeCanvas(W, H);
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#3a3222');
+  g.addColorStop(1, '#241e14');
+  ctx.fillStyle = g;
+  roundRect(ctx, 6, 6, W - 12, H - 12, 14);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(224,178,86,0.6)';
+  ctx.lineWidth = 4;
+  roundRect(ctx, 6, 6, W - 12, H - 12, 14);
+  ctx.stroke();
+
+  const days = devDays(p);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#e9d9ac';
+  ctx.font = 'bold 46px Georgia, serif';
+  let t = p.title;
+  while (ctx.measureText(t).width > W - 64 && t.length > 4) t = t.slice(0, -1);
+  if (t !== p.title) t = t.slice(0, -1) + '…';
+  ctx.fillText(t, W / 2, days == null ? H / 2 : 88);
+
+  if (days != null) {
+    ctx.strokeStyle = 'rgba(224,178,86,0.35)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(W / 2 - 110, 128);
+    ctx.lineTo(W / 2 + 110, 128);
+    ctx.stroke();
+    ctx.fillStyle = '#c9b481'; // gold, dimmed
+    ctx.font = 'italic 34px Georgia, serif';
+    ctx.fillText(`${days} day${days === 1 ? '' : 's'} of work`, W / 2, 166);
+  }
   return tuneTexture(new THREE.CanvasTexture(canvas));
 }
 

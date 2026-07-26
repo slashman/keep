@@ -1,6 +1,10 @@
 import type { Floor } from './types';
 import { EMBED_CHECK_URL } from './config';
 
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+}
+
 function el<K extends keyof HTMLElementTagNameMap>(
   tag: K, cls?: string, html?: string,
 ): HTMLElementTagNameMap[K] {
@@ -58,7 +62,8 @@ export class UI {
       '<span class="key">Shift</span> run &nbsp; <span class="key">Space</span> jump<br>' +
       '<span class="key">E</span> / <span class="key">Click</span> interact &nbsp; ' +
       '<span class="key">M</span> mute &nbsp; ' +
-      '<span class="key">Esc</span> release cursor';
+      '<span class="key">Esc</span> release cursor<br>' +
+      '<b>Step up to a painting and jump</b> to enter it';
 
     document.body.append(
       this.crosshair, this.prompt, this.floorLabel, this.help, this.curtain, this.toast,
@@ -133,6 +138,7 @@ export class UI {
       btn,
       el('div', 'controls-legend',
         '<span><b>W A S D</b> move</span><span><b>Mouse</b> look</span>' +
+        '<span><b>Space</b> jump into a painting</span>' +
         '<span><b>E</b> / <b>Click</b> interact</span><span><b>M</b> mute</span><span><b>Esc</b> menu</span>'),
     );
     document.body.append(this.start);
@@ -149,14 +155,15 @@ export class UI {
   hideStart() { this.start.classList.add('hidden'); }
 
   // ---------- HUD ----------
-  setFloorLabel(year: number, count: number, total: number) {
+  /** Name the place the player is standing in — a year's floor, or a project's room. */
+  setPlaceLabel(title: string, sub: string) {
     this.floorLabel.innerHTML =
-      `<div class="yr">${year}</div>` +
-      `<div class="sub">${count} project${count === 1 ? '' : 's'} · ${total} floors</div>`;
+      `<div class="yr">${escapeHtml(title)}</div>` +
+      `<div class="sub">${escapeHtml(sub)}</div>`;
   }
-  setPrompt(text: string | null) {
+  setPrompt(text: string | null, key = 'E') {
     if (text) {
-      this.prompt.innerHTML = `<span class="key">E</span>${text}`;
+      this.prompt.innerHTML = `<span class="key">${key}</span>${escapeHtml(text)}`;
       this.prompt.classList.add('show');
       this.crosshair.classList.add('active');
     } else {

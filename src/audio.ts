@@ -190,6 +190,67 @@ export class AudioEngine {
     }
   }
 
+  /** Diving through a painting: a wet plunge that swallows you, then a shimmer. */
+  portal() {
+    if (!this.ctx || !this.master) return;
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    const bus = ctx.createGain();
+    bus.gain.value = 0.9;
+    bus.connect(this.master);
+
+    // The surface breaking: a noise burst swept downward, like going under water.
+    if (this.noiseBuffer) {
+      const splash = ctx.createBufferSource();
+      splash.buffer = this.noiseBuffer;
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.Q.value = 3;
+      lp.frequency.setValueAtTime(5200, now);
+      lp.frequency.exponentialRampToValueAtTime(320, now + 0.65);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.42, now + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.0006, now + 0.8);
+      splash.connect(lp);
+      lp.connect(g);
+      g.connect(bus);
+      splash.start(now);
+      splash.stop(now + 0.85);
+    }
+
+    // A pitch-dropping "gulp" underneath — the moment of being pulled in.
+    const gulp = ctx.createOscillator();
+    gulp.type = 'sine';
+    gulp.frequency.setValueAtTime(420, now);
+    gulp.frequency.exponentialRampToValueAtTime(58, now + 0.5);
+    const gg = ctx.createGain();
+    gg.gain.setValueAtTime(0.0001, now);
+    gg.gain.exponentialRampToValueAtTime(0.34, now + 0.04);
+    gg.gain.exponentialRampToValueAtTime(0.0005, now + 0.6);
+    gulp.connect(gg);
+    gg.connect(bus);
+    gulp.start(now);
+    gulp.stop(now + 0.65);
+
+    // Bell-like droplets ringing out on the far side.
+    for (const [freq, delay] of [[988, 0.34], [1319, 0.42], [1568, 0.52]] as const) {
+      const d = ctx.createOscillator();
+      d.type = 'sine';
+      d.frequency.value = freq;
+      const dg = ctx.createGain();
+      const t = now + delay;
+      dg.gain.setValueAtTime(0.0001, t);
+      dg.gain.exponentialRampToValueAtTime(0.2, t + 0.012);
+      dg.gain.exponentialRampToValueAtTime(0.0004, t + 0.7);
+      d.connect(dg);
+      dg.connect(bus);
+      d.start(t);
+      d.stop(t + 0.75);
+    }
+  }
+
   private playStep(sprinting: boolean) {
     const ctx = this.ctx!;
     if (!this.noiseBuffer || !this.master) return;

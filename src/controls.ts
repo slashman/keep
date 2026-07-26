@@ -49,6 +49,16 @@ export class PlayerControls {
   // On touch there is no pointer lock; "locked" means the game is running.
   get isLocked() { return this.touch ? this.touchActive : this.locked; }
 
+  /** Mid-jump — the test a portal uses to decide you leapt into it. */
+  get airborne() { return this.camera.position.y > EYE_HEIGHT + 0.15; }
+
+  /** Leap, if standing on the floor (the on-screen touch button's entry point). */
+  jump() {
+    if (this.isLocked && this.enabled && this.camera.position.y <= EYE_HEIGHT + 1e-3) {
+      this.velY = JUMP_SPEED;
+    }
+  }
+
   lock() {
     if (this.touch) {
       if (!this.touchActive) { this.touchActive = true; this.onLockChange?.(true); }
