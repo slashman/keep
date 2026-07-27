@@ -20,8 +20,12 @@ export interface PortalGate {
   normal: THREE.Vector3;
   /** What happens once the dive completes. */
   enter: () => void;
-  /** Kick off the entry ripple. */
-  ripple: () => void;
+  /**
+   * Disturb the surface. Forward (the default) is an entry: rings race outward
+   * and the surface floods with light. `reverse` is an emergence: it starts
+   * flooded, and the rings converge back to stillness.
+   */
+  ripple: (reverse?: boolean) => void;
   update: (t: number) => void;
   /** Is the player's eye inside the gate's mouth? */
   contains: (p: THREE.Vector3) => boolean;
@@ -177,7 +181,8 @@ export function buildPortalGate(parent: THREE.Object3D, spec: GateSpec): PortalG
   const d = new THREE.Vector3();
 
   let rippleAt: number | null = null;
-  let pending = false;
+  let pending: boolean | null = null; // the reverse flag, once a ripple is queued
+  let reversed = false;
 
   return {
     key: spec.key,
@@ -185,7 +190,7 @@ export function buildPortalGate(parent: THREE.Object3D, spec: GateSpec): PortalG
     center,
     normal,
     enter: spec.enter,
-    ripple: () => { pending = true; },
+    ripple: (reverse = false) => { pending = reverse; },
     contains: (p) => {
       d.subVectors(p, center);
       const along = d.dot(normal);
@@ -195,19 +200,24 @@ export function buildPortalGate(parent: THREE.Object3D, spec: GateSpec): PortalG
     },
     update: (t) => {
       uniforms.uTime.value = t;
-      if (pending) { pending = false; rippleAt = t; }
+      if (pending !== null) { reversed = pending; pending = null; rippleAt = t; }
+      // k is how far through the disturbance we are; prog is where the wavefront
+      // sits, which runs backwards for an emergence.
       const k = rippleAt === null ? 0 : Math.min(1, (t - rippleAt) / RIPPLE_DUR);
-      uniforms.uRipple.value = k;
+      const prog = reversed ? 1 - k : k;
+      uniforms.uRipple.value = rippleAt === null ? 0 : prog;
       if (rippleAt !== null && k >= 1) rippleAt = null;
 
-      if (light) light.intensity = 6 + Math.sin(t * 2.2) * 1.6 + k * 26;
+      if (light) light.intensity = 6 + Math.sin(t * 2.2) * 1.6 + (rippleAt === null ? 0 : prog * 26);
 
       for (const r of rings) {
         const rk = rippleAt === null ? 1 : Math.min(1, Math.max(0, (k - r.delay) / (1 - r.delay)));
         const live = rippleAt !== null && rk > 0 && rk < 1;
         r.mesh.visible = live;
         if (!live) continue;
-        const s = 0.25 + rk * (Math.max(W, H) * 0.9);
+        // scale follows the wavefront (so it converges when reversed); the fade
+        // always follows elapsed time, so a ring never brightens as it dies
+        const s = 0.25 + (reversed ? 1 - rk : rk) * (Math.max(W, H) * 0.9);
         r.mesh.scale.set(s, s, 1);
         r.mat.opacity = (1 - rk) * 0.85;
       }

@@ -4,7 +4,8 @@ import {
   collaboratorsForFloor, collaboratorsForProject,
 } from './data';
 import type { Floor, Project, ProjectButton, Collaborator } from './types';
-import { PlayerControls } from './controls';
+import { PlayerControls, EYE_HEIGHT } from './controls';
+import { PlayerAvatar } from './avatar';
 import { InteractionManager } from './interaction';
 import { TouchControls } from './touch';
 import { buildFloor, type FloorBuild } from './floor';
@@ -29,6 +30,10 @@ scene.fog = new THREE.Fog(0x07060b, 16, 78);
 
 const BASE_FOV = 72;
 const camera = new THREE.PerspectiveCamera(BASE_FOV, window.innerWidth / window.innerHeight, 0.1, 200);
+
+// Your body, shown only during a portal dive (see avatar.ts). It lives on the
+// scene rather than inside a floor, so it survives the swap mid-dive.
+const avatar = new PlayerAvatar(scene);
 
 const isTouch = window.matchMedia('(pointer: coarse)').matches;
 const controls = new PlayerControls(camera, canvas);
@@ -78,7 +83,22 @@ function mountBuild(build: FloorBuild, spawn = build.spawn) {
   audio.resetSteps(); // teleport shouldn't count as travelled distance
 }
 
-function mountFloor(year: number, spawn?: { x: number; z: number; yaw: number }, rippleKey?: string) {
+// A dive's body sits with its hips near the membrane; at this height the pitched
+// body's head lands on the middle of a gate's mouth. The two insets are measured
+// along the gate's normal: sinking in leaves the head buried in the wall (so the
+// opaque membrane swallows it), and an emergence starts with only head and arms
+// through, the rest still hidden behind the surface.
+const GATE_ENTRY_Y = 1.5;
+const DIVE_SINK = 0.25;
+const EMERGE_INSET = -0.8;
+
+/** Where a dive lands: the pose to end in, and the gate to come out of. */
+interface Arrival {
+  spawn: { x: number; z: number; yaw: number };
+  gate?: PortalGate;
+}
+
+function mountFloor(year: number, spawn?: { x: number; z: number; yaw: number }): FloorBuild {
   const floor = floors.find((f) => f.year === year) ?? floors[0];
   const build = buildFloor(floor, {
     onElevator: openElevator,
@@ -90,12 +110,11 @@ function mountFloor(year: number, spawn?: { x: number; z: number; yaw: number },
   currentFloor = floor;
   returnSpawn = null;
   ui.setPlaceLabel(String(floor.year), `${floor.projects.length} project${floor.projects.length === 1 ? '' : 's'} · ${floors.length} floors`);
-  // the gate you just stepped back out of settles behind you
-  if (rippleKey) build.portals.find((g) => g.key === rippleKey)?.ripple();
+  return build;
 }
 
 /** Drop into a project's own room, remembering the gate we came through. */
-function enterProject(p: Project, gate: PortalGate) {
+function enterProject(p: Project, gate: PortalGate): Arrival {
   const floor = currentFloor ?? floors[0];
   returnSpawn = {
     x: gate.center.x + gate.normal.x * 2.6,
@@ -110,16 +129,24 @@ function enterProject(p: Project, gate: PortalGate) {
   }, collaboratorsForProject(p, collab));
   mountBuild(build);
   ui.setPlaceLabel(p.title, `${floor.year} · a room of the Keep`);
+  return { spawn: build.spawn, gate: build.portals.find((g) => g.key === 'back') };
 }
 
-function leaveRoom() {
+function leaveRoom(): Arrival {
   const back = returnSpawn;
-  mountFloor(currentYear, back ? { x: back.x, z: back.z, yaw: back.yaw } : undefined, back?.key);
+  const spawn = back ? { x: back.x, z: back.z, yaw: back.yaw } : undefined;
+  const build = mountFloor(currentYear, spawn);
+  return {
+    spawn: spawn ?? build.spawn,
+    gate: back ? build.portals.find((g) => g.key === back.key) : undefined,
+  };
 }
 
 /**
- * Mario-64 style: the surface bursts into rings, the camera is sucked through,
- * and the world on the far side is built behind the curtain.
+ * Mario-64 style, and shot like it: the camera drops out of your head and holds
+ * still while you watch your own body leap into the rippling surface. Behind the
+ * curtain the far side is built, and you come back to a camera already trained on
+ * the gate there — watching yourself tumble out — before it settles into your eyes.
  */
 async function dive(gate: PortalGate, project?: Project) {
   if (diving) return;
@@ -127,45 +154,134 @@ async function dive(gate: PortalGate, project?: Project) {
   ui.hideDialog();
   ui.setPrompt(null);
   controls.enabled = false;
-  gate.ripple();
-  audio.portal();
-  await pullThrough(gate);
+
+  await diveIn(gate);
   await ui.fade(true);
-  if (project) enterProject(project, gate);
-  else leaveRoom();
-  camera.fov = BASE_FOV;
-  camera.updateProjectionMatrix();
-  await ui.fade(false);
+
+  const arrival = project ? enterProject(project, gate) : leaveRoom();
+  if (arrival.gate) {
+    stageEmergence(arrival.gate);
+    void ui.fade(false);              // the curtain lifts on a portal already blooming
+    arrival.gate.ripple(true);        // …and settling, rather than about to burst
+    await emerge(arrival.gate, arrival.spawn);
+    avatar.hide();
+  } else {
+    avatar.hide();                    // nothing to climb out of — put the body away first
+    await ui.fade(false);
+  }
+
+  controls.setPose(arrival.spawn.x, arrival.spawn.z, arrival.spawn.yaw);
   controls.enabled = true;
   diving = false;
 }
 
 /**
- * Glide the camera into the membrane over half a second, widening the lens.
- * It stops a hair short of the surface, so the flooding portal — not the wall
- * behind it — is what fills the screen when the curtain comes down.
+ * The leap in. The camera pulls back out of your head to a shoulder view and
+ * tracks the gate; your body pitches head-first into the membrane, which bursts
+ * once you reach it.
  */
-function pullThrough(gate: PortalGate): Promise<void> {
+function diveIn(gate: PortalGate): Promise<void> {
   return new Promise((resolve) => {
-    const DUR = 0.55;
-    const from = camera.position.clone();
-    const fromQ = camera.quaternion.clone();
-    const to = gate.center.clone().addScaledVector(gate.normal, 0.14);
-    const aim = new THREE.Object3D();
-    aim.position.copy(from);
-    aim.lookAt(gate.center);
-    const toQ = aim.quaternion.clone();
+    const DUR = 0.8;
+    const { center: C, normal: N } = gate;
+
+    // the body starts at your feet, wherever the jump has carried them…
+    const from = new THREE.Vector3(camera.position.x, Math.max(0, camera.position.y - EYE_HEIGHT), camera.position.z);
+    // …and ends with its hips at the surface and its head already swallowed
+    const to = C.clone().addScaledVector(N, DIVE_SINK).setY(GATE_ENTRY_Y);
+    avatar.place(from.x, from.y, from.z, Math.atan2(-N.x, -N.z)); // face the wall
+    avatar.setDive(0);
+
+    // The camera stays on this side, backing off to watch. Its end orientation is
+    // computed from where it lands, not from where it starts: at t=0 it sits almost
+    // on top of the look target, and aiming from there would swing it wildly.
+    const camFrom = camera.position.clone();
+    const camFromQ = camera.quaternion.clone();
+    const camTo = camFrom.clone().addScaledVector(N, 2.8).setY(camFrom.y + 0.55);
+    const target = C.clone().addScaledVector(N, 0.35).setY(C.y - 0.35);
+    const camToQ = lookQuat(camTo, target).clone();
+
     let t = 0;
+    let rippled = false;
     cinematic = (dt) => {
       t = Math.min(1, t + dt / DUR);
-      const e = t * t * (3 - 2 * t); // smoothstep
-      camera.position.lerpVectors(from, to, e);
-      camera.quaternion.slerpQuaternions(fromQ, toQ, Math.min(1, e * 1.5));
-      camera.fov = BASE_FOV + 26 * e * e;
-      camera.updateProjectionMatrix();
+      const ec = 1 - (1 - t) ** 3;        // camera: get clear fast, then settle
+      const eb = t * t * (3 - 2 * t);     // body: wind up, then commit
+      camera.position.lerpVectors(camFrom, camTo, ec);
+      camera.quaternion.slerpQuaternions(camFromQ, camToQ, ec);
+      avatar.root.visible = t > 0.1;      // don't show the head we started inside of
+      avatar.root.position.lerpVectors(from, to, eb);
+      avatar.setDive(eb);
+      if (!rippled && t > 0.5) { rippled = true; gate.ripple(); audio.portal(); }
       if (t >= 1) { cinematic = null; resolve(); }
     };
   });
+}
+
+/** Set the far side up before the curtain lifts: camera on the gate, body in its mouth. */
+function stageEmergence(gate: PortalGate) {
+  const { center: C, normal: N } = gate;
+  const tangent = new THREE.Vector3(-N.z, 0, N.x);
+  const eye = C.clone().addScaledVector(N, 4.6).addScaledVector(tangent, 1.4).setY(3.0);
+  camera.position.copy(eye);
+  camera.quaternion.copy(lookQuat(eye, C.clone().setY(C.y - 0.4)));
+  avatar.place(C.x + N.x * EMERGE_INSET, GATE_ENTRY_Y, C.z + N.z * EMERGE_INSET, Math.atan2(N.x, N.z));
+  avatar.setDive(1);
+  avatar.show();
+}
+
+/** Tumble out of the gate, land on the spawn, then hand the camera back to your eyes. */
+function emerge(gate: PortalGate, spawn: { x: number; z: number; yaw: number }): Promise<void> {
+  return new Promise((resolve) => {
+    const OUT = 0.7, SETTLE = 0.55;
+    const { center: C, normal: N } = gate;
+    const from = new THREE.Vector3(C.x + N.x * EMERGE_INSET, GATE_ENTRY_Y, C.z + N.z * EMERGE_INSET);
+    const to = new THREE.Vector3(spawn.x, 0, spawn.z);
+
+    const camFrom = camera.position.clone();
+    const camTo = new THREE.Vector3(spawn.x, EYE_HEIGHT, spawn.z);
+    const camDrift = camFrom.clone().lerp(camTo, 0.14); // a slow push-in while you land
+    const eyesQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, spawn.yaw, 0, 'YXZ'));
+    const aim = new THREE.Vector3();
+
+    let t = 0;
+    let settlePos: THREE.Vector3 | null = null;
+    let settleQ: THREE.Quaternion | null = null;
+    cinematic = (dt) => {
+      t += dt;
+      if (t < OUT) {
+        const e = t / OUT;
+        const eb = e * e * (3 - 2 * e);
+        avatar.root.position.lerpVectors(from, to, eb);
+        avatar.root.position.y = (1 - eb) * from.y + Math.sin(eb * Math.PI) * 0.35; // pop, then drop
+        avatar.setDive(1 - eb);
+        camera.position.lerpVectors(camFrom, camDrift, eb);
+        camera.quaternion.slerp(lookQuat(camera.position, avatar.midpoint(aim)), Math.min(1, dt * 8));
+        return;
+      }
+      if (!settleQ) { settleQ = camera.quaternion.clone(); settlePos = camera.position.clone(); }
+      const e = Math.min(1, (t - OUT) / SETTLE);
+      const es = e * e * (3 - 2 * e);
+      camera.position.lerpVectors(settlePos!, camTo, es);
+      camera.quaternion.slerpQuaternions(settleQ, eyesQ, es);
+      avatar.root.position.copy(to);
+      avatar.setDive(0);
+      if (e >= 1) { cinematic = null; resolve(); }
+    };
+  });
+}
+
+const _m4 = new THREE.Matrix4();
+const _q = new THREE.Quaternion();
+const _up = new THREE.Vector3(0, 1, 0);
+/**
+ * Camera orientation looking from `eye` at `target`. Note this can't use
+ * Object3D.lookAt on a helper object: that points a plain object's +Z at the
+ * target, the exact opposite of a camera's −Z, and would aim us backwards.
+ */
+function lookQuat(eye: THREE.Vector3, target: THREE.Vector3): THREE.Quaternion {
+  _m4.lookAt(eye, target, _up);
+  return _q.setFromRotationMatrix(_m4);
 }
 
 async function travelTo(year: number) {
@@ -225,13 +341,22 @@ function closeOverlay() {
 }
 
 function resumeLock() {
-  controls.enabled = true;
+  enableControls();
   ui.hideStart();
   controls.lock();
 }
 
+/**
+ * Hand movement back to the player — unless a portal dive still owns the camera.
+ * Escaping (or clicking) mid-dive puts the resume overlay up; taking the offer
+ * must not let WASD fight the cinematic. The dive re-enables on its own way out.
+ */
+function enableControls() {
+  if (!diving) controls.enabled = true;
+}
+
 // ---------- input ----------
-ui.onStart = () => { ui.hideStart(); startAudio(); controls.enabled = true; controls.lock(); };
+ui.onStart = () => { ui.hideStart(); startAudio(); enableControls(); controls.lock(); };
 ui.onPickFloor = (year) => travelTo(year);
 ui.onCloseOverlay = () => closeOverlay();
 
@@ -240,7 +365,7 @@ canvas.addEventListener('pointerdown', () => {
   startAudio();
   if (ui.anyOverlayOpen) return;
   if (ui.dialogOpen) { ui.hideDialog(); return; }
-  if (!controls.isLocked) { controls.enabled = true; controls.lock(); return; }
+  if (!controls.isLocked) { enableControls(); controls.lock(); return; }
   if (interaction.focused) interaction.activate();
 });
 

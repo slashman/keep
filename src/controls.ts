@@ -8,7 +8,7 @@ export interface CollisionWorld {
   excluders: { x: number; z: number; r: number }[];
 }
 
-const EYE_HEIGHT = 2.5;
+export const EYE_HEIGHT = 2.5;
 const SPEED = 4.2;
 const SPRINT = 8.4;
 const GRAVITY = 22;      // m/s² pulling the player back down

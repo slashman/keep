@@ -77,8 +77,15 @@ npm run preview   # serve the production build
   - a glowing **rune on the floor** marking the run-up. The mouth starts at chin
     height, so walking into it just bumps the sill: **step onto the rune and jump**
     (or press `E` / tap the gate) and you go through.
-- **Behind the gate is the project's room.** The dive plays out in the world —
-  the surface ripples, the camera is dragged in and the lens widens — and you land
+- **The dive is shot in third person.** The camera drops out of your head, backs
+  off to a shoulder view and holds still while **your own character** — the same
+  blocky build as the NPCs, keeping its drawn smiley since it has no portrait —
+  pitches head-first into the membrane, which bursts as it reaches it and swallows
+  the body. On the far side you come back to a camera already trained on that
+  room's gate, watching yourself tumble out and land, before it settles into your
+  eyes and first person resumes. The arrival ripple runs **backwards**: the portal
+  is blazing as the curtain lifts and its rings converge back to stillness.
+- **Behind the gate is the project's room** — you land
   in a chamber holding the project's artwork **wall-sized**, the full museum
   **placard** (title, subtitle, description, status/activity/client/effort and
   colour-coded tag pills — 🟡 genre · 🔵 technologies · 🟣 collaborators · 🌸 art
@@ -108,6 +115,7 @@ src/
   floor.ts        builds one year's hall: shell, lighting, elevator, gates
   portal.ts       the gate itself: rippling-membrane shader, splash rings, trigger volume
   room.ts         builds the room behind a gate: mural, placard, dais of levers, way home
+  avatar.ts       your own body, shown only for the third-person shots of a dive
   textures.ts     canvas-drawn paintings, placards, banners, button labels
   tags.ts         tag family colours + YouTube id extraction
   ui.ts           all HTML overlays (start, loading, elevator, video, HUD)

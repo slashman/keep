@@ -276,7 +276,16 @@ function buildCradle(person: Person): THREE.Group {
   return g;
 }
 
-function buildNpc(person: Person): THREE.Group {
+/**
+ * The player's own body, for the third-person shots of diving through a gate.
+ * Same build as everyone else in the Keep — and with no `image`, the cube head
+ * keeps its drawn smiley. No name tag: you don't wear one over your own head.
+ */
+export function buildPlayerAvatar(): THREE.Group {
+  return buildNpc({ key: 'slashie', name: '' }, false);
+}
+
+function buildNpc(person: Person, withTag = true): THREE.Group {
   const g = new THREE.Group();
   g.scale.setScalar(person.scale ?? 1); // smaller/larger characters (feet stay on the floor)
   const shirt = colorFromKey(person.key, 55, 50);
@@ -310,13 +319,15 @@ function buildNpc(person: Person): THREE.Group {
   }
   g.userData.arms = arms;
 
-  // cube head — picture on the four sides, skin on top/bottom
+  // Cube head — the picture goes on the front face only, skin all the way round.
+  // The body's forward is local +Z (see the yaw convention in updateNpc), so that
+  // is the one face that gets it: turn away and you see the back of a head.
   const faceMat = new THREE.MeshBasicMaterial({ map: faceTexture(person.key) });
   const skinMat = new THREE.MeshStandardMaterial({ color: '#caa47c', roughness: 0.85 });
   // BoxGeometry material order: +x, -x, +y, -y, +z, -z
   const head = new THREE.Mesh(
     new THREE.BoxGeometry(0.78, 0.78, 0.78),
-    [faceMat, faceMat, skinMat, skinMat, faceMat, faceMat],
+    [skinMat, skinMat, skinMat, skinMat, faceMat, skinMat],
   );
   head.position.set(0, 2.3, 0);
   g.add(head);
@@ -330,12 +341,14 @@ function buildNpc(person: Person): THREE.Group {
   }
 
   // floating name tag (faces the player, since the whole NPC turns to face them)
-  const tag = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.4, 0.35),
-    new THREE.MeshBasicMaterial({ map: nameTagTexture(person.name), transparent: true }),
-  );
-  tag.position.set(0, 3.05, 0);
-  g.add(tag);
+  if (withTag) {
+    const tag = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.4, 0.35),
+      new THREE.MeshBasicMaterial({ map: nameTagTexture(person.name), transparent: true }),
+    );
+    tag.position.set(0, 3.05, 0);
+    g.add(tag);
+  }
 
   return g;
 }
