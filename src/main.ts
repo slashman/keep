@@ -26,7 +26,9 @@ setAnisotropy(renderer.capabilities.getMaxAnisotropy());
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x07060b);
-scene.fog = new THREE.Fog(0x07060b, 16, 78);
+// Near plane pushed back to suit the hall's size: fog that started at 16 units
+// hazed the far wall of a room you are standing in the middle of.
+scene.fog = new THREE.Fog(0x07060b, 26, 92);
 
 const BASE_FOV = 72;
 const camera = new THREE.PerspectiveCamera(BASE_FOV, window.innerWidth / window.innerHeight, 0.1, 200);

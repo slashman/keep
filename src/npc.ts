@@ -5,7 +5,7 @@ import { faceTexture, squareImageTexture, nameTagTexture } from './textures';
 import { DATA_BASE } from './config';
 
 const MAX_NPCS = 16;          // cap so busy years don't overcrowd the map
-const NPC_SPACING = 1.5;      // minimum distance between NPCs
+const NPC_SPACING = 3.2;      // minimum distance between NPCs (the halls are big; let them spread)
 const STARE_DIST = 4.0;       // within this range an NPC stops and faces the player
 const WALK_SPEED = 0.55;      // metres/second while wandering
 const TURN_RATE = 7;          // how quickly an NPC swings to face its target heading
@@ -163,7 +163,7 @@ function samplePosition(
   placed: { x: number; z: number }[],
 ): { x: number; z: number } | null {
   for (let i = 0; i < 40; i++) {
-    const r = rooms[Math.floor(Math.random() * rooms.length)];
+    const r = pickRoom(rooms);
     const x = r.minX + 0.6 + Math.random() * Math.max(0.01, r.maxX - r.minX - 1.2);
     const z = r.minZ + 0.6 + Math.random() * Math.max(0.01, r.maxZ - r.minZ - 1.2);
     if (excluders.some((e) => (x - e.x) ** 2 + (z - e.z) ** 2 < (e.r + 0.8) ** 2)) continue;
@@ -171,6 +171,23 @@ function samplePosition(
     return { x, z };
   }
   return null;
+}
+
+/**
+ * A room to drop someone in, chosen in proportion to floor area. A floor's rooms
+ * differ hugely in size — a main hall holding six big projects against a side hall
+ * holding one — so picking uniformly among them crowds the small ones and empties
+ * the large ones. Weighting by area gives the whole floor one even density.
+ */
+function pickRoom(rooms: Rect[]): Rect {
+  const areas = rooms.map((r) => (r.maxX - r.minX) * (r.maxZ - r.minZ));
+  const total = areas.reduce((a, b) => a + b, 0);
+  let t = Math.random() * total;
+  for (let i = 0; i < rooms.length; i++) {
+    t -= areas[i];
+    if (t <= 0) return rooms[i];
+  }
+  return rooms[rooms.length - 1];
 }
 
 /** A quiet corner of the biggest room for a static prop (e.g. a cradle). */

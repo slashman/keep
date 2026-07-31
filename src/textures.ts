@@ -457,10 +457,16 @@ export function doorSignTexture(text: string): THREE.CanvasTexture {
   ctx.fillStyle = '#e9d9ac';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font = 'bold 74px Georgia, serif';
-  let t = text;
-  while (ctx.measureText(t).width > W - 150 && t.length > 4) t = t.slice(0, -1);
-  ctx.fillText(t, W / 2, H / 2);
+  // Shrink to fit rather than trim to fit: at 74px "Smaller Projects" overruns the
+  // space between the flanking arrows by a few pixels, and cutting characters loses
+  // the plural ("Smaller Project") on the one sign this draws.
+  let size = 74;
+  const fits = () => {
+    ctx.font = `bold ${size}px Georgia, serif`;
+    return ctx.measureText(text).width <= W - 150;
+  };
+  while (!fits() && size > 40) size -= 2;
+  ctx.fillText(text, W / 2, H / 2);
   // flanking arrows
   ctx.fillStyle = '#e0b256';
   ctx.font = 'bold 64px Georgia, serif';

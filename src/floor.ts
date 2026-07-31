@@ -42,25 +42,39 @@ export interface FloorBuild {
 interface Slot { ax: number; az: number; nx: number; nz: number; }
 
 // ---- layout constants ----
-const CEIL = 6.2;
-const GATE_Y = 3.15;           // height of the centre of a project gate
-const GATE_W = 2.8;
-const GATE_H = 2.3;            // mouth bottom sits at chin height — you must jump in
-const CW = 4.5;                // corridor half-width (walls at ±CW)
-const CORRIDOR_FIRST_Z = 8.5;  // z of the first corridor row
-const ROW_SPACING = 5.2;       // spacing between corridor rows
-const BACK_PAD = 3.8;          // gap between last corridor row and the tapestry wall
+// Every room here should read as a hall, not a passage: the two facing display
+// walls stand far enough apart that a crowd of wandering NPCs can never box the
+// player in, the walk between two facing gates is a walk across a room, and the
+// ceiling is high enough to feel vaulted from the middle of the floor. Note the
+// player is a giant by these numbers — EYE_HEIGHT is 2.5 — so a hall has to be
+// half again as wide as a human-scale one to read as roomy.
+// The one thing that must NOT scale with the room is the *bottom* of a gate's
+// mouth: GATE_Y − GATE_H/2 ≈ 2.0 keeps it at chin height, which is what makes a
+// leap the only way in (see portal.ts). The gate grew with the halls here, but it
+// grew upward from that same sill.
+const CEIL = 11.0;
+const GATE_Y = 3.4;            // height of the centre of a project gate
+const GATE_W = 3.4;
+const GATE_H = 2.7;            // mouth bottom sits at chin height — you must jump in
+const CW = 11.5;               // main hall half-width (walls at ±CW)
+const CORRIDOR_FIRST_Z = 12.0; // z of the first main-hall row
+const ROW_SPACING = 7.5;       // spacing between main-hall rows
+const BACK_PAD = 7.0;          // gap between last row and the tapestry wall
 const MARGIN = 1.05;           // player standoff from display walls
-const ALCOVE_HALF = 1.3;       // half-width of the run-up notch (the mouth's own half-width is 1.4)
+const ALCOVE_HALF = 1.6;       // half-width of the run-up notch (the mouth's own half-width is 1.7)
 const ALCOVE_NEAR = 0.45;      // how close to the wall that notch lets you stand
-const DOOR = { z0: 2.0, z1: 4.4, height: 3.6 };
-const ELEV = { x: 0, z: 3.2, r: 0.9 }; // the orb's spot (small excluder so you can walk right up)
+// Lamps hang well below the vault: from the ceiling of a hall this high a point
+// light reaches the floor too weakly to pool, and the dark span above the lamps
+// is much of what sells the height.
+const LAMP_Y = CEIL - 3.6;
+const DOOR = { z0: 1.6, z1: 6.8, height: 5.4 }; // the archway into a side hall, beside the orb
+const ELEV = { x: 0, z: 4.2, r: 0.9 }; // the orb's spot (small excluder so you can walk right up)
 const ORB_Y = 2.0;
 // side halls
-const HALL_DEPTH = 8;          // z-extent of a side hall
-const HALL_FIRST = 3.0;        // x-distance of the first hall row from the corridor wall
-const HALL_SPACING = 5.0;
-const HALL_END_PAD = 2.6;      // clears the back-most gate (its arch runs out to ≈1.7)
+const HALL_DEPTH = 16;         // z-extent of a side hall — the gap between its two display walls
+const HALL_FIRST = 6.5;        // x-distance of the first hall row from the main hall's wall
+const HALL_SPACING = 8.0;
+const HALL_END_PAD = 5.0;      // clears the back-most gate and leaves it room to be looked at
 
 /**
  * "Big" projects get the main corridor. A project is big if its logged dev effort
@@ -91,13 +105,16 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
   const leftPs = rest.slice(0, half);
   const rightPs = rest.slice(half);
 
-  // corridor length is fixed by its (≤6) contents — always short and reachable
+  // the hall's length is fixed by its contents — long enough to hold them, never longer
   const cRows = Math.max(1, Math.ceil(corridorPs.length / 2));
   const CL = CORRIDOR_FIRST_Z + (cRows - 1) * ROW_SPACING + BACK_PAD; // z of the back (tapestry) wall
 
   // ---- shared materials ----
   const floorMat = new THREE.MeshStandardMaterial({ map: stoneTexture('#2c2740', '#211d31'), roughness: 0.95, metalness: 0.02 });
-  const ceilMat = new THREE.MeshStandardMaterial({ color: '#0d0b16', roughness: 1 });
+  // Stone, but barely lighter than the void it replaces: at CEIL the vault is far
+  // enough above the lamps to stay in shadow, and a near-black albedo is what keeps
+  // the lamp pools from blowing out up there and flattening the height back out.
+  const ceilMat = new THREE.MeshStandardMaterial({ map: stoneTexture('#1a1626', '#0d0b16'), roughness: 1 });
   const wallMat = new THREE.MeshStandardMaterial({ map: stoneTexture('#38314f', '#252036'), roughness: 0.9 });
 
   const addFloorCeil = (r: Rect) => {
@@ -124,12 +141,14 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
     addWall(x, z0, x, DOOR.z0, CEIL);
     addWall(x, DOOR.z1, x, z1, CEIL);
     addWall(x, DOOR.z0, x, DOOR.z1, CEIL - DOOR.height, DOOR.height); // lintel above the door
-    // "Smaller Projects" sign on the lintel, facing into the corridor
+    // "Smaller Projects" sign, hung just above the arch rather than centred in the
+    // lintel — the lintel of a door this tall reaches most of the way to the vault,
+    // and a sign floating in the middle of it reads as unmoored from the doorway.
     const sign = new THREE.Mesh(
-      new THREE.PlaneGeometry(2.4, 0.69),
+      new THREE.PlaneGeometry(4.5, 1.29),
       new THREE.MeshBasicMaterial({ map: doorSignTexture('Smaller Projects'), transparent: true }),
     );
-    sign.position.set(x - Math.sign(x) * 0.11, (DOOR.height + CEIL) / 2, (DOOR.z0 + DOOR.z1) / 2);
+    sign.position.set(x - Math.sign(x) * 0.11, DOOR.height + 1.1, (DOOR.z0 + DOOR.z1) / 2);
     sign.rotation.y = Math.atan2(-Math.sign(x), 0);
     group.add(sign);
   };
@@ -154,13 +173,19 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
   const key = new THREE.DirectionalLight(0xfff1d6, 0.35);
   key.position.set(3, 10, 2);
   group.add(key);
+  // Paired lamps per row rather than one down the middle: with the display walls
+  // 2·CW apart a single central light leaves both of them dim, and a double row of
+  // lamps is much of what makes the space read as a lit hall instead of a tunnel.
+  // They sit out near the walls (0.6·CW) so each one washes the gates it belongs to.
   for (let r = 0; r < cRows; r++) {
-    const lamp = new THREE.PointLight(0xffcf8a, 22, 15, 2);
-    lamp.position.set(0, CEIL - 0.6, CORRIDOR_FIRST_Z + r * ROW_SPACING);
-    group.add(lamp);
+    for (const s of [-1, 1]) {
+      const lamp = new THREE.PointLight(0xffcf8a, 60, 30, 2);
+      lamp.position.set(s * CW * 0.6, LAMP_Y, CORRIDOR_FIRST_Z + r * ROW_SPACING);
+      group.add(lamp);
+    }
   }
-  const elevGlow = new THREE.PointLight(0xffe6a8, 16, 9, 2);
-  elevGlow.position.set(ELEV.x, 3.6, ELEV.z);
+  const elevGlow = new THREE.PointLight(0xffe6a8, 26, 16, 2);
+  elevGlow.position.set(ELEV.x, 4.8, ELEV.z);
   group.add(elevGlow);
 
   // ---------- magic orb + corridor displays + tapestry ----------
@@ -192,7 +217,7 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
     interactables,
     portals,
     world,
-    spawn: { x: 0, z: 5.6, yaw: Math.PI }, // step in beside the orb, tapestry dead ahead
+    spawn: { x: 0, z: 7.4, yaw: Math.PI }, // step in beside the orb, tapestry dead ahead
     update: (t, playerPos) => {
       for (const u of updaters) u(t, playerPos);
       for (const g of portals) g.update(t);
@@ -256,10 +281,16 @@ function buildHall(
     perpx: 0, perpz: 1, half: HALL_DEPTH / 2, spacing: HALL_SPACING,
   });
 
-  // warm lamp
-  const lamp = new THREE.PointLight(0xffcf8a, 22, 16, 2);
-  lamp.position.set(sign * (CW + HL / 2), CEIL - 0.6, HALL_DEPTH / 2);
-  group.add(lamp);
+  // A warm lamp over every row, so a long hall doesn't fade out at its far end.
+  // One per row, not a pair like the main hall: a side hall's two display walls are
+  // only HALL_DEPTH apart, so a lamp on the centre line reaches both — and gate art,
+  // plaques and banners are all unlit materials, so these lamps are for the stone,
+  // the people walking under them and the sense of scale, not for legibility.
+  for (let r = 0; r < rows; r++) {
+    const lamp = new THREE.PointLight(0xffcf8a, 58, 30, 2);
+    lamp.position.set(sign * (CW + HALL_FIRST + r * HALL_SPACING), LAMP_Y, HALL_DEPTH / 2);
+    group.add(lamp);
+  }
 
   // Walkable region: no margin on the inner (door) side so the player can reach the
   // doorway, margin on the far display wall. Plus a small bridge rect through the door.
@@ -341,35 +372,53 @@ function buildOrb(group: THREE.Group, interactables: Interactable[], handlers: F
 function buildYearWall(group: THREE.Group, floor: Floor, backZ: number) {
   const wz = backZ - 0.35; // clear of the back wall's front face (at backZ − 0.1) to avoid z-fighting
 
+  // Both panels are sized off the hall rather than hardcoded: on a wall 2·CW wide
+  // and CEIL high, art scaled for the old narrow corridor reads as postage stamps.
+  // Their proportions must stay put though — the tapestry canvas is 1.6:1 and the
+  // chronicle 3.5:1 (see textures.ts), and any other plane aspect stretches the art
+  // — so each takes its width from the wall and lets the other dimension follow.
+  // Stacked bottom-up: chronicle just above the floor trim, then the tapestry filling
+  // the band up to the hanging rod, which stays clear of the ceiling.
+  const chronW = Math.min(CW, 12);
+  const chronH = chronW / 3.5;
+  const chronY = 0.45 + chronH / 2;
+  const tapBottom = chronY + chronH / 2 + 0.6;
+  const tapH = Math.min(CEIL - 0.55 - tapBottom, (CW * 0.85) / 1.6);
+  const tapW = tapH * 1.6;
+  const tapY = tapBottom + tapH / 2;
+
   const tapestry = new THREE.Mesh(
-    new THREE.PlaneGeometry(6.1, 3.8),
+    new THREE.PlaneGeometry(tapW, tapH),
     new THREE.MeshBasicMaterial({ map: yearTapestryTexture(floor) }),
   );
-  tapestry.position.set(0, 4.2, wz);
+  tapestry.position.set(0, tapY, wz);
   tapestry.rotation.y = Math.PI;
   group.add(tapestry);
 
   const rodMat = new THREE.MeshStandardMaterial({ color: '#4a3d18', metalness: 0.7, roughness: 0.3 });
-  const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 6.5, 10), rodMat);
+  const rodY = tapY + tapH / 2 + 0.28;
+  const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, tapW + 0.5, 10), rodMat);
   rod.rotation.z = Math.PI / 2;
-  rod.position.set(0, 6.12, wz - 0.03);
+  rod.position.set(0, rodY, wz - 0.03);
   group.add(rod);
   for (const ex of [-1, 1]) {
     const cap = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 12), rodMat);
-    cap.position.set(ex * 3.25, 6.12, wz - 0.03);
+    cap.position.set(ex * (tapW + 0.5) / 2, rodY, wz - 0.03);
     group.add(cap);
   }
 
   const chron = new THREE.Mesh(
-    new THREE.PlaneGeometry(7.0, 2.0),
+    new THREE.PlaneGeometry(chronW, chronH),
     new THREE.MeshBasicMaterial({ map: yearInfoTexture(floor) }),
   );
-  chron.position.set(0, 1.15, wz);
+  chron.position.set(0, chronY, wz);
   chron.rotation.y = Math.PI;
   group.add(chron);
 
-  const glow = new THREE.PointLight(0xffe6b0, 26, 20, 2);
-  glow.position.set(0, 4.3, backZ - 2.2);
+  // Stood off the wall far enough to graze the whole tapestry rather than blow out
+  // its middle — this is the one light the player walks toward down the hall.
+  const glow = new THREE.PointLight(0xffe6b0, 58, 34, 2);
+  glow.position.set(0, tapY - 0.8, backZ - 4.6);
   group.add(glow);
 }
 
@@ -431,25 +480,28 @@ function buildDisplayAt(ctx: RunCtx, p: Project, slot: Slot) {
     minZ: Math.min(cz(n, -h), cz(f, h)), maxZ: Math.max(cz(n, -h), cz(f, h)),
   });
 
-  // genre banner + rod, hung in front of the arch
+  // Genre banner + rod. It hangs in the bare wall *above* the arch rather than over
+  // it: on a CEIL-high wall that band is empty anyway, and clearing the arch means
+  // the banner no longer has to thread the 0.07 of depth between it and the keystone.
   const banner = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.85, 1.9),
+    new THREE.PlaneGeometry(1.3, 2.9),
     new THREE.MeshBasicMaterial({ map: bannerTexture(primaryGenre, genreColor(primaryGenre)), transparent: true }),
   );
-  place(banner, 0.3, 0, 5.15);  // clear of the arch's top rail, which juts out 0.23
+  place(banner, 0.3, 0, 6.73);   // hangs 5.28…8.18: clear of the arch's top at 5.14
   group.add(banner);
   const rodMat = new THREE.MeshStandardMaterial({ color: '#4a3d18', metalness: 0.7, roughness: 0.3 });
-  const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.05, 8), rodMat);
+  const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.5, 8), rodMat);
   rod.rotation.z = Math.PI / 2;
-  place(rod, 0.3, 0, 6.08);
+  place(rod, 0.3, 0, 8.2);
   group.add(rod);
 
   // Name and dev days, on the lintel below the mouth. That's all a gate says —
   // the full placard lives inside the project's room.
   // 0.13 clears the wall's inner face (the wall is a 0.2-thick box centred on the
-  // slot, so anything at out < 0.1 is buried inside it); 1.28 clears the low rail.
+  // slot, so anything at out < 0.1 is buried inside it); 1.28 clears the low rail,
+  // whose underside is at 1.79 — the plaque's top edge lands at 1.787.
   const plaque = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.4, 0.825),
+    new THREE.PlaneGeometry(2.95, 1.014),
     new THREE.MeshBasicMaterial({ map: gatePlaqueTexture(p), transparent: true }),
   );
   place(plaque, 0.13, 0, 1.28);
