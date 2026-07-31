@@ -121,7 +121,13 @@ function enterProject(p: Project, gate: PortalGate): Arrival {
   returnSpawn = {
     x: gate.center.x + gate.normal.x * 2.6,
     z: gate.center.z + gate.normal.z * 2.6,
-    yaw: Math.atan2(gate.normal.x, gate.normal.z), // face the gate you emerged from
+    // Face out of the gate, into the hall — the camera's forward is (−sin yaw,
+    // −cos yaw), so pointing it along the gate's outward normal takes the negated
+    // normal. The avatar's own yaw convention is the opposite one (0 looks down
+    // +Z, see avatar.place), which is why stageEmergence spells this the other way
+    // round for the body; both must come out facing the same direction, or the
+    // handoff from the third-person shot spins the world 180° for no reason.
+    yaw: Math.atan2(-gate.normal.x, -gate.normal.z),
     key: gate.key,
   };
   const build = buildProjectRoom(p, floor, {
@@ -235,7 +241,7 @@ function stageEmergence(gate: PortalGate) {
 /** Tumble out of the gate, land on the spawn, then hand the camera back to your eyes. */
 function emerge(gate: PortalGate, spawn: { x: number; z: number; yaw: number }): Promise<void> {
   return new Promise((resolve) => {
-    const OUT = 0.7, SETTLE = 0.55;
+    const OUT = 0.7, SETTLE = 0.85;
     const { center: C, normal: N } = gate;
     const from = new THREE.Vector3(C.x + N.x * EMERGE_INSET, GATE_ENTRY_Y, C.z + N.z * EMERGE_INSET);
     const to = new THREE.Vector3(spawn.x, 0, spawn.z);
@@ -247,8 +253,9 @@ function emerge(gate: PortalGate, spawn: { x: number; z: number; yaw: number }):
     const aim = new THREE.Vector3();
 
     let t = 0;
-    let settlePos: THREE.Vector3 | null = null;
     let settleQ: THREE.Quaternion | null = null;
+    /** Polar frame for the settle, around the spot you land on. */
+    let orbit: { r: number; a0: number; da: number; y: number } | null = null;
     cinematic = (dt) => {
       t += dt;
       if (t < OUT) {
@@ -261,10 +268,29 @@ function emerge(gate: PortalGate, spawn: { x: number; z: number; yaw: number }):
         camera.quaternion.slerp(lookQuat(camera.position, avatar.midpoint(aim)), Math.min(1, dt * 8));
         return;
       }
-      if (!settleQ) { settleQ = camera.quaternion.clone(); settlePos = camera.position.clone(); }
+      // The camera has been watching your face from out in front of the gate, and it
+      // has to end up inside your head looking the way you are looking — most of a
+      // half-turn away. So it *orbits* into place rather than sliding: it swings
+      // around your shoulder while it turns, on a radius that shrinks to nothing.
+      // A straight lerp would pass through your own body mid-spin.
+      if (!settleQ) {
+        settleQ = camera.quaternion.clone();
+        const rx = camera.position.x - camTo.x, rz = camera.position.z - camTo.z;
+        const a0 = Math.atan2(rx, rz);
+        let da = Math.atan2(-N.x, -N.z) - a0; // end behind the eyes, gate-ward
+        while (da > Math.PI) da -= Math.PI * 2;
+        while (da < -Math.PI) da += Math.PI * 2;
+        orbit = { r: Math.hypot(rx, rz), a0, da, y: camera.position.y };
+      }
       const e = Math.min(1, (t - OUT) / SETTLE);
       const es = e * e * (3 - 2 * e);
-      camera.position.lerpVectors(settlePos!, camTo, es);
+      const a = orbit!.a0 + orbit!.da * es;
+      const r = orbit!.r * (1 - es);
+      camera.position.set(
+        camTo.x + Math.sin(a) * r,
+        orbit!.y + (EYE_HEIGHT - orbit!.y) * es,
+        camTo.z + Math.cos(a) * r,
+      );
       camera.quaternion.slerpQuaternions(settleQ, eyesQ, es);
       avatar.root.position.copy(to);
       avatar.setDive(0);
