@@ -19,8 +19,10 @@ Deploy = upload the contents of `dist/` into `public_html/keep/` on slashie.net 
 
 A first-person three.js "castle" of the projects on slashie.net. Each **year is a floor**;
 each **project is a portal gate** on a wall that you jump into to reach that project's own
-room. Vanilla TypeScript + three.js + Vite — no framework, no state library, no asset files
-(every texture is drawn on a `<canvas>`, all sound is synthesized in `audio.ts`).
+room. Vanilla TypeScript + three.js + Vite — no framework, no state library, and almost no
+asset files (every texture is drawn on a `<canvas>`, all sound is synthesized in `audio.ts`).
+The exception is the optional 3D centrepiece a project room can hold: `src/assets/*.glb`,
+lazy-loaded by `roomModel.ts`.
 
 ## Data and base paths (the fragile part)
 
@@ -94,6 +96,18 @@ name tags, fallback art). Real project images load asynchronously via `attachPro
 swap in when ready — for a gate through `setGateMap()`, since the membrane carries its art in a
 shader uniform rather than `material.map`. `disposeObject()` (`floor.ts`) knows about that and
 disposes textures held in uniforms; keep new materials disposable through it.
+
+**A project room can hold a 3D centrepiece**, and that is the one piece of content this repo
+owns rather than fetches. `roomModel.ts` maps a project to an optional `.glb` — keyed by
+**title**, because projects.json entries have no id yet; give them one and `modelFor()` is the
+only thing that changes — and `room.ts` stands it on the dais in place of the floating shard.
+Both halves are on-demand: the `GLTFLoader` through a dynamic `import()` so it stays out of the
+startup chunk, the model through a `?url` import that is only a string until something loads it
+(the Miku file alone is 5 MB — ten times the JS bundle). Two traps worth knowing: a room can be
+disposed while its model is still in flight, so a late arrival is dropped and disposed; and not
+every glTF "animation" is one — that file ships four **zero-duration poses** among its clips,
+and playing one looks exactly like a mixer that never ticks, so only clips with a duration are
+eligible.
 
 **UI is imperative DOM.** `ui.ts` builds every overlay in its constructor and exposes
 `show*`/`hide*` methods plus `onStart`/`onPickFloor`/`onCloseOverlay` callbacks that `main.ts`

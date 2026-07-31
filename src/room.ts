@@ -5,6 +5,7 @@ import { buttonStyle, genreColor } from './tags';
 import { placeNpcs, type NpcUpdater } from './npc';
 import { buildPortalGate, type PortalGate } from './portal';
 import { disposeObject, stoneTexture, type FloorBuild, type Interactable } from './floor';
+import { modelFor, loadRoomModel, type LoadedModel } from './roomModel';
 import {
   placardTexture, titlePlaqueTexture, bannerTexture, buttonLabelTexture,
   fallbackPaintingTexture, attachProjectArt, yearTapestryTexture,
@@ -161,7 +162,24 @@ export function buildProjectRoom(
   group.add(yearPlaque);
 
   // ---------- the dais and its ring of levers ----------
-  const daisUpdate = buildDais(group, p, accent, handlers, interactables);
+  // A project with a 3D centrepiece stands it where the shard would float, so the
+  // shard steps aside — the two occupy the same air above the dais.
+  const spec = modelFor(p);
+  const daisUpdate = buildDais(group, p, accent, handlers, interactables, !spec);
+
+  // The model arrives whenever it arrives (megabytes, fetched on demand). If the
+  // player has already left by then there is nothing to add it to, so drop it.
+  let model: LoadedModel | null = null;
+  let gone = false;
+  if (spec) {
+    void loadRoomModel(spec).then((m) => {
+      if (!m) return;
+      if (gone) { m.dispose(); return; }
+      m.root.position.set(0, DAIS.h, DAIS.z);
+      group.add(m.root);
+      model = m;
+    });
+  }
 
   // ---------- the way home ----------
   const backGate = buildPortalGate(group, {
@@ -211,10 +229,15 @@ export function buildProjectRoom(
       for (const u of updaters) u(t, playerPos);
       for (const g of portals) g.update(t);
       daisUpdate(t);
+      model?.update(t);
       motes(t);
       daisLight.intensity = 17 + Math.sin(t * 1.7) * 4;
     },
-    dispose: () => disposeObject(group),
+    dispose: () => {
+      gone = true;                 // …so a model still in flight is dropped on arrival
+      model?.dispose();
+      disposeObject(group);
+    },
   };
 }
 
@@ -233,7 +256,7 @@ function yearLine(p: Project, floor: Floor): string {
  */
 function buildDais(
   group: THREE.Group, p: Project, accent: THREE.Color,
-  handlers: RoomHandlers, interactables: Interactable[],
+  handlers: RoomHandlers, interactables: Interactable[], withShard = true,
 ): (t: number) => void {
   const stone = new THREE.MeshStandardMaterial({ map: stoneTexture('#4a3f66', '#2b2440'), roughness: 0.8 });
   const base = new THREE.Mesh(new THREE.CylinderGeometry(DAIS.r, DAIS.r + 0.15, DAIS.h, 40), stone);
@@ -260,6 +283,7 @@ function buildDais(
     }),
   );
   shard.position.set(0, 3.1, DAIS.z);
+  shard.visible = withShard;
   group.add(shard);
   const halo = new THREE.Mesh(
     new THREE.SphereGeometry(1.0, 24, 24),
