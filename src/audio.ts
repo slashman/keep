@@ -2,10 +2,29 @@
 // effect is still synthesized — footsteps, the orb's teleport, the portal dive —
 // so there is nothing to download for them. The one exception is the music:
 //   • the museum score (mx_museum.ogg), looped under everything once the game runs,
-//     with the old synthesized drone kept as a fallback (see startAmbient);
+//     with the old synthesized drone kept as a fallback (see startAmbient). Each
+//     track carries its credit (see `Track`) and announces itself through
+//     `onTrackStart` when it really starts playing;
 //   • stone footsteps, triggered by distance travelled while walking.
 
 import museumUrl from './assets/audio/mx_museum.ogg?url';
+
+/** A music file plus the credit shown when it starts playing. */
+export interface Track {
+  url: string;
+  title: string;
+  artist: string;
+}
+
+/**
+ * The score. Keep the credit next to the file: anything that plays music goes
+ * through a `Track`, so a new track can never reach the speakers uncredited.
+ */
+const MUSEUM_TRACK: Track = {
+  url: museumUrl,
+  title: 'Museum of The Roguelike',
+  artist: 'QuietGecko',
+};
 
 const STRIDE = 2.15; // world units between footfalls (cadence scales with speed)
 /**
@@ -27,6 +46,12 @@ export class AudioEngine {
   private ambientStarted = false;
   private muted = false;
   private stepDist = 0; // accumulated distance since the last footfall
+
+  /**
+   * Fired when a track actually begins playing — not when it is requested, since
+   * the file may still fail to fetch or decode. Wired by main to the HUD toast.
+   */
+  onTrackStart?: (track: Track) => void;
 
   /** Create/resume the context. Safe to call from any user-gesture handler. */
   resume() {
@@ -77,12 +102,12 @@ export class AudioEngine {
    * hypothetical: Ogg Vorbis is not decodable in every browser (Safari only gained
    * it recently), and a silent Keep is worse than a humming one.
    */
-  private async startMusic() {
+  private async startMusic(track: Track = MUSEUM_TRACK) {
     const ctx = this.ctx!;
     const gain = this.ambientGain!;
     let buffer: AudioBuffer;
     try {
-      const res = await fetch(museumUrl);
+      const res = await fetch(track.url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       buffer = await ctx.decodeAudioData(await res.arrayBuffer());
     } catch (err) {
@@ -100,6 +125,8 @@ export class AudioEngine {
     gain.gain.cancelScheduledValues(now);
     gain.gain.setValueAtTime(0, now);
     gain.gain.linearRampToValueAtTime(MUSIC_GAIN, now + MUSIC_FADE);
+
+    this.onTrackStart?.(track);
   }
 
   /** The original all-synth bed: a breathing stone drone plus an airy draft. */

@@ -43,6 +43,9 @@ controls.touch = isTouch;
 const interaction = new InteractionManager(camera);
 const ui = new UI();
 const audio = new AudioEngine();
+// Credit whatever starts playing. The score is fetched lazily, so this lands a
+// moment after "Enter the Keep" rather than on the click itself.
+audio.onTrackStart = (track) => ui.flash(`♪ Now playing: “${track.title}” by ${track.artist}`, 15000);
 if (isTouch) document.body.classList.add('touch');
 
 /** Wake the audio context and its ambient bed — call from user-gesture paths. */
