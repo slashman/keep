@@ -1,9 +1,23 @@
-// Procedural sound for the Keep — no asset files, all synthesized with the
-// Web Audio API so it stays same-origin and zero-download. Two voices:
-//   • a low, breathing dungeon drone (ambient), started once the game runs;
+// Sound for the Keep, all through the Web Audio API and all same-origin. Every
+// effect is still synthesized — footsteps, the orb's teleport, the portal dive —
+// so there is nothing to download for them. The one exception is the music:
+//   • the museum score (mx_museum.ogg), looped under everything once the game runs,
+//     with the old synthesized drone kept as a fallback (see startAmbient);
 //   • stone footsteps, triggered by distance travelled while walking.
 
+import museumUrl from './assets/audio/mx_museum.ogg?url';
+
 const STRIDE = 2.15; // world units between footfalls (cadence scales with speed)
+/**
+ * Playback gain for the score. The file is mastered hot — it peaks a hair over
+ * 0 dBFS and sits at 0.176 RMS — so this lands it near 0.03 RMS: a bed, not a
+ * feature. It has to leave room for the footsteps, whose useful energy lands in the
+ * same 400–2000 Hz window the music fills; at 0.28 the two were at parity through
+ * a laptop speaker during musical swells, and the steps disappeared.
+ * This and the step `peak` below are the two knobs for that balance.
+ */
+const MUSIC_GAIN = 0.18;
+const MUSIC_FADE = 1.5; // seconds to ease in, so it doesn't slam in on the click
 
 export class AudioEngine {
   private ctx: AudioContext | null = null;
@@ -39,17 +53,63 @@ export class AudioEngine {
 
   get isMuted() { return this.muted; }
 
-  /** Kick off the looping ambient bed (idempotent). */
+  /**
+   * Kick off the looping ambient bed (idempotent): the museum score, or the
+   * synthesized drone if that can't be played.
+   */
   startAmbient() {
     if (this.ambientStarted || !this.ctx || !this.master) return;
-    this.ambientStarted = true;
+    this.ambientStarted = true; // claimed before the await, so a second call can't race in
     const ctx = this.ctx;
-    const now = ctx.currentTime;
 
     this.ambientGain = ctx.createGain();
+    this.ambientGain.gain.setValueAtTime(0, ctx.currentTime);
+    this.ambientGain.connect(this.master);
+    void this.startMusic();
+  }
+
+  /**
+   * Fetch, decode and loop the score. Nothing is downloaded until this runs — it is
+   * called from a user gesture (the context can't start before one anyway), so the
+   * 874 KB never touches the boot path.
+   *
+   * On any failure it falls back to the drone this used to be. That is not
+   * hypothetical: Ogg Vorbis is not decodable in every browser (Safari only gained
+   * it recently), and a silent Keep is worse than a humming one.
+   */
+  private async startMusic() {
+    const ctx = this.ctx!;
+    const gain = this.ambientGain!;
+    let buffer: AudioBuffer;
+    try {
+      const res = await fetch(museumUrl);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      buffer = await ctx.decodeAudioData(await res.arrayBuffer());
+    } catch (err) {
+      console.warn('[audio] could not play the score; using the synth drone instead:', err);
+      this.startSynthBed();
+      return;
+    }
+    const music = ctx.createBufferSource();
+    music.buffer = buffer;
+    music.loop = true; // the file runs edge to edge with no silence to trim
+    music.connect(gain);
+    music.start();
+
+    const now = ctx.currentTime;
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(MUSIC_GAIN, now + MUSIC_FADE);
+  }
+
+  /** The original all-synth bed: a breathing stone drone plus an airy draft. */
+  private startSynthBed() {
+    if (!this.ctx || !this.ambientGain) return;
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+    this.ambientGain.gain.cancelScheduledValues(now);
     this.ambientGain.gain.setValueAtTime(0, now);
     this.ambientGain.gain.linearRampToValueAtTime(0.08, now + 3); // fade in
-    this.ambientGain.connect(this.master);
 
     // A softly detuned low drone through a dark low-pass — the stone hum.
     const drone = ctx.createGain();
@@ -104,7 +164,7 @@ export class AudioEngine {
 
   /**
    * Feed the frame's travelled distance; emits a footstep each stride.
-   * `sprinting` brightens/hardens the step a touch.
+   * `sprinting` lifts the step slightly, though both are deliberately muffled.
    */
   footsteps(distance: number, sprinting: boolean) {
     if (!this.ctx || distance <= 0) return;
@@ -259,36 +319,57 @@ export class AudioEngine {
     // Slight per-step variation so it doesn't sound like a metronome.
     const vary = 0.85 + (Math.sin(now * 977.3) * 0.5 + 0.5) * 0.3;
 
-    // Body of the step: a short filtered noise burst (foot scuffing stone).
+    // Body of the step: a soft filtered puff — a foot settling onto stone rather
+    // than a heel cracking against it. What makes it soft is the *envelope* and the
+    // missing top: the attack is slow enough (~18 ms) that there is no
+    // instantaneous edge — the old 4 ms ramp was itself audible as a click,
+    // whatever the filtering — and the lowpass keeps the 2–5 kHz region the ear
+    // hears as "crack" out of it. A bandpass alone won't: its skirts are gentle
+    // enough to pass plenty, which is what made this brittle to begin with.
+    //
+    // What softness must NOT mean is moving everything below ~200 Hz. An earlier
+    // pass put the band at 460 Hz under a 1100 Hz cap and left this step 37 dB
+    // down at 900 Hz–2 kHz, so the sub-bass thud was the whole sound — inaudible on
+    // laptop speakers, which roll off under ~150 Hz. The band lives up here now, in
+    // the range a small driver can actually reproduce, and stays under the cap.
     const src = ctx.createBufferSource();
     src.buffer = this.noiseBuffer;
     const bp = ctx.createBiquadFilter();
     bp.type = 'bandpass';
-    bp.frequency.value = (sprinting ? 1500 : 1150) * vary;
-    bp.Q.value = 0.9;
+    bp.frequency.value = (sprinting ? 950 : 800) * vary;
+    bp.Q.value = 0.7;
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = sprinting ? 2100 : 1800;
+    lp.Q.value = 0.4;
     const g = ctx.createGain();
-    const peak = (sprinting ? 0.5 : 0.38) * vary;
+    const peak = (sprinting ? 0.54 : 0.46) * vary;
     g.gain.setValueAtTime(0, now);
-    g.gain.linearRampToValueAtTime(peak, now + 0.004);
-    g.gain.exponentialRampToValueAtTime(0.0008, now + 0.13);
+    g.gain.linearRampToValueAtTime(peak, now + (sprinting ? 0.012 : 0.018));
+    g.gain.exponentialRampToValueAtTime(0.0008, now + 0.22); // longer, softer tail
     src.connect(bp);
-    bp.connect(g);
+    bp.connect(lp);
+    lp.connect(g);
     g.connect(this.master);
     src.start(now);
-    src.stop(now + 0.16);
+    src.stop(now + 0.26);
 
-    // Low thud so the footfall has weight.
+    // Low thud, for weight only — it is deliberately the quieter half, since it is
+    // also the half most speakers cannot deliver. It fades in over a few
+    // milliseconds: a sine that starts at full gain clicks as plainly as a bright
+    // filter does.
     const thud = ctx.createOscillator();
     thud.type = 'sine';
-    thud.frequency.setValueAtTime(150 * vary, now);
-    thud.frequency.exponentialRampToValueAtTime(70, now + 0.09);
+    thud.frequency.setValueAtTime(132 * vary, now);
+    thud.frequency.exponentialRampToValueAtTime(62, now + 0.1);
     const tg = ctx.createGain();
-    tg.gain.setValueAtTime(0.28 * vary, now);
-    tg.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+    tg.gain.setValueAtTime(0, now);
+    tg.gain.linearRampToValueAtTime(0.22 * vary, now + 0.008);
+    tg.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
     thud.connect(tg);
     tg.connect(this.master);
     thud.start(now);
-    thud.stop(now + 0.12);
+    thud.stop(now + 0.15);
   }
 
   /** A couple of seconds of stereo white noise, reused for wind and steps. */

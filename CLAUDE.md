@@ -20,9 +20,11 @@ Deploy = upload the contents of `dist/` into `public_html/keep/` on slashie.net 
 A first-person three.js "castle" of the projects on slashie.net. Each **year is a floor**;
 each **project is a portal gate** on a wall that you jump into to reach that project's own
 room. Vanilla TypeScript + three.js + Vite — no framework, no state library, and almost no
-asset files (every texture is drawn on a `<canvas>`, all sound is synthesized in `audio.ts`).
-The exception is the optional 3D centrepiece a project room can hold: `src/assets/*.glb`,
-lazy-loaded by `roomModel.ts`.
+asset files: every texture is drawn on a `<canvas>`, and every sound *effect* is synthesized in
+`audio.ts`. Two exceptions live in `src/assets`, both fetched on demand rather than at boot —
+the looping museum score (`audio/mx_museum.ogg`; the old synthesized drone is still there as a
+fallback, since Ogg Vorbis does not decode everywhere) and the optional 3D centrepiece a project
+room can hold (`*.glb`, loaded by `roomModel.ts`).
 
 ## Data and base paths (the fragile part)
 
