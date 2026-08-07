@@ -12,12 +12,17 @@ export class InteractionManager {
   private meshToItem = new Map<THREE.Object3D, Interactable>();
   focused: Interactable | null = null;
   onFocusChange?: (item: Interactable | null) => void;
+  /**
+   * How far the camera currently sits behind the eye. The ray is cast from the
+   * camera so the crosshair means what it looks like it means; without this, a
+   * chase camera would eat the player's reach from in front of them.
+   */
+  standOff = 0;
   private highlighted?: THREE.Mesh;
   private prevEmissive = 0;
 
   constructor(camera: THREE.PerspectiveCamera) {
     this.camera = camera;
-    this.raycaster.far = RANGE;
   }
 
   setItems(items: Interactable[]) {
@@ -31,6 +36,7 @@ export class InteractionManager {
 
   update() {
     this.raycaster.setFromCamera(this.center, this.camera);
+    this.raycaster.far = RANGE + this.standOff;
     const meshes = this.items.map((i) => i.mesh);
     const hits = this.raycaster.intersectObjects(meshes, false);
     const item = hits.length ? this.meshToItem.get(hits[0].object) ?? null : null;

@@ -475,6 +475,157 @@ export function doorSignTexture(text: string): THREE.CanvasTexture {
   return tuneTexture(new THREE.CanvasTexture(canvas));
 }
 
+/**
+ * The face of an activity gate. A project gate shows the project's art; an
+ * activity has none, so it gets a sigil instead — deliberately in the signage
+ * palette rather than the genre palette, so it never reads as one more project.
+ */
+export function trialSigilTexture(title: string, tagline: string): THREE.CanvasTexture {
+  const W = 640, H = 512;
+  const { canvas, ctx } = makeCanvas(W, H);
+  const g = ctx.createRadialGradient(W / 2, H / 2, 30, W / 2, H / 2, W * 0.72);
+  g.addColorStop(0, '#4a3d1c');
+  g.addColorStop(1, '#17130c');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+
+  // a laurel of concentric rings, broken at the sides so it reads as a wreath
+  ctx.strokeStyle = 'rgba(224,178,86,0.32)';
+  ctx.lineWidth = 3;
+  for (let i = 1; i <= 4; i++) {
+    ctx.beginPath();
+    ctx.arc(W / 2, 196, 48 + i * 26, 0.35, Math.PI - 0.35);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(W / 2, 196, 48 + i * 26, Math.PI + 0.35, Math.PI * 2 - 0.35);
+    ctx.stroke();
+  }
+  ctx.fillStyle = '#e0b256';
+  ctx.font = '112px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('⌛', W / 2, 196);
+
+  ctx.fillStyle = '#f4efe2';
+  ctx.font = 'bold 52px Georgia, serif';
+  let size = 52;
+  while (ctx.measureText(title).width > W - 90 && size > 28) {
+    size -= 2;
+    ctx.font = `bold ${size}px Georgia, serif`;
+  }
+  ctx.fillText(title, W / 2, 372);
+
+  ctx.strokeStyle = 'rgba(224,178,86,0.4)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(W / 2 - 130, 412);
+  ctx.lineTo(W / 2 + 130, 412);
+  ctx.stroke();
+
+  ctx.fillStyle = '#c9b481';
+  ctx.font = 'italic 32px Georgia, serif';
+  ctx.fillText(tagline, W / 2, 448);
+  return tuneTexture(new THREE.CanvasTexture(canvas));
+}
+
+/** A standing rules board: a heading and a short list, carved in the signage palette. */
+export function ruleBoardTexture(heading: string, lines: string[]): THREE.CanvasTexture {
+  const W = 640, H = 460;
+  const { canvas, ctx } = makeCanvas(W, H);
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#3a3222');
+  g.addColorStop(1, '#241e14');
+  ctx.fillStyle = g;
+  roundRect(ctx, 8, 8, W - 16, H - 16, 18);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(224,178,86,0.7)';
+  ctx.lineWidth = 5;
+  roundRect(ctx, 8, 8, W - 16, H - 16, 18);
+  ctx.stroke();
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#e9d9ac';
+  ctx.font = 'bold 48px Georgia, serif';
+  let size = 48;
+  while (ctx.measureText(heading).width > W - 80 && size > 26) {
+    size -= 2;
+    ctx.font = `bold ${size}px Georgia, serif`;
+  }
+  ctx.fillText(heading, W / 2, 76);
+
+  ctx.strokeStyle = 'rgba(224,178,86,0.35)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(70, 116);
+  ctx.lineTo(W - 70, 116);
+  ctx.stroke();
+
+  ctx.textAlign = 'left';
+  ctx.font = '32px Georgia, serif';
+  let y = 168;
+  for (const l of lines) {
+    ctx.fillStyle = '#e0b256';
+    ctx.fillText('❯', 62, y);
+    ctx.fillStyle = '#d8cfb4';
+    y = wrapText(ctx, l, 104, y, W - 170, 40, 2) + 18;
+  }
+  return tuneTexture(new THREE.CanvasTexture(canvas));
+}
+
+/** The Decree itself: an unrolled sheet of vellum, seen on its pedestal. */
+export function decreeTexture(name: string): THREE.CanvasTexture {
+  const W = 512, H = 640;
+  const { canvas, ctx } = makeCanvas(W, H);
+  const g = ctx.createLinearGradient(0, 0, W, H);
+  g.addColorStop(0, '#f2e6c4');
+  g.addColorStop(1, '#d8c79c');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+  // foxing, so the vellum isn't a flat wash
+  for (let i = 0; i < 90; i++) {
+    const x = (Math.sin(i * 12.9898) * 43758.5) % 1;
+    const y = (Math.sin(i * 78.233) * 12345.6) % 1;
+    ctx.fillStyle = `rgba(150,120,70,${0.03 + Math.abs(x) * 0.05})`;
+    ctx.beginPath();
+    ctx.arc(Math.abs(x) * W, Math.abs(y) * H, 6 + Math.abs(y) * 22, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.strokeStyle = 'rgba(90,60,20,0.45)';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(28, 28, W - 56, H - 56);
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#3a2a10';
+  ctx.font = 'bold 40px Georgia, serif';
+  wrapText(ctx, name, W / 2, 118, W - 110, 50, 3);
+
+  // ruled body text, illegible on purpose — it is a prop, not a document
+  ctx.strokeStyle = 'rgba(70,50,20,0.35)';
+  ctx.lineWidth = 5;
+  for (let i = 0; i < 9; i++) {
+    const w = (W - 140) * (0.55 + Math.abs(Math.sin(i * 2.3)) * 0.45);
+    ctx.beginPath();
+    ctx.moveTo(W / 2 - w / 2, 268 + i * 30);
+    ctx.lineTo(W / 2 + w / 2, 268 + i * 30);
+    ctx.stroke();
+  }
+
+  // wax seal
+  ctx.fillStyle = '#8e2230';
+  ctx.beginPath();
+  ctx.arc(W / 2, H - 108, 56, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(40,8,12,0.6)';
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(255,220,220,0.85)';
+  ctx.font = 'bold 44px Georgia, serif';
+  ctx.fillText('S', W / 2, H - 104);
+  return tuneTexture(new THREE.CanvasTexture(canvas));
+}
+
 /** Big directional sign texture for the elevator core. */
 export function signTexture(lines: string[]): THREE.CanvasTexture {
   const W = 512, H = 512;

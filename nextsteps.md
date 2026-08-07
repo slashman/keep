@@ -60,7 +60,27 @@ Adding a project — or a whole new year — to `projects.json` "just works":
 - **Problem:** if the site renumbers categories, projects silently stop being classified
   as "big" (corridor placement) and dev-days derivation breaks — with no visible error.
 
-### 4. Hand-authored content
+### 4. Per-year activities and artifacts (hand-authored, and deliberately so)
+- **Where:** `src/activities.ts` (one `ActivityDef` per year), `src/artifacts.ts` (one
+  `Artifact` per year), and a builder module per activity (`src/obby.ts` for 2026).
+- **Why it isn't data-driven:** an activity is a *level*, not a record. `projects.json`
+  could never describe one, and each is meant to be different from the last. This is the
+  same escape hatch as `roomModel.ts`'s title-keyed model table.
+- **Adding next year's:** one entry in `ACTIVITIES`, one in `ARTIFACTS`, one builder that
+  returns a `FloorBuild`. Nothing else changes — a year with no entry simply grows no gate
+  on its front wall, which is what every year but 2026 does today.
+- **The one thing that will drift:** `Artifact.id` is the localStorage key. Renaming one
+  silently orphans everyone's collection. `Inventory` drops ids it no longer recognises on
+  load, so a rename reads as "the player never had it" rather than as a crash.
+
+### 5. The first persistent state
+- **Where:** `src/inventory.ts`, key `slashie.keep.inventory.v1`.
+- Everything else in the app is fetched live or rebuilt from scratch on mount; this is the
+  only thing that survives a reload. Every storage call is wrapped, and a browser that
+  refuses storage degrades to an inventory that lasts the session. **Nothing here may
+  throw during boot** — bump the key suffix rather than changing the stored shape.
+
+### 6. Hand-authored content
 - **Custom NPCs** (Gaby, Adri) and their local images live in `src/data.ts`
   (`CUSTOM_PEOPLE`) + `public/people/`. Intentionally manual; low risk. These are the
   only client-side content left — not a snapshot (they aren't on the server). Gaby uses

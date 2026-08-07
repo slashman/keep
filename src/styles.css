@@ -433,6 +433,95 @@ body.locked #help, body.ready #help { opacity: 0.9; }
   border-radius: 4px; background: var(--gold); color: #1a1206; font-weight: 700; margin-right: 5px;
 }
 
+/* ---------- Satchel HUD (top-right) ---------- */
+/* Top-left is the floor label, top-centre the toast, bottom-left the help, and the
+   whole bottom edge belongs to the touch controls — top-right is the corner left. */
+#inventory {
+  position: fixed;
+  right: 18px;
+  top: 16px;
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-right: 3px solid var(--gold);
+  border-radius: 8px;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+body.locked #inventory, body.ready #inventory { opacity: 1; }
+/* An empty satchel is no satchel — the row only appears once you have won something. */
+#inventory.empty { opacity: 0 !important; }
+#inventory .inv-slot { font-size: 22px; line-height: 1; filter: drop-shadow(0 0 6px rgba(224, 178, 86, 0.5)); }
+
+/* ---------- "Artifact obtained" card ---------- */
+/* Same non-blocking recipe as #dialog: no pointer lock is taken, so the celebration
+   plays while you are still standing where you won it. */
+#artifactGet {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translate(-50%, 16px) scale(0.97);
+  width: min(560px, 88vw);
+  padding: 18px 24px 16px;
+  background: var(--panel);
+  border: 1px solid var(--gold);
+  border-radius: 14px;
+  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(224, 178, 86, 0.18);
+  z-index: 12;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s, transform 0.28s;
+}
+#artifactGet.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
+#artifactGet .ag-kicker {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--gold); opacity: 0.9; margin-bottom: 8px;
+}
+#artifactGet .ag-row { display: flex; align-items: center; gap: 14px; }
+#artifactGet .ag-glyph { font-size: 40px; line-height: 1; filter: drop-shadow(0 0 10px rgba(224, 178, 86, 0.6)); }
+#artifactGet .ag-name { font-size: 21px; font-weight: 800; color: var(--ink); letter-spacing: 0.3px; }
+#artifactGet .ag-blurb { margin-top: 10px; font-size: 14px; line-height: 1.55; opacity: 0.82; }
+#artifactGet .ag-foot { margin-top: 12px; font-size: 12px; opacity: 0.7; text-align: right; }
+#artifactGet .ag-foot .key {
+  display: inline-block; min-width: 16px; padding: 0 6px; text-align: center;
+  border-radius: 4px; background: var(--gold); color: #1a1206; font-weight: 700; margin-right: 5px;
+}
+
+/* ---------- Satchel panel ---------- */
+#inventoryPanel .panel {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  padding: 22px;
+  max-width: 720px;
+  width: 92vw;
+  max-height: 85vh;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#inventoryPanel h2 { margin: 0 0 4px; color: var(--gold); letter-spacing: 1px; }
+.inv-grid { display: grid; gap: 10px; }
+.inv-empty { font-size: 14px; line-height: 1.6; opacity: 0.7; padding: 8px 2px; }
+.inv-card {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: center;
+  gap: 4px 16px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 3px solid var(--gold);
+  border-radius: 10px;
+}
+.inv-card .inv-glyph { grid-row: span 2; font-size: 34px; line-height: 1; text-align: center; }
+.inv-card .inv-name { font-size: 17px; font-weight: 700; color: var(--gold); }
+.inv-card .inv-year { font-size: 13px; opacity: 0.6; }
+.inv-card .inv-blurb { grid-column: 2 / span 2; font-size: 13px; line-height: 1.5; opacity: 0.8; }
+
 /* fade curtain for elevator travel */
 #curtain {
   position: fixed;

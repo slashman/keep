@@ -10,6 +10,9 @@ import { InteractionManager } from './interaction';
 import { TouchControls } from './touch';
 import { buildFloor, type FloorBuild } from './floor';
 import { buildProjectRoom } from './room';
+import { activityForYear, type ActivityDef } from './activities';
+import { Inventory } from './inventory';
+import { artifactById } from './artifacts';
 import type { PortalGate } from './portal';
 import { setAnisotropy } from './textures';
 import { youtubeId } from './tags';
@@ -27,14 +30,18 @@ setAnisotropy(renderer.capabilities.getMaxAnisotropy());
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x07060b);
 // Near plane pushed back to suit the hall's size: fog that started at 16 units
-// hazed the far wall of a room you are standing in the middle of.
-scene.fog = new THREE.Fog(0x07060b, 26, 92);
+// hazed the far wall of a room you are standing in the middle of. A build may
+// override this while it is mounted (see `FloorBuild.fog`).
+const DEFAULT_FOG = { near: 26, far: 92 };
+const fog = new THREE.Fog(0x07060b, DEFAULT_FOG.near, DEFAULT_FOG.far);
+scene.fog = fog;
 
 const BASE_FOV = 72;
 const camera = new THREE.PerspectiveCamera(BASE_FOV, window.innerWidth / window.innerHeight, 0.1, 200);
 
-// Your body, shown only during a portal dive (see avatar.ts). It lives on the
-// scene rather than inside a floor, so it survives the swap mid-dive.
+// Your body: shown during a portal dive, and for the whole of a third-person
+// place (see avatar.ts). It lives on the scene rather than inside a floor, so it
+// survives the swap mid-dive.
 const avatar = new PlayerAvatar(scene);
 
 const isTouch = window.matchMedia('(pointer: coarse)').matches;
@@ -71,8 +78,15 @@ let current: FloorBuild | null = null;
 let returnSpawn: { x: number; z: number; yaw: number; key: string } | null = null;
 /** Set while a dive is playing out, so nothing else grabs the camera. */
 let diving = false;
+/** Set while a failed activity is being wound back to its start pose. */
+let resetting = false;
 /** Per-frame camera animation owned by the dive (controls are off while it runs). */
 let cinematic: ((dt: number) => void) | null = null;
+/** Camera behind the body rather than inside the head — see `applyChase`. */
+let thirdPerson = false;
+let chasing = false;
+/** The one piece of state that outlives a reload. */
+const inventory = new Inventory();
 
 // ---------- mounting places ----------
 function mountBuild(build: FloorBuild, spawn = build.spawn) {
@@ -86,6 +100,82 @@ function mountBuild(build: FloorBuild, spawn = build.spawn) {
   controls.setPose(spawn.x, spawn.z, spawn.yaw);
   interaction.setItems(build.interactables);
   audio.resetSteps(); // teleport shouldn't count as travelled distance
+  thirdPerson = build.thirdPerson ?? false;
+  const f = build.fog ?? DEFAULT_FOG;
+  fog.near = f.near;
+  fog.far = f.far;
+}
+
+// ---------- chase camera ----------
+// `controls` moves the camera as if it were the player's eye, and every piece of
+// game logic — portals, the fall judgement, footsteps — reads that position. So
+// the chase is applied *after* all of it and undone right after the render: the
+// camera is the eye for the whole frame except the moment it is drawn from.
+//
+// The offset is in camera space, not world space. A world-up offset looks fine
+// staring straight ahead and then swings the body up over the crosshair the
+// moment you pitch down — which is exactly when you are lining up a jump.
+//
+// The three numbers are a single compromise, and none of them moves alone:
+//  - UP is low, because a camera even a metre above the eye puts your own feet
+//    below the bottom edge when you look level, and platforming is mostly a
+//    question of where your feet are. At 0.45 the frame reaches 0.7 m *below*
+//    the floor you are standing on.
+//  - SIDE exists only because UP is low. Looking over your own head from just
+//    above it parks the head on the crosshair; stepping 1.4 m to the shoulder
+//    moves it a quarter of the way to the screen edge and leaves the middle
+//    clear to aim with.
+//  - BACK is then whatever frames the body at that height.
+const CHASE_BACK = 5.0;
+const CHASE_UP = 0.45;
+const CHASE_SIDE = 1.4;
+const CHASE_MIN = 1.2;   // never jam the camera right inside your own head
+const playerEye = new THREE.Vector3();
+const chaseFwd = new THREE.Vector3();
+const chaseUp = new THREE.Vector3();
+const chaseRight = new THREE.Vector3();
+const chaseOff = new THREE.Vector3();
+const chaseRay = new THREE.Raycaster();
+
+/** Push the camera out behind the body. Returns true if it moved (so it can be put back). */
+function applyChase(): boolean {
+  if (diving) return false;   // the dive owns the camera and the body both
+  if (!thirdPerson) {
+    if (chasing) { avatar.hide(); chasing = false; interaction.standOff = 0; }
+    return false;
+  }
+  // Read the heading off the quaternion rather than the world matrix, which is
+  // still last frame's until something renders.
+  chaseFwd.set(0, 0, -1).applyQuaternion(camera.quaternion);
+  avatar.place(playerEye.x, playerEye.y - EYE_HEIGHT, playerEye.z, Math.atan2(chaseFwd.x, chaseFwd.z));
+  avatar.stride(controls.movedDistance, controls.airborne);
+  avatar.show();
+  chasing = true;
+
+  chaseUp.set(0, 1, 0).applyQuaternion(camera.quaternion);
+  chaseRight.set(1, 0, 0).applyQuaternion(camera.quaternion);
+  chaseOff.copy(chaseFwd).multiplyScalar(-CHASE_BACK)
+    .addScaledVector(chaseUp, CHASE_UP)
+    .addScaledVector(chaseRight, CHASE_SIDE);
+  let dist = chaseOff.length();
+  chaseOff.divideScalar(dist);
+  // Walls are cosmetic to the *player*, but not to the camera: without this it
+  // sails straight out of the shaft and you watch the trial from outside it.
+  if (current) {
+    chaseRay.set(playerEye, chaseOff);
+    chaseRay.far = dist;
+    const hit = chaseRay.intersectObject(current.group, true)[0];
+    if (hit) dist = Math.max(CHASE_MIN, hit.distance - 0.35);
+  }
+  camera.position.copy(playerEye).addScaledVector(chaseOff, dist);
+  camera.updateMatrixWorld(true);
+  interaction.standOff = dist;
+  return true;
+}
+
+function setThirdPerson(on: boolean) {
+  thirdPerson = on;
+  ui.flash(on ? 'Third person' : 'First person');
 }
 
 // A dive's body sits with its hips near the membrane; at this height the pitched
@@ -93,9 +183,14 @@ function mountBuild(build: FloorBuild, spawn = build.spawn) {
 // along the gate's normal: sinking in leaves the head buried in the wall (so the
 // opaque membrane swallows it), and an emergence starts with only head and arms
 // through, the rest still hidden behind the surface.
-const GATE_ENTRY_Y = 1.5;
+// Measured *down from the mouth's centre*, not from the world floor: a gate can
+// now open onto a platform twelve metres up (the Trial's summit exit), and an
+// absolute entry height sent the body swooping down to the pit to dive into it.
+const GATE_ENTRY_DROP = 1.8;
 const DIVE_SINK = 0.25;
 const EMERGE_INSET = -0.8;
+/** Where a diving body's feet belong when its hips reach a gate's surface. */
+const entryY = (gate: PortalGate) => gate.center.y - GATE_ENTRY_DROP;
 
 /** Where a dive lands: the pose to end in, and the gate to come out of. */
 interface Arrival {
@@ -108,7 +203,9 @@ function mountFloor(year: number, spawn?: { x: number; z: number; yaw: number })
   const build = buildFloor(floor, {
     onElevator: openElevator,
     onNpc: handleNpc,
-    onEnterProject: (p, gate) => void dive(gate, p),
+    onEnterProject: (p, gate) => void dive(gate, () => enterProject(p, gate)),
+    activity: activityForYear(floor.year),
+    onEnterActivity: (def, gate) => void dive(gate, () => enterActivity(def, gate)),
   }, collaboratorsForFloor(floor, collab));
   mountBuild(build, spawn);
   currentYear = floor.year;
@@ -143,7 +240,28 @@ function enterProject(p: Project, gate: PortalGate): Arrival {
   return { spawn: build.spawn, gate: build.portals.find((g) => g.key === 'back') };
 }
 
-function leaveRoom(): Arrival {
+/** Drop into the year's activity, which is a place like any other. */
+function enterActivity(def: ActivityDef, gate: PortalGate): Arrival {
+  const floor = currentFloor ?? floors[0];
+  returnSpawn = {
+    x: gate.center.x + gate.normal.x * 2.6,
+    z: gate.center.z + gate.normal.z * 2.6,
+    yaw: Math.atan2(-gate.normal.x, -gate.normal.z),
+    key: gate.key,
+  };
+  const build = def.build(floor, def, {
+    onLeave: (back) => void dive(back),
+    onReset: () => void restartActivity(),
+    onClaim: (id) => claimArtifact(id),
+    hasArtifact: (id) => inventory.has(id),
+  });
+  mountBuild(build);
+  ui.setPlaceLabel(def.title, def.subtitle);
+  return { spawn: build.spawn, gate: build.portals.find((g) => g.key === 'back') };
+}
+
+/** Leave whatever place we're in, back to the floor and the gate we came through. */
+function leavePlace(): Arrival {
   const back = returnSpawn;
   const spawn = back ? { x: back.x, z: back.z, yaw: back.yaw } : undefined;
   const build = mountFloor(currentYear, spawn);
@@ -154,13 +272,45 @@ function leaveRoom(): Arrival {
 }
 
 /**
+ * Failed the activity: wind the player back to its start. Short and hard rather
+ * than a long fall — the run is the point, not the plummet. `resetting` keeps
+ * anything else off the camera the way `diving` does.
+ */
+async function restartActivity() {
+  if (resetting || diving || !current) return;
+  resetting = true;
+  controls.enabled = false;
+  ui.setPrompt(null);
+  audio.stumble();
+  await ui.fade(true, 220);
+  const { x, z, yaw } = current.spawn;
+  controls.setPose(x, z, yaw);
+  ui.flash('You fall. The trial begins again.');
+  await ui.fade(false, 260);
+  resetting = false;
+  enableControls();
+}
+
+/** Take an artifact. Silent if it was already held, so the fanfare fires once. */
+function claimArtifact(id: string) {
+  const artifact = artifactById(id);
+  if (!artifact || !inventory.grant(id)) return;
+  audio.artifact();
+  ui.setInventory(inventory.list());
+  ui.showArtifactGet(artifact);
+  // The prize's own entry rewrote its label as it was taken; re-seating the list
+  // clears the stale prompt so it re-reads on the next frame.
+  if (current) interaction.setItems(current.interactables);
+}
+
+/**
  * Mario-64 style, and shot like it: the camera drops out of your head and holds
  * still while you watch your own body leap into the rippling surface. Behind the
  * curtain the far side is built, and you come back to a camera already trained on
  * the gate there — watching yourself tumble out — before it settles into your eyes.
  */
-async function dive(gate: PortalGate, project?: Project) {
-  if (diving) return;
+async function dive(gate: PortalGate, arrive?: () => Arrival) {
+  if (diving || resetting) return;
   diving = true;
   ui.hideDialog();
   ui.setPrompt(null);
@@ -169,7 +319,7 @@ async function dive(gate: PortalGate, project?: Project) {
   await diveIn(gate);
   await ui.fade(true);
 
-  const arrival = project ? enterProject(project, gate) : leaveRoom();
+  const arrival = arrive ? arrive() : leavePlace();
   if (arrival.gate) {
     stageEmergence(arrival.gate);
     void ui.fade(false);              // the curtain lifts on a portal already blooming
@@ -199,7 +349,7 @@ function diveIn(gate: PortalGate): Promise<void> {
     // the body starts at your feet, wherever the jump has carried them…
     const from = new THREE.Vector3(camera.position.x, Math.max(0, camera.position.y - EYE_HEIGHT), camera.position.z);
     // …and ends with its hips at the surface and its head already swallowed
-    const to = C.clone().addScaledVector(N, DIVE_SINK).setY(GATE_ENTRY_Y);
+    const to = C.clone().addScaledVector(N, DIVE_SINK).setY(entryY(gate));
     avatar.place(from.x, from.y, from.z, Math.atan2(-N.x, -N.z)); // face the wall
     avatar.setDive(0);
 
@@ -233,10 +383,10 @@ function diveIn(gate: PortalGate): Promise<void> {
 function stageEmergence(gate: PortalGate) {
   const { center: C, normal: N } = gate;
   const tangent = new THREE.Vector3(-N.z, 0, N.x);
-  const eye = C.clone().addScaledVector(N, 4.6).addScaledVector(tangent, 1.4).setY(3.0);
+  const eye = C.clone().addScaledVector(N, 4.6).addScaledVector(tangent, 1.4).setY(C.y - 0.25);
   camera.position.copy(eye);
   camera.quaternion.copy(lookQuat(eye, C.clone().setY(C.y - 0.4)));
-  avatar.place(C.x + N.x * EMERGE_INSET, GATE_ENTRY_Y, C.z + N.z * EMERGE_INSET, Math.atan2(N.x, N.z));
+  avatar.place(C.x + N.x * EMERGE_INSET, entryY(gate), C.z + N.z * EMERGE_INSET, Math.atan2(N.x, N.z));
   avatar.setDive(1);
   avatar.show();
 }
@@ -246,11 +396,13 @@ function emerge(gate: PortalGate, spawn: { x: number; z: number; yaw: number }):
   return new Promise((resolve) => {
     const OUT = 0.7, SETTLE = 0.85;
     const { center: C, normal: N } = gate;
-    const from = new THREE.Vector3(C.x + N.x * EMERGE_INSET, GATE_ENTRY_Y, C.z + N.z * EMERGE_INSET);
-    const to = new THREE.Vector3(spawn.x, 0, spawn.z);
+    // You land on whatever stands at the spawn, which is not always the floor.
+    const groundY = controls.groundAt(spawn.x, spawn.z);
+    const from = new THREE.Vector3(C.x + N.x * EMERGE_INSET, entryY(gate), C.z + N.z * EMERGE_INSET);
+    const to = new THREE.Vector3(spawn.x, groundY, spawn.z);
 
     const camFrom = camera.position.clone();
-    const camTo = new THREE.Vector3(spawn.x, EYE_HEIGHT, spawn.z);
+    const camTo = new THREE.Vector3(spawn.x, groundY + EYE_HEIGHT, spawn.z);
     const camDrift = camFrom.clone().lerp(camTo, 0.14); // a slow push-in while you land
     const eyesQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, spawn.yaw, 0, 'YXZ'));
     const aim = new THREE.Vector3();
@@ -265,7 +417,7 @@ function emerge(gate: PortalGate, spawn: { x: number; z: number; yaw: number }):
         const e = t / OUT;
         const eb = e * e * (3 - 2 * e);
         avatar.root.position.lerpVectors(from, to, eb);
-        avatar.root.position.y = (1 - eb) * from.y + Math.sin(eb * Math.PI) * 0.35; // pop, then drop
+        avatar.root.position.y = (1 - eb) * from.y + eb * to.y + Math.sin(eb * Math.PI) * 0.35; // pop, then drop
         avatar.setDive(1 - eb);
         camera.position.lerpVectors(camFrom, camDrift, eb);
         camera.quaternion.slerp(lookQuat(camera.position, avatar.midpoint(aim)), Math.min(1, dt * 8));
@@ -291,7 +443,7 @@ function emerge(gate: PortalGate, spawn: { x: number; z: number; yaw: number }):
       const r = orbit!.r * (1 - es);
       camera.position.set(
         camTo.x + Math.sin(a) * r,
-        orbit!.y + (EYE_HEIGHT - orbit!.y) * es,
+        orbit!.y + (camTo.y - orbit!.y) * es,
         camTo.z + Math.cos(a) * r,
       );
       camera.quaternion.slerpQuaternions(settleQ, eyesQ, es);
@@ -364,10 +516,18 @@ function openWeb(url: string, title: string) {
   controls.unlock();
 }
 
+function openInventory() {
+  ui.hideDialog();
+  ui.showInventory(inventory.list());
+  controls.enabled = false;
+  controls.unlock();
+}
+
 function closeOverlay() {
   ui.hideElevator();
   ui.hideVideo();
   ui.hideWeb();
+  ui.hideInventory();
   resumeLock();
 }
 
@@ -383,7 +543,7 @@ function resumeLock() {
  * must not let WASD fight the cinematic. The dive re-enables on its own way out.
  */
 function enableControls() {
-  if (!diving) controls.enabled = true;
+  if (!diving && !resetting) controls.enabled = true;
 }
 
 // ---------- input ----------
@@ -406,11 +566,17 @@ window.addEventListener('keydown', (e) => {
     interact();
   } else if (e.code === 'KeyM') {
     ui.flash(audio.toggleMute() ? '🔇 Muted' : '🔊 Sound on');
+  } else if (e.code === 'KeyV') {
+    setThirdPerson(!thirdPerson);
+  } else if (e.code === 'KeyI') {
+    if (ui.inventoryOpen) { ui.hideInventory(); resumeLock(); }
+    else if (!ui.anyOverlayOpen) openInventory();
   } else if (e.code === 'Escape') {
     if (ui.dialogOpen) ui.hideDialog();
     else if (ui.videoOpen) { ui.hideVideo(); resumeLock(); }
     else if (ui.webOpen) { ui.hideWeb(); resumeLock(); }
     else if (ui.elevatorOpen) { ui.hideElevator(); resumeLock(); }
+    else if (ui.inventoryOpen) { ui.hideInventory(); resumeLock(); }
   }
 });
 
@@ -446,9 +612,9 @@ window.addEventListener('resize', () => {
 
 /** Mid-jump inside a gate's mouth? Then you're going through it. */
 function checkPortals() {
-  if (diving || !controls.enabled || !controls.airborne) return;
+  if (diving || resetting || !controls.enabled || !controls.airborne) return;
   for (const gate of current?.portals ?? []) {
-    if (gate.contains(camera.position)) { void gate.enter(); return; }
+    if (gate.contains(playerEye)) { void gate.enter(); return; }
   }
 }
 
@@ -461,15 +627,18 @@ function animate() {
   elapsed += dt;
   controls.update(dt);
   cinematic?.(dt);
-  current?.update?.(elapsed, camera.position);
-  if (controls.isLocked && !ui.anyOverlayOpen && !diving) {
+  playerEye.copy(camera.position);    // where the player actually is, all frame
+  const chased = applyChase();
+  current?.update?.(elapsed, playerEye);
+  if (controls.isLocked && !ui.anyOverlayOpen && !diving && !resetting) {
     audio.footsteps(controls.movedDistance, controls.sprinting);
-    interaction.update();
+    interaction.update();             // rays from the camera, so the crosshair is honest
     checkPortals();
   } else if (ui.anyOverlayOpen) {
     ui.setPrompt(null);
   }
   renderer.render(scene, camera);
+  if (chased) camera.position.copy(playerEye);   // hand it straight back to the controller
 }
 
 // ---------- boot ----------
@@ -489,6 +658,7 @@ async function boot() {
   if (!floors.length) { ui.setProgress(1, 'No dated projects found.'); return; }
   ui.setProgress(0.8, `Raising ${floors.length} floors…`);
   document.body.classList.add('ready');
+  ui.setInventory(inventory.list()); // whatever survived from a previous visit
   mountFloor(floors[0].year); // newest year on top
   ui.setProgress(1, 'The Keep stands ready.');
   await new Promise((r) => setTimeout(r, 350));

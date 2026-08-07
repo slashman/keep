@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { Floor, Project, Person } from './types';
+import type { ActivityDef } from './activities';
 import type { CollisionWorld, Rect } from './controls';
 import { genreColor } from './tags';
 import { placeNpcs, type NpcUpdater } from './npc';
@@ -7,13 +8,13 @@ import { buildPortalGate, setGateMap, type PortalGate } from './portal';
 import {
   gatePlaqueTexture, bannerTexture,
   fallbackPaintingTexture, doorSignTexture, attachProjectArt,
-  yearTapestryTexture, yearInfoTexture,
+  yearTapestryTexture, yearInfoTexture, trialSigilTexture,
 } from './textures';
 
 export interface Interactable {
   mesh: THREE.Object3D;
   label: string;
-  kind: 'button' | 'elevator' | 'npc' | 'portal';
+  kind: 'button' | 'elevator' | 'npc' | 'portal' | 'prize';
   action: () => void;
 }
 
@@ -22,6 +23,13 @@ export interface FloorHandlers {
   onNpc: (person: Person, projects: string[]) => void;
   /** Dive through a project's gate into its own room. */
   onEnterProject: (p: Project, gate: PortalGate) => void;
+  /**
+   * The year's activity, if it has one. Looked up by `main.ts` and passed in
+   * rather than imported here: the activity registry has to reach the builders,
+   * and a builder reaches back to this module for `FloorBuild`.
+   */
+  activity?: ActivityDef | null;
+  onEnterActivity?: (def: ActivityDef, gate: PortalGate) => void;
 }
 
 /** One mounted place — a year's floor, or a single project's room. */
@@ -31,6 +39,18 @@ export interface FloorBuild {
   portals: PortalGate[];
   world: CollisionWorld;
   spawn: { x: number; z: number; yaw: number };
+  /**
+   * Put the camera behind the player's body on arrival. A gallery is best seen
+   * through your own eyes; a jumping puzzle is unplayable that way, because you
+   * cannot see the ledge you are standing on. The player can still toggle.
+   */
+  thirdPerson?: boolean;
+  /**
+   * Override the scene fog while mounted. The default is tuned for halls you look
+   * along; a tower you look *up* is deeper than it is wide, and the same fog puts
+   * the thing you are climbing toward behind a haze.
+   */
+  fog?: { near: number; far: number };
   update?: (t: number, playerPos: THREE.Vector3) => void; // orb animation + NPCs staring
   dispose: () => void;
 }
@@ -197,6 +217,11 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
 
   regions.push({ minX: -CW + MARGIN, maxX: CW - MARGIN, minZ: 0.6, maxZ: CL - 0.6 });
   const excluders = [{ x: ELEV.x, z: ELEV.z, r: ELEV.r }];
+
+  // ---------- the year's activity ----------
+  if (handlers.activity && handlers.onEnterActivity) {
+    buildActivityGate(group, interactables, portals, regions, handlers.activity, handlers.onEnterActivity);
+  }
 
   // ---------- side halls (only if they hold projects) ----------
   if (leftPs.length) buildHall(ctx, leftPs, -1, addFloorCeil, addWall);
@@ -506,6 +531,51 @@ function buildDisplayAt(ctx: RunCtx, p: Project, slot: Slot) {
   );
   place(plaque, 0.13, 0, 1.28);
   group.add(plaque);
+}
+
+/**
+ * The year's activity gate, set into the front wall behind the orb — the one
+ * blank wall on a floor, and the one you turn round to see when you arrive.
+ *
+ * It is built exactly like a project gate, down to the sill height (the bottom
+ * of the mouth at GATE_Y − GATE_H/2 ≈ 2.0 is what makes a leap the only way in),
+ * and differs only in dress: a sigil instead of project art, a gold tint instead
+ * of a genre colour, and a real point light, which is affordable because there is
+ * never more than one of these on a floor.
+ */
+function buildActivityGate(
+  group: THREE.Group, inter: Interactable[], portals: PortalGate[], regions: Rect[],
+  def: ActivityDef, onEnter: (def: ActivityDef, gate: PortalGate) => void,
+) {
+  const gate = buildPortalGate(group, {
+    key: def.key,
+    x: 0, y: GATE_Y, z: 0.1,
+    yaw: 0,
+    width: GATE_W,
+    height: GATE_H,
+    map: trialSigilTexture(def.title, def.tagline),
+    tint: new THREE.Color(def.tint),
+    rune: true,
+    light: true,
+    enter: () => onEnter(def, gate),
+  });
+  portals.push(gate);
+  inter.push({
+    mesh: gate.surface,
+    label: `Leap into “${def.title}”`,
+    kind: 'portal',
+    action: () => onEnter(def, gate),
+  });
+
+  // the run-up notch, same shape as a project gate's
+  regions.push({ minX: -ALCOVE_HALF, maxX: ALCOVE_HALF, minZ: ALCOVE_NEAR, maxZ: MARGIN + 0.1 });
+
+  const sign = new THREE.Mesh(
+    new THREE.PlaneGeometry(5.0, 1.43),
+    new THREE.MeshBasicMaterial({ map: doorSignTexture(def.title), transparent: true }),
+  );
+  sign.position.set(0, 6.2, 0.12);
+  group.add(sign);
 }
 
 // ---- procedural stone texture ----

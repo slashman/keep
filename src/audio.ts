@@ -338,6 +338,115 @@ export class AudioEngine {
     }
   }
 
+  /** Winning an artifact — a bell fifth blooming out of a bright shimmer. */
+  artifact() {
+    if (!this.ctx || !this.master) return;
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    const bus = ctx.createGain();
+    bus.gain.value = 0.9;
+    bus.connect(this.master);
+
+    // An arpeggio climbing a major triad, then the octave — the whole point is
+    // that it resolves upward, unlike `stumble()` below.
+    for (const [freq, delay] of [[523, 0], [659, 0.09], [784, 0.18], [1047, 0.3]] as const) {
+      for (const [mul, gain] of [[1, 0.26], [2, 0.09]] as const) {
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = freq * mul;   // a touch of second harmonic reads as a bell
+        const g = ctx.createGain();
+        const t = now + delay;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(gain, t + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0004, t + 1.4);
+        osc.connect(g);
+        g.connect(bus);
+        osc.start(t);
+        osc.stop(t + 1.5);
+      }
+    }
+
+    // Bright dust rising under the arpeggio.
+    if (this.noiseBuffer) {
+      const shimmer = ctx.createBufferSource();
+      shimmer.buffer = this.noiseBuffer;
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.Q.value = 4;
+      bp.frequency.setValueAtTime(1800, now);
+      bp.frequency.exponentialRampToValueAtTime(7000, now + 0.6);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.14, now + 0.1);
+      g.gain.exponentialRampToValueAtTime(0.0004, now + 0.9);
+      shimmer.connect(bp);
+      bp.connect(g);
+      g.connect(bus);
+      shimmer.start(now);
+      shimmer.stop(now + 0.95);
+    }
+  }
+
+  /** Falling out of a trial — a dull impact and a short sinking rewind. */
+  stumble() {
+    if (!this.ctx || !this.master) return;
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    const bus = ctx.createGain();
+    bus.gain.value = 0.9;
+    bus.connect(this.master);
+
+    // The landing: a low thud with all the top rolled off it.
+    const thud = ctx.createOscillator();
+    thud.type = 'sine';
+    thud.frequency.setValueAtTime(160, now);
+    thud.frequency.exponentialRampToValueAtTime(48, now + 0.22);
+    const tg = ctx.createGain();
+    tg.gain.setValueAtTime(0.0001, now);
+    tg.gain.exponentialRampToValueAtTime(0.4, now + 0.012);
+    tg.gain.exponentialRampToValueAtTime(0.0005, now + 0.4);
+    thud.connect(tg);
+    tg.connect(bus);
+    thud.start(now);
+    thud.stop(now + 0.45);
+
+    if (this.noiseBuffer) {
+      const dust = ctx.createBufferSource();
+      dust.buffer = this.noiseBuffer;
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.setValueAtTime(1400, now);
+      lp.frequency.exponentialRampToValueAtTime(240, now + 0.3);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.2, now + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0005, now + 0.35);
+      dust.connect(lp);
+      lp.connect(g);
+      g.connect(bus);
+      dust.start(now);
+      dust.stop(now + 0.4);
+    }
+
+    // …and the rewind: a falling fifth, the arpeggio in `artifact()` run backwards.
+    for (const [freq, delay] of [[494, 0.12], [392, 0.2]] as const) {
+      const osc = ctx.createOscillator();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      const g = ctx.createGain();
+      const t = now + delay;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.16, t + 0.015);
+      g.gain.exponentialRampToValueAtTime(0.0004, t + 0.45);
+      osc.connect(g);
+      g.connect(bus);
+      osc.start(t);
+      osc.stop(t + 0.5);
+    }
+  }
+
   private playStep(sprinting: boolean) {
     const ctx = this.ctx!;
     if (!this.noiseBuffer || !this.master) return;

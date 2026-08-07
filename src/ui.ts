@@ -1,4 +1,5 @@
 import type { Floor } from './types';
+import type { Artifact } from './artifacts';
 import { EMBED_CHECK_URL } from './config';
 
 function escapeHtml(s: string): string {
@@ -38,6 +39,11 @@ export class UI {
   private dialogName = el('div', 'dname');
   private dialogText = el('div', 'dtext');
   private dialogProjects = el('div', 'dprojects');
+  private inventory = el('div');
+  private inventoryPanel = el('div', 'overlay hidden');
+  private inventoryGrid = el('div', 'inv-grid');
+  private getCard = el('div');
+  private getTimer = 0;
   private curtain = el('div');
   private toast = el('div');
   private toastTimer = 0;
@@ -54,19 +60,25 @@ export class UI {
     this.help.id = 'help';
     this.curtain.id = 'curtain';
     this.toast.id = 'toast';
+    this.inventory.id = 'inventory';
+    this.getCard.id = 'artifactGet';
     this.elevator.id = 'elevator'; // without these ids every #elevator / #video CSS rule is dead
     this.video.id = 'video';
     this.web.id = 'web';
+    this.inventoryPanel.id = 'inventoryPanel';
     this.help.innerHTML =
       '<span class="key">W A S D</span> move &nbsp; <span class="key">Mouse</span> look &nbsp; ' +
-      '<span class="key">Shift</span> run &nbsp; <span class="key">Space</span> jump<br>' +
+      '<span class="key">Shift</span> run &nbsp; <span class="key">Space</span> jump &nbsp; ' +
+      '<span class="key">V</span> view<br>' +
       '<span class="key">E</span> / <span class="key">Click</span> interact &nbsp; ' +
+      '<span class="key">I</span> satchel &nbsp; ' +
       '<span class="key">M</span> mute &nbsp; ' +
       '<span class="key">Esc</span> release cursor<br>' +
       '<b>Step up to a painting and jump</b> to enter it';
 
     document.body.append(
-      this.crosshair, this.prompt, this.floorLabel, this.help, this.curtain, this.toast,
+      this.crosshair, this.prompt, this.floorLabel, this.help,
+      this.inventory, this.getCard, this.curtain, this.toast,
     );
 
     this.buildStart();
@@ -75,6 +87,7 @@ export class UI {
     this.buildVideo();
     this.buildWeb();
     this.buildDialog();
+    this.buildInventory();
   }
 
   // ---------- NPC dialog blurb ----------
@@ -297,6 +310,66 @@ export class UI {
   }
   get webOpen() { return !this.web.classList.contains('hidden'); }
 
+  // ---------- the satchel: HUD row, "you got it" card, and the full panel ----------
+  private buildInventory() {
+    const close = el('button', 'close-x', '×');
+    close.addEventListener('click', () => this.onCloseOverlay?.());
+    const panel = el('div', 'panel');
+    panel.append(
+      close,
+      el('h2', undefined, '🎒 The Satchel'),
+      el('div', 'hint', 'Each year of the Keep sets a trial. What you win from one is yours to keep.'),
+      this.inventoryGrid,
+    );
+    this.inventoryPanel.append(panel);
+    document.body.append(this.inventoryPanel);
+  }
+
+  /** The always-on HUD row — one glyph per artifact held. */
+  setInventory(items: Artifact[]) {
+    this.inventory.classList.toggle('empty', items.length === 0);
+    this.inventory.innerHTML = items
+      .map((a) => `<span class="inv-slot" title="${escapeHtml(a.name)}">${escapeHtml(a.glyph)}</span>`)
+      .join('');
+  }
+
+  /**
+   * The moment of winning something. Deliberately not an `.overlay`: it takes no
+   * pointer lock and blocks nothing, so the celebration can play while you are
+   * still standing on the summit looking at where the thing used to be.
+   */
+  showArtifactGet(a: Artifact, ms = 6500) {
+    this.getCard.innerHTML =
+      `<div class="ag-kicker">Artifact obtained</div>` +
+      `<div class="ag-row"><span class="ag-glyph">${escapeHtml(a.glyph)}</span>` +
+      `<span class="ag-name">${escapeHtml(a.name)}</span></div>` +
+      `<div class="ag-blurb">${escapeHtml(a.blurb)}</div>` +
+      `<div class="ag-foot"><span class="key">I</span> to open your satchel</div>`;
+    this.getCard.classList.add('show');
+    clearTimeout(this.getTimer);
+    this.getTimer = window.setTimeout(() => this.getCard.classList.remove('show'), ms);
+  }
+
+  showInventory(items: Artifact[]) {
+    this.inventoryGrid.replaceChildren();
+    if (!items.length) {
+      this.inventoryGrid.append(el('div', 'inv-empty',
+        'Nothing yet. Every floor of the Keep has a trial somewhere on it — start with the gate behind the orb.'));
+    }
+    for (const a of items) {
+      const card = el('div', 'inv-card');
+      card.innerHTML =
+        `<span class="inv-glyph">${escapeHtml(a.glyph)}</span>` +
+        `<span class="inv-name">${escapeHtml(a.name)}</span>` +
+        `<span class="inv-year">${a.year}</span>` +
+        `<span class="inv-blurb">${escapeHtml(a.blurb)}</span>`;
+      this.inventoryGrid.append(card);
+    }
+    this.inventoryPanel.classList.remove('hidden');
+  }
+  hideInventory() { this.inventoryPanel.classList.add('hidden'); }
+  get inventoryOpen() { return !this.inventoryPanel.classList.contains('hidden'); }
+
   // ---------- transient toast ----------
   flash(msg: string, ms = 1400) {
     this.toast.textContent = msg;
@@ -311,5 +384,7 @@ export class UI {
     await new Promise((r) => setTimeout(r, ms));
   }
 
-  get anyOverlayOpen() { return this.elevatorOpen || this.videoOpen || this.webOpen; }
+  get anyOverlayOpen() {
+    return this.elevatorOpen || this.videoOpen || this.webOpen || this.inventoryOpen;
+  }
 }

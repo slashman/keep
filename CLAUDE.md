@@ -19,7 +19,8 @@ Deploy = upload the contents of `dist/` into `public_html/keep/` on slashie.net 
 
 A first-person three.js "castle" of the projects on slashie.net. Each **year is a floor**;
 each **project is a portal gate** on a wall that you jump into to reach that project's own
-room. Vanilla TypeScript + three.js + Vite — no framework, no state library, and almost no
+room. A year may also hold an **activity** — a gate on the front wall leading to a place you
+complete for an **artifact**, kept in an inventory that survives a reload (2026 only so far). Vanilla TypeScript + three.js + Vite — no framework, no state library, and almost no
 asset files: every texture is drawn on a `<canvas>`, and every sound *effect* is synthesized in
 `audio.ts`. Two exceptions live in `src/assets`, both fetched on demand rather than at boot —
 the looping museum score (`audio/mx_museum.ogg`; the old synthesized drone is still there as a
@@ -73,6 +74,68 @@ independently against `walkable()`, which is what lets the player slide along wa
 through doorways where rectangles overlap. Every portal gate pushes a small "alcove" rect in
 front of itself so you can step up to it and leap in; the orb is an excluder.
 
+**Ground height is a third list, and it is opt-in.** A `CollisionWorld` may also carry
+`platforms: Platform[]` — walkable rects with a `top`, an optional XZ velocity (a rider is
+carried), and an optional `active` flag (blinking). `resolveGround(x, z, maxTop)` picks the
+highest one not above `maxTop`; everything vertical — gravity's floor, `airborne`, `jump()`,
+`setPose()` — is measured from that instead of from 0. **Omit `platforms` and the behaviour is
+exactly what it was**, which is why floors and rooms needed no changes.
+
+`maxTop` is the whole rule, and it must be the feet's own height nearly always. Letting it
+reach *above* the feet is the step-up, and **the step-up is only ever legal while already
+standing**: a mid-air player briefly within `STEP_UP` of a ledge would otherwise be snapped up
+onto it with their velocity zeroed — jump up under a platform and you'd stick to its underside
+instead of clearing it. Two things a platform still deliberately does not have: sides and an
+underside. You rise up through one from below and never bonk your head, so lay them out where
+that isn't a shortcut. The frame order matters and is commented in `update()`: carry, then
+gravity, then input, then a re-resolve that steps you up onto a low lip (walking *off* an edge
+needs no code — the ground drops and gravity does the rest). Because `main.ts` runs
+`controls.update` before the build's `update`, a mover's pose and velocity are both one frame
+stale, which is consistent; a measured full ride drifts 3 cm.
+
+`JUMP_ARC` (exported from `controls.ts`) is the derived apex/hang/reach of the leap, and its
+`apex` is the **sampled** peak, not the analytic one — velocity is decremented before the
+position integrates, so a 60 fps frame loses `JUMP_SPEED/120` off the top, and that lower figure
+is what a level has to be jumpable at. Anything laying out ground to jump across should build
+its distances from `JUMP_ARC` rather than hardcoding metres.
+
+**A year can hold an activity** — a place you dive into, complete, and come out of holding an
+artifact. `activities.ts` maps a year to an `ActivityDef` whose `build()` returns a plain
+`FloorBuild`, so `mountBuild` knows nothing about it; `main.ts` looks the def up and hands it
+to `buildFloor`, which grows one extra gate on the otherwise blank front wall behind the orb.
+Years with no entry grow no gate. 2026's is `obby.ts`, a jumping puzzle up a stone shaft, and
+**not one distance in it is written in metres** — the rise between its fifteen platforms, the
+spiral's radius, the shaft's size and the fall tolerance all come off `JUMP_ARC`, so retuning
+the leap retunes the tower with it. Two fractions are the whole difficulty knob: a rise is 62%
+of what you can clear, a stage 1 gap 55% of how far you can carry yourself. Failure is judged
+against the highest surface you actually *stood* on, not against the pit — the spiral doubles
+back over itself, so a fall from the top can land on a stage 1 ledge and would otherwise never
+reach the bottom. `inventory.ts` is the app's only persistent state (localStorage, wrapped so a
+refusal degrades to session-only).
+
+**A place can ask for a chase camera** by returning `thirdPerson: true` (`V` toggles it
+anywhere). A gallery is best seen through your own eyes; a jumping puzzle is unplayable that
+way, because you cannot see the ledge you are standing on. `applyChase()` in `main.ts` is
+ordered carefully: `controls` moves the camera as the player's *eye*, all game logic reads that
+position, and the chase offset is applied only for the render and undone the same frame — so
+`playerEye`, not `camera.position`, is what portals and the fall judgement see. The offset is
+in **camera space**, not world space: a world-up offset looks fine staring ahead and then
+swings the body up over the crosshair the moment you pitch down, which is exactly when you are
+lining up a jump. The three offsets are one compromise and none moves alone: `CHASE_UP` is
+deliberately *low* (0.45) because a camera even a metre above the eye puts your own feet below
+the bottom edge when you look level, and platforming is mostly a question of where your feet
+are; `CHASE_SIDE` exists only because `CHASE_UP` is low, since looking over your own head from
+just above it parks the head on the crosshair. `interaction.standOff` gives the player their
+reach back, since the ray now starts 5 m behind them. The Trial's shaft is wider and deeper than the climb
+needs, so the camera has room behind you instead of being pinned against the wall you are
+climbing; a build can also override the scene fog (`FloorBuild.fog`), which a tower needs
+because the default is tuned for halls you look *along*, not shafts you look *up*.
+
+Note the dive is measured **relative to a gate**, not to the world floor: `GATE_ENTRY_DROP`
+hangs the diving body below the mouth's centre, and `emerge()` lands you on
+`controls.groundAt(spawn)`. An absolute entry height worked only while every gate stood on the
+ground, and sent the body swooping to the pit to dive into the Trial's summit exit.
+
 **Interaction is opt-in per mesh.** `InteractionManager` raycasts from screen center over
 exactly the meshes registered in `interactables`; a build that forgets to push an entry makes an
 object unclickable no matter how it looks. Setting `mesh.userData.pulse = someMesh` makes the
@@ -113,8 +176,11 @@ eligible.
 
 **UI is imperative DOM.** `ui.ts` builds every overlay in its constructor and exposes
 `show*`/`hide*` methods plus `onStart`/`onPickFloor`/`onCloseOverlay` callbacks that `main.ts`
-wires. The `#elevator`/`#video`/`#web` element ids matter — the CSS in `styles.css` keys off
-them. `styles.css` is loaded straight from `index.html`, not imported by TS.
+wires. The `#elevator`/`#video`/`#web`/`#inventoryPanel` element ids matter — the CSS in
+`styles.css` keys off them. `styles.css` is loaded straight from `index.html`, not imported by
+TS. A *blocking* overlay must be registered in three places or the pointer lock desyncs:
+`anyOverlayOpen` (`ui.ts`), `closeOverlay()` and the Escape chain (`main.ts`). `#artifactGet`
+sidesteps all three by being non-blocking, like `#dialog`.
 
 Touch is a parallel input path: `PlayerControls.touch` swaps pointer-lock for a `touchActive`
 flag, and `touch.ts` supplies an on-screen joystick/jump/interact.
