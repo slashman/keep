@@ -183,7 +183,13 @@ TS. A *blocking* overlay must be registered in three places or the pointer lock 
 sidesteps all three by being non-blocking, like `#dialog`.
 
 Touch is a parallel input path: `PlayerControls.touch` swaps pointer-lock for a `touchActive`
-flag, and `touch.ts` supplies an on-screen joystick/jump/interact.
+flag, and `touch.ts` supplies an on-screen joystick plus a single jump button — there is no
+interact button, because a tap on the thing itself already interacts (a quick tap that barely
+moved, in `onEnd`, calls the same `interact()` the `E` key does). There is no Shift to sprint
+with, so the stick's travel is the throttle: full walk at `RUN_THRESHOLD` of the radius, ramping
+to `SPRINT` at the rim (the thumb lights up past the threshold). The ramp measures the stick
+alone, not the summed move vector — a key press is already a unit vector and would read as
+permanently at the rim.
 
 ## Notes
 

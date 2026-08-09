@@ -43,6 +43,12 @@ const GRAVITY = 22;      // m/s² pulling the player back down
 const JUMP_SPEED = 12;
 const SENS = 0.0022;
 const TOUCH_SENS = 0.006; // radians per pixel of swipe
+/**
+ * Joystick travel at which the walk is at full SPEED. Push past it and the
+ * remaining travel ramps up to SPRINT — a thumbstick can say *how fast* by
+ * itself, so touch has no Shift equivalent and needs none.
+ */
+export const RUN_THRESHOLD = 0.72;
 const PITCH_LIMIT = Math.PI / 2 - 0.08;
 /** How high a lip you walk up without jumping. Only ever applied while standing. */
 const STEP_UP = 0.35;
@@ -244,8 +250,18 @@ export class PlayerControls {
     const mag = Math.min(1, Math.hypot(f, s));
     if (mag < 0.001) { this.sprinting = false; return; }
 
-    this.sprinting = this.keys.has('ShiftLeft') || this.keys.has('ShiftRight');
-    const speed = this.sprinting ? SPRINT : SPEED;
+    // Keyboard input is all-or-nothing and sprints on Shift; the joystick is
+    // analog, so how far it is pushed *is* the throttle: full walk at
+    // RUN_THRESHOLD, ramping to a full sprint at the rim.
+    // The ramp reads the stick itself, not `mag`: a key press is a unit vector,
+    // so measuring the sum would put the keyboard permanently at the rim.
+    const shift = this.keys.has('ShiftLeft') || this.keys.has('ShiftRight');
+    const stick = Math.min(1, Math.hypot(this.moveX, this.moveY));
+    const run = Math.max(0, (stick - RUN_THRESHOLD) / (1 - RUN_THRESHOLD));
+    this.sprinting = shift || run > 0.5;
+    const speed = shift
+      ? SPRINT
+      : SPEED * Math.min(1, mag / RUN_THRESHOLD) + (SPRINT - SPEED) * run;
     // horizontal forward/right from current yaw
     this.euler.setFromQuaternion(this.camera.quaternion);
     const yaw = this.euler.y;
@@ -254,7 +270,7 @@ export class PlayerControls {
     let dx = (-sin * f + cos * s);
     let dz = (-cos * f - sin * s);
     const len = Math.hypot(dx, dz) || 1;
-    const step = speed * mag * dt; // analog magnitude scales speed
+    const step = speed * dt; // `speed` already carries the analog magnitude
     dx = (dx / len) * step;
     dz = (dz / len) * step;
 

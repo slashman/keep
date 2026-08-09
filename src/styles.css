@@ -31,8 +31,7 @@ html, body {
 #touch.show { opacity: 1; }
 /* when hidden, don't let the (invisible) joystick/button swallow touches, e.g. the orb menu */
 #touch:not(.show) #joystick,
-#touch:not(.show) #touchJump,
-#touch:not(.show) #touchInteract { pointer-events: none; }
+#touch:not(.show) #touchJump { pointer-events: none; }
 #joystick {
   position: absolute;
   left: 26px;
@@ -56,29 +55,18 @@ html, body {
   background: rgba(224, 178, 86, 0.75);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
 }
-#touchInteract {
+#joythumb.run {
+  background: rgba(255, 226, 150, 0.92);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45), 0 0 14px rgba(255, 214, 120, 0.8);
+}
+/* jump — the only action button on touch (interacting is a tap on the thing itself),
+   so it sits in the thumb's natural spot on the right */
+#touchJump {
   position: absolute;
   right: 30px;
   bottom: max(46px, env(safe-area-inset-bottom, 0px));
   width: 88px;
   height: 88px;
-  border-radius: 50%;
-  background: rgba(224, 178, 86, 0.85);
-  color: #1a1206;
-  font: 700 30px Georgia, serif;
-  border: none;
-  pointer-events: auto;
-  touch-action: none;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
-}
-#touchInteract:active { transform: scale(0.94); }
-/* jump — sits above the interact button, the way into a painting on touch */
-#touchJump {
-  position: absolute;
-  right: 38px;
-  bottom: calc(max(46px, env(safe-area-inset-bottom, 0px)) + 104px);
-  width: 72px;
-  height: 72px;
   border-radius: 50%;
   background: rgba(143, 216, 255, 0.8);
   color: #06131c;

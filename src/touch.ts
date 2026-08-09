@@ -1,16 +1,17 @@
-import type { PlayerControls } from './controls';
+import { RUN_THRESHOLD, type PlayerControls } from './controls';
 
 const JOY_R = 58; // joystick thumb travel radius (px)
 
 /**
  * On-screen touch controls: a virtual joystick (bottom-left) for movement, swipe
- * anywhere on the canvas to look, a tap (or the round button) to interact.
+ * anywhere on the canvas to look, a tap to interact, and one round button to jump.
+ * There is no interact button — a tap on the thing itself already does that, so the
+ * only action needing a button of its own is the leap into a gate.
  */
 export class TouchControls {
   private root = document.createElement('div');
   private joy = document.createElement('div');
   private thumb = document.createElement('div');
-  private btn = document.createElement('button');
   private jumpBtn = document.createElement('button');
 
   private joyId: number | null = null;
@@ -32,20 +33,13 @@ export class TouchControls {
     this.joy.id = 'joystick';
     this.thumb.id = 'joythumb';
     this.joy.appendChild(this.thumb);
-    this.btn.id = 'touchInteract';
-    this.btn.textContent = 'E';
     this.jumpBtn.id = 'touchJump';
     this.jumpBtn.textContent = '⤒';
     this.jumpBtn.setAttribute('aria-label', 'Jump');
-    this.root.append(this.joy, this.btn, this.jumpBtn);
+    this.root.append(this.joy, this.jumpBtn);
     document.body.appendChild(this.root);
 
     this.joy.addEventListener('touchstart', this.onJoyStart, { passive: false });
-    this.btn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.onInteract();
-    }, { passive: false });
     this.jumpBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -127,11 +121,15 @@ export class TouchControls {
     const d = Math.hypot(dx, dy);
     if (d > JOY_R) { dx = (dx / d) * JOY_R; dy = (dy / d) * JOY_R; }
     this.thumb.style.transform = `translate(${dx}px, ${dy}px)`;
+    // Past the run threshold the thumb lights up: the speed is analog and
+    // otherwise invisible, so this is the only cue that you are now running.
+    this.thumb.classList.toggle('run', Math.min(d, JOY_R) / JOY_R > RUN_THRESHOLD);
     this.controls.setMove(dx / JOY_R, -dy / JOY_R); // screen-y down → forward is up
   }
 
   private resetJoy() {
     this.thumb.style.transform = 'translate(0, 0)';
+    this.thumb.classList.remove('run');
     this.controls.setMove(0, 0);
   }
 }
