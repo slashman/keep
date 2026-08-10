@@ -4,6 +4,15 @@
   --panel: rgba(18, 16, 26, 0.86);
   --panel-border: rgba(224, 178, 86, 0.35);
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* Display cut-outs, live only because index.html asks for viewport-fit=cover.
+     Every fixed corner below ADDS these rather than max()-ing against them: in
+     landscape the notch is on a side and the home indicator still on the bottom,
+     so a corner needs its own margin *plus* the inset, not the larger of the two. */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
 }
 
 * { box-sizing: border-box; }
@@ -17,7 +26,10 @@ html, body {
   cursor: default;
 }
 
-#app { display: block; width: 100vw; height: 100vh; touch-action: none; }
+/* dvh so the canvas matches the *visible* viewport while a mobile browser's toolbar
+   is expanded — three.js overwrites both with px on setSize(), so this only governs
+   the frame before the first render and any moment the renderer is between sizes. */
+#app { display: block; width: 100vw; height: 100vh; height: 100dvh; touch-action: none; }
 
 /* ---------- Touch controls (mobile) ---------- */
 #touch {
@@ -34,8 +46,8 @@ html, body {
 #touch:not(.show) #touchJump { pointer-events: none; }
 #joystick {
   position: absolute;
-  left: 26px;
-  bottom: max(30px, env(safe-area-inset-bottom, 0px));
+  left: calc(26px + var(--safe-l));
+  bottom: calc(30px + var(--safe-b));
   width: 132px;
   height: 132px;
   border-radius: 50%;
@@ -63,8 +75,8 @@ html, body {
    so it sits in the thumb's natural spot on the right */
 #touchJump {
   position: absolute;
-  right: 30px;
-  bottom: max(46px, env(safe-area-inset-bottom, 0px));
+  right: calc(30px + var(--safe-r));
+  bottom: calc(46px + var(--safe-b));
   width: 88px;
   height: 88px;
   border-radius: 50%;
@@ -139,8 +151,8 @@ body.locked #crosshair { opacity: 1; }
 /* ---------- Floor label (top-left) ---------- */
 #floorLabel {
   position: fixed;
-  left: 18px;
-  top: 16px;
+  left: calc(18px + var(--safe-l));
+  top: calc(16px + var(--safe-t));
   padding: 10px 16px;
   background: var(--panel);
   border: 1px solid var(--panel-border);
@@ -160,7 +172,7 @@ body.locked #floorLabel, body.ready #floorLabel { opacity: 1; }
 #toast {
   position: fixed;
   left: 50%;
-  top: 22px;
+  top: calc(22px + var(--safe-t));
   transform: translate(-50%, -8px);
   padding: 8px 16px;
   background: var(--panel);
@@ -179,8 +191,8 @@ body.locked #floorLabel, body.ready #floorLabel { opacity: 1; }
 /* ---------- Help (bottom-left) ---------- */
 #help {
   position: fixed;
-  left: 18px;
-  bottom: 16px;
+  left: calc(18px + var(--safe-l));
+  bottom: calc(16px + var(--safe-b));
   padding: 10px 14px;
   background: var(--panel);
   border: 1px solid var(--panel-border);
@@ -216,9 +228,14 @@ body.locked #help, body.ready #help { opacity: 0.9; }
   z-index: 20;
   background: radial-gradient(circle at 50% 35%, rgba(30, 22, 14, 0.85), rgba(5, 4, 9, 0.97));
   text-align: center;
-  padding: 24px;
+  /* the padding is the panels' margin too — they size to 100% of it, not to vw */
+  padding: calc(24px + var(--safe-t)) calc(24px + var(--safe-r))
+           calc(24px + var(--safe-b)) calc(24px + var(--safe-l));
 }
 .overlay.hidden { display: none; }
+/* The close × of the frame overlays hangs off the overlay itself (the panelled ones
+   put theirs inside .panel), so it is at the screen corner and needs the inset. */
+#video > .close-x, #web > .close-x { top: calc(18px + var(--safe-t)); right: calc(22px + var(--safe-r)); }
 
 .title {
   font-size: clamp(34px, 6vw, 68px);
@@ -275,8 +292,8 @@ body.locked #help, body.ready #help { opacity: 0.9; }
   border-radius: 14px;
   padding: 22px;
   max-width: 760px;
-  width: 92vw;
-  max-height: 85vh;
+  width: 100%;
+  max-height: 100%;
   overflow: auto; /* the panel itself scrolls the year list */
   -webkit-overflow-scrolling: touch;
 }
@@ -321,7 +338,13 @@ body.locked #help, body.ready #help { opacity: 0.9; }
 #video { background: rgba(3, 2, 6, 0.95); }
 #video .frame-wrap {
   position: relative;
-  width: min(1100px, 92vw);
+  /* A 16:9 box sized only by width is taller than a phone held sideways, so the
+     height is capped through the width: 132dvh × 9/16 ≈ 74dvh, leaving room for the
+     title and the padding. On any tall window the 1100px cap wins and nothing moves.
+     flex:none because a squeezed flex item would break the aspect instead. */
+  width: min(1100px, calc(100vw - 48px - var(--safe-l) - var(--safe-r)), 132vh);
+  width: min(1100px, calc(100vw - 48px - var(--safe-l) - var(--safe-r)), 132dvh);
+  flex: none;
   aspect-ratio: 16 / 9;
   background: #000;
   border: 1px solid var(--panel-border);
@@ -338,8 +361,8 @@ body.locked #help, body.ready #help { opacity: 0.9; }
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: min(1100px, 92vw);
-  max-width: 92vw;
+  width: 100%;
+  max-width: 1100px;
 }
 #web .web-bar {
   display: flex;
@@ -362,6 +385,7 @@ body.locked #help, body.ready #help { opacity: 0.9; }
   position: relative;
   width: 100%;
   height: min(78vh, 820px);
+  height: min(78dvh, 820px);
   background: #fff;
   border: 1px solid var(--panel-border);
   border-radius: 10px;
@@ -426,8 +450,8 @@ body.locked #help, body.ready #help { opacity: 0.9; }
    whole bottom edge belongs to the touch controls — top-right is the corner left. */
 #inventory {
   position: fixed;
-  right: 18px;
-  top: 16px;
+  right: calc(18px + var(--safe-r));
+  top: calc(16px + var(--safe-t));
   display: flex;
   gap: 8px;
   padding: 8px 12px;
@@ -486,8 +510,8 @@ body.locked #inventory, body.ready #inventory { opacity: 1; }
   border-radius: 14px;
   padding: 22px;
   max-width: 720px;
-  width: 92vw;
-  max-height: 85vh;
+  width: 100%;
+  max-height: 100%;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -509,6 +533,77 @@ body.locked #inventory, body.ready #inventory { opacity: 1; }
 .inv-card .inv-name { font-size: 17px; font-weight: 700; color: var(--gold); }
 .inv-card .inv-year { font-size: 13px; opacity: 0.6; }
 .inv-card .inv-blurb { grid-column: 2 / span 2; font-size: 13px; line-height: 1.5; opacity: 0.8; }
+
+/* ---------- Short viewport: a phone held sideways ---------- */
+/* Landscape is the good way to play — the castle is wide and a 72° *vertical* FOV
+   opens up horizontally as the aspect widens — but sideways a phone is only ~390px
+   tall, roughly a third of what the portrait layout above assumes. Everything here
+   buys height back: the corners of the HUD shrink, the bottom-centre panels narrow
+   so the joystick and jump button keep their corners, and the overlays tighten.
+   Keyed on height alone, so a short desktop window gets the same treatment. */
+@media (max-height: 500px) {
+  .overlay {
+    gap: 10px;
+    padding: calc(12px + var(--safe-t)) calc(16px + var(--safe-r))
+             calc(12px + var(--safe-b)) calc(16px + var(--safe-l));
+    /* If content still overflows, `safe` degrades the centring to flex-start rather
+       than pushing the top out of the scroll range where it can't be reached.
+       Browsers that don't know the keyword drop this and keep plain `center`. */
+    justify-content: safe center;
+    overflow-y: auto;
+  }
+  .title { font-size: clamp(24px, 11vh, 42px); }
+  .subtitle { font-size: 14px; line-height: 1.45; }
+  .cta { margin-top: 0; padding: 10px 26px; font-size: 15px; }
+  .controls-legend { gap: 14px; margin-top: 0; font-size: 12px; }
+  .bar { height: 6px; }
+
+  #elevator .panel, #inventoryPanel .panel { padding: 14px 18px; }
+  #elevator h2, #inventoryPanel h2 { font-size: 19px; }
+  .hint { margin-bottom: 10px; }
+  .floor-grid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+  .floor-btn { padding: 8px 11px; }
+  .floor-btn .fy { font-size: 18px; }
+  .inv-card { padding: 10px 12px; }
+  .inv-card .inv-glyph { font-size: 26px; }
+  .close-x { top: 10px; right: 12px; font-size: 22px; }
+  #video > .close-x, #web > .close-x { top: calc(10px + var(--safe-t)); right: calc(12px + var(--safe-r)); }
+
+  #floorLabel { padding: 6px 12px; max-width: 40vw; }
+  #floorLabel .yr { font-size: 19px; }
+  #floorLabel .sub { font-size: 11px; }
+  #inventory { padding: 5px 9px; gap: 6px; }
+  #inventory .inv-slot { font-size: 18px; }
+  #help { font-size: 11px; line-height: 1.6; padding: 7px 11px; }
+
+  /* Same touch layout, smaller footprint — at full size the joystick alone is
+     nearly half the height of the screen. */
+  #joystick {
+    width: 104px; height: 104px;
+    left: calc(18px + var(--safe-l)); bottom: calc(16px + var(--safe-b));
+  }
+  #joythumb { width: 46px; height: 46px; margin: -23px 0 0 -23px; }
+  #touchJump {
+    width: 70px; height: 70px; font-size: 24px;
+    right: calc(20px + var(--safe-r)); bottom: calc(26px + var(--safe-b));
+  }
+
+  /* The bottom-centre cards can no longer sit *above* the controls, so they sit
+     BETWEEN them: narrow enough to leave both thumb corners clear. */
+  #dialog, #artifactGet { width: min(560px, 56vw); max-height: 68dvh; overflow: hidden; }
+  #dialog { bottom: calc(14px + var(--safe-b)); padding: 12px 16px 10px; }
+  body.touch #dialog { bottom: calc(14px + var(--safe-b)); }
+  #dialog .dname { font-size: 16px; margin-bottom: 4px; }
+  #dialog .dtext { font-size: 13px; line-height: 1.45; }
+  #dialog .dprojects { margin-top: 8px; }
+  #dialog .dplist { font-size: 12px; }
+  #dialog .dhint { margin-top: 8px; }
+  #artifactGet { bottom: calc(14px + var(--safe-b)); padding: 12px 18px 10px; }
+  #artifactGet .ag-glyph { font-size: 30px; }
+  #artifactGet .ag-name { font-size: 17px; }
+  #artifactGet .ag-blurb { margin-top: 6px; font-size: 12px; line-height: 1.45; }
+  #artifactGet .ag-foot { margin-top: 8px; }
+}
 
 /* fade curtain for elevator travel */
 #curtain {

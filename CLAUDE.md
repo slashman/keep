@@ -191,6 +191,20 @@ to `SPRINT` at the rim (the thumb lights up past the threshold). The ramp measur
 alone, not the summed move vector — a key press is already a unit vector and would read as
 permanently at the rim.
 
+**Both orientations are supported, and landscape is the one to design for** — the castle is
+wide, and a fixed 72° *vertical* FOV opens up horizontally as the aspect widens. Sideways a
+phone is only ~390px tall, so `styles.css` carries a `@media (max-height: 500px)` block (keyed
+on height alone, so a short desktop window gets it too) that shrinks the HUD corners and the
+touch controls and narrows the bottom-centre cards — `#dialog` and `#artifactGet` can no longer
+sit *above* the joystick and jump button, so they sit between them. `index.html` asks for
+`viewport-fit=cover`, which is the only reason `env(safe-area-inset-*)` is ever non-zero:
+landscape puts the cut-out on a long edge, so every fixed corner **adds** the inset to its own
+margin rather than `max()`-ing against it, and overlay panels size to `100%` of the padded
+overlay instead of to `vw` so that padding is their margin. A rotation is just a resize, but
+mobile Safari announces it while still reporting the old dimensions — hence the delayed
+re-measures in `main.ts`'s `resize()`, which reads `window.inner*` (not the visual viewport, or
+a pinch-zoom would restretch the world) and no-ops when nothing changed.
+
 ## Notes
 
 - The in-app link popup can't detect a refused iframe from JS, so `public/embeddable.php` checks

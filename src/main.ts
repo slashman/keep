@@ -604,11 +604,31 @@ interaction.onFocusChange = (item) => {
   if (ui.dialogOpen) ui.hideDialog(); // walking/looking away closes the blurb
 };
 
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
+// A rotation into landscape is just a resize, but not one the browser always
+// measures correctly at the moment it announces it: mobile Safari fires
+// `orientationchange` (and occasionally the first `resize` after it) while still
+// reporting the pre-rotation dimensions, which would leave the canvas letterboxed
+// with a stale aspect until something else nudged it. So: re-measure on a delay
+// too, and take the visual viewport's own resizes (the toolbar collapsing as you
+// play) as another cue. Reading `window.inner*` rather than the visual viewport
+// keeps a pinch-zoom from restretching the world — those calls then no-op here.
+let lastW = 0, lastH = 0;
+function resize() {
+  const w = window.innerWidth, h = window.innerHeight;
+  if (w === lastW && h === lastH) return;
+  lastW = w; lastH = h;
+  camera.aspect = w / h;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(w, h);
+}
+resize();
+window.addEventListener('resize', resize);
+window.addEventListener('orientationchange', () => {
+  resize();
+  setTimeout(resize, 120);
+  setTimeout(resize, 400); // iOS settles the viewport a beat after the rotation
 });
+window.visualViewport?.addEventListener('resize', resize);
 
 /** Mid-jump inside a gate's mouth? Then you're going through it. */
 function checkPortals() {
