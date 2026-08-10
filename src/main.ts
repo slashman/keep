@@ -547,7 +547,28 @@ function enableControls() {
 }
 
 // ---------- input ----------
-ui.onStart = () => { ui.hideStart(); startAudio(); enableControls(); controls.lock(); };
+/**
+ * Reclaim the browser's own chrome, where it costs the most: a phone held
+ * sideways is ~390px tall and the toolbar is a fifth of that. Must be called
+ * from a user gesture, so it rides along with the other two gesture-bound jobs
+ * on "Enter the Keep" — waking the audio context and taking the lock.
+ *
+ * Three things it is deliberately not:
+ *  - not the canvas, the *document* element. Every overlay is a sibling of the
+ *    canvas, so fullscreening the canvas alone would put the whole UI offscreen.
+ *  - not on desktop, where one Esc would drop fullscreen and pointer lock while
+ *    the Escape chain below still thinks it is closing an overlay.
+ *  - not paired with a screen.orientation.lock(). That is the usual companion
+ *    call and it would *force* landscape; both ways up are meant to work.
+ * A refusal is the expected path, not an error — iPhone Safari has no element
+ * fullscreen at all (only video), and the dvh layout is correct either way.
+ */
+function goFullscreen() {
+  if (!isTouch || document.fullscreenElement) return;
+  void document.documentElement.requestFullscreen?.().catch(() => { /* unsupported or refused */ });
+}
+
+ui.onStart = () => { ui.hideStart(); goFullscreen(); startAudio(); enableControls(); controls.lock(); };
 ui.onPickFloor = (year) => travelTo(year);
 ui.onCloseOverlay = () => closeOverlay();
 

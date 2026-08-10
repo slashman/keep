@@ -203,7 +203,13 @@ margin rather than `max()`-ing against it, and overlay panels size to `100%` of 
 overlay instead of to `vw` so that padding is their margin. A rotation is just a resize, but
 mobile Safari announces it while still reporting the old dimensions — hence the delayed
 re-measures in `main.ts`'s `resize()`, which reads `window.inner*` (not the visual viewport, or
-a pinch-zoom would restretch the world) and no-ops when nothing changed.
+a pinch-zoom would restretch the world) and no-ops when nothing changed. `goFullscreen()` rides
+the "Enter the Keep" gesture to win back the toolbar's fifth of a sideways screen; it takes the
+**document** element (the overlays are siblings of the canvas), runs on touch only (on desktop
+one Esc would drop fullscreen *and* pointer lock while the Escape chain thinks it is closing an
+overlay), and never locks the orientation. A refusal is the expected path on iPhone, which has
+no element fullscreen — the layout doesn't depend on getting it. A manifest for an installed,
+genuinely fullscreen iOS home-screen app is the unwritten other half of this.
 
 ## Notes
 
