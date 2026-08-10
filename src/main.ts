@@ -564,7 +564,7 @@ function enableControls() {
  * fullscreen at all (only video), and the dvh layout is correct either way.
  */
 function goFullscreen() {
-  if (!isTouch || document.fullscreenElement) return;
+  if (document.fullscreenElement) return;
   void document.documentElement.requestFullscreen?.().catch(() => { /* unsupported or refused */ });
 }
 
