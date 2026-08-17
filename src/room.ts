@@ -130,7 +130,7 @@ export function buildProjectRoom(
   group.add(placardBack);
   const placard = new THREE.Mesh(
     new THREE.PlaneGeometry(2.85, 3.89),
-    new THREE.MeshBasicMaterial({ map: placardTexture(p) }),
+    new THREE.MeshBasicMaterial({ map: placardTexture(p, floor.year) }),
   );
   placard.position.set(-RX + 0.22, 3.1, RD / 2);
   placard.rotation.y = Math.PI / 2;
@@ -243,11 +243,10 @@ export function buildProjectRoom(
 
 // ---------------------------------------------------------------------------
 
-/** "2019 · continued into 2021" — the project's place in the timeline. */
+/** "2019–2021" — the project's place in the timeline (its span, not just its floor). */
 function yearLine(p: Project, floor: Floor): string {
   const years = (p.years ?? []).filter((y) => Number.isFinite(y)).sort((a, b) => a - b);
-  const span = years.length > 1 ? `${years[0]}–${years[years.length - 1]}` : String(p.year ?? floor.year);
-  return p.revisited ? `${span} · revisited in ${floor.year}` : span;
+  return years.length > 1 ? `${years[0]}–${years[years.length - 1]}` : String(p.year ?? floor.year);
 }
 
 /**

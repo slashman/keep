@@ -45,20 +45,24 @@ npm run preview   # serve the production build
   images as WebGL textures). There is **no bundled snapshot** — the client ships no
   hardcoded content. `projects.json` is required (an unreachable host shows an error);
   a missing `years.json`/`friends.json` just drops year blurbs / collaborator NPCs.
-- **Floors = years.** Projects are grouped by their `year` field. A floor also
-  includes projects **developed but not started** that year — derived from each
-  project's `years` array — shown after the started ones and marked *CONTINUED* on
-  their placards. The **magic orb** (press `E`) opens a floor directory to travel
+- **Floors = years.** Projects are grouped by their `year` field, and a project
+  stands on that one floor however many years it went on being worked on. Those
+  later years show as **effort** instead: where `effortMeasures` breaks the work
+  down per year, a gate and its placard read *148 days of work this year · 400 in
+  total*. The **magic orb** (press `E`) opens a floor directory to travel
   between years. Only one floor is built at a time and disposed on travel, keeping
   the scene light.
 - **Floor plan (a plus/cross).** You arrive beside the **magic orb** in a short
   **corridor** with the year tapestry on the wall straight ahead. The corridor is
-  reserved for **big projects** — those with more than **20 logged dev days**
-  (summed from `effortMeasures`), or, when a project has no `effortMeasures` data,
+  reserved for **big projects** — those with more than **20 logged dev days** over
+  the project's whole life (from `effortMeasures`, per-year breakdowns included),
+  or, when a project has no `effortMeasures` data,
   those in the **Big Games** (`games1`) or **+1 Month Game Projects** (`games2`)
   categories. Everything else overflows into **two side halls** entered through
-  **doors left and right of the orb**, split evenly between them. Corridor and halls
-  are each only built when they have projects to show. Collision is a union of
+  **doors left and right of the orb**, split evenly between them. A year that began
+  nothing big still shows its **largest work** in the corridor, so you never arrive
+  to an empty one. Corridor and halls are each only built when they have projects
+  to show. Collision is a union of
   walkable rectangles that overlap at the doorways.
 - **The year wall** (opposite the elevator) hangs a grand **tapestry** — the real
   per-year image from `slashie.net/img/years/YYYY.jpg`, loaded live via the proxy

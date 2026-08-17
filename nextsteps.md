@@ -55,7 +55,7 @@ Adding a project — or a whole new year — to `projects.json` "just works":
   NPCs; the app never serves stale bundled data.
 
 ### 3. Category-id coupling
-- **Where:** `isBigProject()` in `src/floor.ts` and `devDays()` in `src/textures.ts`
+- **Where:** `devEffort()` in `src/data.ts` and `isBigProject()` in `src/floor.ts`
   hardcode `games1` / `games2` / `games3` and the `> 20` day threshold.
 - **Problem:** if the site renumbers categories, projects silently stop being classified
   as "big" (corridor placement) and dev-days derivation breaks — with no visible error.

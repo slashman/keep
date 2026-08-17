@@ -142,11 +142,26 @@ object unclickable no matter how it looks. Setting `mesh.userData.pulse = someMe
 manager brighten that mesh's `emissiveIntensity` while focused.
 
 **Layout is derived from the data**, never hardcoded. `buildFloors()` groups projects by `year`
-plus each project's `years` array (extra years get a `revisited: true` copy). `isBigProject()`
-sends >20-dev-day projects to the corridor and everything else to two side halls; corridor
-length, hall length, lighting and collision rects all scale from those counts. Note the
-category-id coupling: `isBigProject()` (`floor.ts`) and `devDays()` (`textures.ts`) hardcode
-`games1`/`games2`/`games3` as the fallback when a project has no `effortMeasures`.
+alone — a project stands on the floor of the year it *began*, once, however long it went on.
+`isBigProject()` sends >20-dev-day projects to the corridor and everything else to two side
+halls; corridor length, hall length, lighting and collision rects all scale from those counts.
+A floor where nothing qualifies promotes its largest work rather than sitting you down in an
+empty corridor with the year's whole output behind the side doors — and on a floor with no
+effort data at all (2017's fourteen projects log none) every candidate ties, so that comes down
+to whichever `projects.json` lists first.
+
+**How long a project took is one function**, `devEffort()` in `data.ts` (`isBigProject()` and
+both placard textures read it). It returns a lifetime `total` and the share `inYear`, and the
+per-year half is the reason a floor can afford to show each project once: a `byYear`
+`effortMeasures` entry carries its own `years` breakdown, so the 2021 floor can say NovaMundi
+took 148 days *that year* out of 400. A `byYear` entry **supersedes** the other measures rather
+than adding to them — Senatus carries both `byYear` and `blogDays`, which are the same work
+counted twice. `isBigProject()` deliberately reads the lifetime `total` and not `inYear`, even
+though the placards show both: a long project's later years are each small, and judging by the
+year empties the corridor of a quiet one. Note the category-id coupling: with no
+`effortMeasures` at all, `games1`/`games2`/`games3` are hardcoded as the fallback in both
+`devEffort()` and `isBigProject()` — and the two do not agree by accident, since `devEffort`'s
+20 days for games2 does not *exceed* 20, so `isBigProject` keeps its own category test.
 
 **The portal dive is a three-way collaboration** and the trickiest flow to change: `main.ts`
 (`dive` → `diveIn` → `stageEmergence` → `emerge`) drives a `cinematic` per-frame callback while

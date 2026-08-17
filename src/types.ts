@@ -16,6 +16,8 @@ export interface EffortMeasure {
   period?: string;
   days?: number;
   ref?: string;
+  /** type "byYear": the effort broken down per year instead of as one `days` total */
+  years?: Array<{ year: number; days?: number }>;
 }
 
 export interface Project {
@@ -39,7 +41,6 @@ export interface Project {
   origin?: string;
   category?: string;   // injected: parent category name
   categoryId?: string; // injected: parent category id (e.g. "games1")
-  revisited?: boolean; // injected: on a floor for a year it was developed but not started
 }
 
 export interface Category {

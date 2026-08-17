@@ -135,29 +135,60 @@ export function collaboratorsForProject(p: Project, collab: Map<string, Collabor
   return people;
 }
 
-/** Group projects into floors keyed by their start year (descending: newest on top). */
+/**
+ * Group projects into floors keyed by their `year` (descending: newest on top).
+ * A project stands on exactly one floor — the year it began — however many years
+ * it went on being worked on; those later years show up as effort on its placard
+ * (see `devEffort`), not as a second gate on a second floor.
+ */
 export function buildFloors(data: ProjectsData): Floor[] {
-  const projects = flattenProjects(data);
   const byYear = new Map<number, Project[]>();
-  const bucket = (y: number) => {
-    let arr = byYear.get(y);
-    if (!arr) byYear.set(y, (arr = []));
-    return arr;
-  };
-  for (const p of projects) {
+  for (const p of flattenProjects(data)) {
     if (typeof p.year !== 'number' || !Number.isFinite(p.year)) continue;
-    bucket(p.year).push(p); // started this year
-    // additional years the project saw development, from `years` (excluding the start year)
-    const devYears = new Set(
-      (p.years ?? []).filter((y) => typeof y === 'number' && Number.isFinite(y) && y !== p.year),
-    );
-    for (const y of devYears) bucket(y).push({ ...p, revisited: true });
+    let arr = byYear.get(p.year);
+    if (!arr) byYear.set(p.year, (arr = []));
+    arr.push(p);
   }
   return [...byYear.keys()]
     .sort((a, b) => b - a)
-    .map((year) => ({
-      year,
-      // projects started this year first, then continued/revisited ones (stable sort keeps data order within each)
-      projects: byYear.get(year)!.slice().sort((a, b) => Number(!!a.revisited) - Number(!!b.revisited)),
-    }));
+    .map((year) => ({ year, projects: byYear.get(year)! }));
+}
+
+/** Days of work behind a project: the whole of it, and the part that fell in one year. */
+export interface DevEffort {
+  total: number;
+  /** days logged in the year asked about, or null when the data isn't broken down by year */
+  inYear: number | null;
+}
+
+/**
+ * The effort behind a project, as its placard and gate report it.
+ *
+ * An `effortMeasures` entry of type `byYear` carries the breakdown in its own
+ * `years` array and **supersedes** the other measures rather than adding to them —
+ * a project holding both (Senatus has `byYear` and `blogDays`) is counting the same
+ * work twice. Otherwise the measures are summed, and with no measures at all the
+ * category stands in (games1 → 50, games2 → 20, games3 → 10). Null when there is
+ * nothing to go on, and the figure is simply not shown.
+ */
+export function devEffort(p: Project, year?: number): DevEffort | null {
+  const measures = p.effortMeasures ?? [];
+  const byYear = measures.find((m) => m.type === 'byYear' && m.years?.length);
+  if (byYear) {
+    const entries = byYear.years!.filter((e) => typeof e.days === 'number');
+    const here = year == null ? undefined : entries.find((e) => e.year === year);
+    return {
+      total: entries.reduce((sum, e) => sum + e.days!, 0),
+      inYear: here?.days ?? null,
+    };
+  }
+  if (measures.length) {
+    return { total: measures.reduce((sum, m) => sum + (m.days ?? 0), 0), inYear: null };
+  }
+  switch (p.categoryId) {
+    case 'games1': return { total: 50, inYear: null };
+    case 'games2': return { total: 20, inYear: null };
+    case 'games3': return { total: 10, inYear: null };
+    default: return null;
+  }
 }

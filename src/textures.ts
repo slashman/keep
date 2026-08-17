@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import type { Project, Floor } from './types';
 import { TAG_FAMILY, type TagFamily, genreColor } from './tags';
 import { yearText, yearImagePath } from './yearContent';
+import { devEffort } from './data';
 import { DATA_BASE } from './config';
 
 let maxAniso = 4;
@@ -178,23 +179,11 @@ export function loadImageTexture(url: string): Promise<THREE.Texture | null> {
 }
 
 /**
- * Dev days shown on a placard: summed from effortMeasures when present, otherwise
- * derived from the category (games1 → 50, games2 → 20, games3 → 10). Null (shown
- * as nothing) for any other case.
+ * The museum wall placard: title, meta, description and colour-coded tag pills.
+ * `year` is the floor the project stands on, and only decides how the effort reads
+ * (this year's share, with the lifetime total beside it) — see `devEffort`.
  */
-function devDays(p: Project): number | null {
-  const em = p.effortMeasures;
-  if (em && em.length) return em.reduce((sum, m) => sum + (m.days ?? 0), 0);
-  switch (p.categoryId) {
-    case 'games1': return 50;
-    case 'games2': return 20;
-    case 'games3': return 10;
-    default: return null;
-  }
-}
-
-/** The museum wall placard: title, meta, description and colour-coded tag pills. */
-export function placardTexture(p: Project): THREE.CanvasTexture {
+export function placardTexture(p: Project, year?: number): THREE.CanvasTexture {
   const W = 660, H = 900;
   const { canvas, ctx } = makeCanvas(W, H);
 
@@ -216,16 +205,16 @@ export function placardTexture(p: Project): THREE.CanvasTexture {
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
 
-  // eyebrow: dev days, plus a "continued" marker on floors where the project was
-  // developed but not started
-  const dd = devDays(p);
-  const eyebrow: string[] = [];
-  if (dd != null) eyebrow.push(`${dd} DEV DAYS`);
-  if (p.revisited) eyebrow.push('CONTINUED');
-  if (eyebrow.length) {
+  // eyebrow: dev days — this year's share first for a project whose effort is
+  // logged per year and spans more than this one, since the floor is a year
+  const eff = devEffort(p, year);
+  if (eff) {
+    const eyebrow = eff.inYear != null && eff.inYear !== eff.total
+      ? `${eff.inYear} DEV DAYS THIS YEAR   ·   ${eff.total} TOTAL`
+      : `${eff.total} DEV DAYS`;
     ctx.fillStyle = '#e0b256';
     ctx.font = 'bold 22px Georgia, serif';
-    ctx.fillText(eyebrow.join('   ·   '), padX, y);
+    ctx.fillText(eyebrow, padX, y);
     y += 12;
   }
 
@@ -333,9 +322,11 @@ export function titlePlaqueTexture(title: string): THREE.CanvasTexture {
 
 /**
  * The plaque under a project's gate. Deliberately spare — the name and how many
- * days went into it; everything else waits inside the room.
+ * days went into it; everything else waits inside the room. A project whose effort
+ * is logged per year gets two figures, because the gate stands on one year's floor
+ * while the work behind it may have run for several.
  */
-export function gatePlaqueTexture(p: Project): THREE.CanvasTexture {
+export function gatePlaqueTexture(p: Project, year?: number): THREE.CanvasTexture {
   const W = 640, H = 220;
   const { canvas, ctx } = makeCanvas(W, H);
   const g = ctx.createLinearGradient(0, 0, 0, H);
@@ -349,7 +340,12 @@ export function gatePlaqueTexture(p: Project): THREE.CanvasTexture {
   roundRect(ctx, 6, 6, W - 12, H - 12, 14);
   ctx.stroke();
 
-  const days = devDays(p);
+  const eff = devEffort(p, year);
+  // a second, dimmer line for the lifetime total — only when it says something the
+  // year's own figure doesn't
+  const split = eff != null && eff.inYear != null && eff.inYear !== eff.total;
+  const days = (n: number) => `${n} day${n === 1 ? '' : 's'}`;
+
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#e9d9ac';
@@ -357,18 +353,26 @@ export function gatePlaqueTexture(p: Project): THREE.CanvasTexture {
   let t = p.title;
   while (ctx.measureText(t).width > W - 64 && t.length > 4) t = t.slice(0, -1);
   if (t !== p.title) t = t.slice(0, -1) + '…';
-  ctx.fillText(t, W / 2, days == null ? H / 2 : 88);
+  ctx.fillText(t, W / 2, eff == null ? H / 2 : split ? 80 : 88);
 
-  if (days != null) {
+  if (eff) {
     ctx.strokeStyle = 'rgba(224,178,86,0.35)';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(W / 2 - 110, 128);
-    ctx.lineTo(W / 2 + 110, 128);
+    ctx.moveTo(W / 2 - 110, split ? 118 : 128);
+    ctx.lineTo(W / 2 + 110, split ? 118 : 128);
     ctx.stroke();
     ctx.fillStyle = '#c9b481'; // gold, dimmed
-    ctx.font = 'italic 34px Georgia, serif';
-    ctx.fillText(`${days} day${days === 1 ? '' : 's'} of work`, W / 2, 166);
+    if (split) {
+      ctx.font = 'italic 32px Georgia, serif';
+      ctx.fillText(`${days(eff.inYear!)} of work this year`, W / 2, 152);
+      ctx.fillStyle = '#9a8a62';
+      ctx.font = 'italic 24px Georgia, serif';
+      ctx.fillText(`${days(eff.total)} in total`, W / 2, 190);
+    } else {
+      ctx.font = 'italic 34px Georgia, serif';
+      ctx.fillText(`${days(eff.total)} of work`, W / 2, 166);
+    }
   }
   return tuneTexture(new THREE.CanvasTexture(canvas));
 }
@@ -809,18 +813,14 @@ export function yearInfoTexture(floor: Floor): THREE.CanvasTexture {
     ctx.font = 'italic 28px Georgia, serif';
     y = wrapText(ctx, '“' + desc + '”', padX, y, leftW, 37, 4) + 10;
   }
-  const started = floor.projects.filter((p) => !p.revisited);
-  const continued = floor.projects.filter((p) => p.revisited);
+  // every project on a floor was begun in its year — later years of work on it are
+  // effort on its own placard, not a gate on another floor
+  const started = floor.projects;
   ctx.fillStyle = '#a49d89';
   ctx.font = '23px Georgia, serif';
   const begun = `${started.length} work${started.length === 1 ? '' : 's'} begun here`
     + (started.length ? ': ' + started.map((p) => p.title).join(' · ') + '.' : '.');
-  y = wrapText(ctx, begun, padX, y + 6, leftW, 30, 2) + 8;
-  if (continued.length) {
-    ctx.fillStyle = '#8f8874';
-    ctx.font = 'italic 22px Georgia, serif';
-    wrapText(ctx, 'Also worked on this year: ' + continued.map((p) => p.title).join(' · ') + '.', padX, y, leftW, 29, 2);
-  }
+  wrapText(ctx, begun, padX, y + 6, leftW, 30, 3);
 
   // ---- right column: aggregated tag families ----
   ctx.fillStyle = '#c9c0a8';

@@ -3,6 +3,7 @@ import type { Floor, Project, Person } from './types';
 import type { ActivityDef } from './activities';
 import type { CollisionWorld, Rect } from './controls';
 import { genreColor } from './tags';
+import { devEffort } from './data';
 import { placeNpcs, type NpcUpdater } from './npc';
 import { buildPortalGate, setGateMap, type PortalGate } from './portal';
 import {
@@ -97,15 +98,18 @@ const HALL_SPACING = 8.0;
 const HALL_END_PAD = 5.0;      // clears the back-most gate and leaves it room to be looked at
 
 /**
- * "Big" projects get the main corridor. A project is big if its logged dev effort
- * exceeds 20 days; when no effortMeasures data exists, fall back to membership of
- * the Big Games (games1) or +1 Month Game Projects (games2) categories.
+ * "Big" projects get the main corridor. A project is big if its *lifetime* logged
+ * effort exceeds 20 days — deliberately the total and not the floor year's share,
+ * which the placards show: a long project's later years are each small, and judging
+ * by the year left the corridor of a quiet year empty with everything in the halls.
+ * When no effortMeasures data exists, fall back to membership of the Big Games
+ * (games1) or +1 Month Game Projects (games2) categories (`devEffort`'s own category
+ * fallback can't stand in here: games2's 20 days does not exceed 20).
  */
 function isBigProject(p: Project): boolean {
-  const em = p.effortMeasures;
-  if (em && em.length) {
-    const days = em.reduce((sum, m) => sum + (m.days ?? 0), 0);
-    return days > 20;
+  if (p.effortMeasures?.length) {
+    const eff = devEffort(p);
+    if (eff) return eff.total > 20;
   }
   return p.categoryId === 'games1' || p.categoryId === 'games2';
 }
@@ -121,6 +125,15 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
   // the two side halls, split evenly between them.
   const corridorPs = floor.projects.filter(isBigProject);
   const rest = floor.projects.filter((p) => !isBigProject(p));
+  // A year that began nothing big would arrive to a bare corridor with its whole
+  // output hidden behind the side doors — so the largest work on such a floor is
+  // promoted to it. Ties go to whichever the data lists first.
+  if (!corridorPs.length && rest.length) {
+    const size = (p: Project) => devEffort(p)?.total ?? 0;
+    let biggest = 0;
+    for (let i = 1; i < rest.length; i++) if (size(rest[i]) > size(rest[biggest])) biggest = i;
+    corridorPs.push(...rest.splice(biggest, 1));
+  }
   const half = Math.ceil(rest.length / 2);
   const leftPs = rest.slice(0, half);
   const rightPs = rest.slice(half);
@@ -211,7 +224,7 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
   // ---------- magic orb + corridor displays + tapestry ----------
   const orbUpdate = buildOrb(group, interactables, handlers);
   updaters.push((t) => orbUpdate(t));
-  const ctx: RunCtx = { group, inter: interactables, portals, regions, handlers };
+  const ctx: RunCtx = { group, inter: interactables, portals, regions, handlers, year: floor.year };
   placeRun(ctx, corridorPs, { ox: 0, oz: CORRIDOR_FIRST_Z, dirx: 0, dirz: 1, perpx: 1, perpz: 0, half: CW, spacing: ROW_SPACING });
   buildYearWall(group, floor, CL);
 
@@ -262,6 +275,7 @@ interface RunCtx {
   portals: PortalGate[];
   regions: Rect[];
   handlers: FloorHandlers;
+  year: number; // the floor's year, for the share of a project's effort spent in it
 }
 
 /** Place a set of projects as alternating gates on two facing walls of a run. */
@@ -527,7 +541,7 @@ function buildDisplayAt(ctx: RunCtx, p: Project, slot: Slot) {
   // whose underside is at 1.79 — the plaque's top edge lands at 1.787.
   const plaque = new THREE.Mesh(
     new THREE.PlaneGeometry(2.95, 1.014),
-    new THREE.MeshBasicMaterial({ map: gatePlaqueTexture(p), transparent: true }),
+    new THREE.MeshBasicMaterial({ map: gatePlaqueTexture(p, ctx.year), transparent: true }),
   );
   place(plaque, 0.13, 0, 1.28);
   group.add(plaque);
