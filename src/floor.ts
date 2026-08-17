@@ -9,7 +9,7 @@ import { buildPortalGate, setGateMap, type PortalGate } from './portal';
 import {
   gatePlaqueTexture, bannerTexture,
   fallbackPaintingTexture, doorSignTexture, attachProjectArt,
-  yearTapestryTexture, yearInfoTexture, trialSigilTexture,
+  yearTapestryTexture, yearInfoTexture, workLedgerTexture, trialSigilTexture,
 } from './textures';
 
 export interface Interactable {
@@ -89,6 +89,11 @@ const ALCOVE_NEAR = 0.45;      // how close to the wall that notch lets you stan
 // is much of what sells the height.
 const LAMP_Y = CEIL - 3.6;
 const DOOR = { z0: 1.6, z1: 6.8, height: 5.4 }; // the archway into a side hall, beside the orb
+// The front wall's two flanks, mirrored either side of the orb: the activity gate
+// hangs on the right one, the ledger of continued work on the left. Nothing stands
+// directly behind the orb any more — a gate there was the first thing you backed
+// into on arrival, and it left the wall's whole width unused.
+const FRONT_FLANK = 6.2;
 const ELEV = { x: 0, z: 4.2, r: 0.9 }; // the orb's spot (small excluder so you can walk right up)
 const ORB_Y = 2.0;
 // side halls
@@ -231,10 +236,11 @@ export function buildFloor(floor: Floor, handlers: FloorHandlers, people: Person
   regions.push({ minX: -CW + MARGIN, maxX: CW - MARGIN, minZ: 0.6, maxZ: CL - 0.6 });
   const excluders = [{ x: ELEV.x, z: ELEV.z, r: ELEV.r }];
 
-  // ---------- the year's activity ----------
+  // ---------- the year's activity, and the ledger that shares its wall ----------
   if (handlers.activity && handlers.onEnterActivity) {
     buildActivityGate(group, interactables, portals, regions, handlers.activity, handlers.onEnterActivity);
   }
+  buildWorkLedger(group, floor);
 
   // ---------- side halls (only if they hold projects) ----------
   if (leftPs.length) buildHall(ctx, leftPs, -1, addFloorCeil, addWall);
@@ -548,8 +554,33 @@ function buildDisplayAt(ctx: RunCtx, p: Project, slot: Slot) {
 }
 
 /**
- * The year's activity gate, set into the front wall behind the orb — the one
- * blank wall on a floor, and the one you turn round to see when you arrive.
+ * The ledger of work carried into this year from projects begun in earlier ones —
+ * no gates of their own, so this board is the only place the floor names them.
+ *
+ * It takes the front wall's left flank, mirroring the activity gate on the right,
+ * and stays there whether or not the year has a gate to mirror: the back wall is
+ * already the tapestry and the chronicle, and a plaque that moves about depending on
+ * the year is a plaque you have to hunt for. Its height follows the number of
+ * entries — a year with one line gets a small board rather than a mostly empty one —
+ * which is why the plane is shaped from the texture's own aspect, not a constant.
+ */
+function buildWorkLedger(group: THREE.Group, floor: Floor) {
+  if (!floor.continued.length) return;
+  const tex = workLedgerTexture(floor);
+  const w = 5.6;
+  const h = (w * tex.image.height) / tex.image.width;
+  const ledger = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex }));
+  // 0.13 clears the wall's inner face at 0.1, as the gate's own plaque does; hung at
+  // eye level for a player this tall (EYE_HEIGHT 2.5) rather than centred on the wall
+  ledger.position.set(-FRONT_FLANK, Math.max(1.2 + h / 2, 3.4), 0.13);
+  group.add(ledger);
+}
+
+/**
+ * The year's activity gate, set into the front wall — the one blank wall on a
+ * floor, and the one you turn round to see when you arrive. It stands on that
+ * wall's right flank (`FRONT_FLANK`), over by the right-hand door rather than
+ * squarely behind the orb, with the work ledger mirroring it on the left.
  *
  * It is built exactly like a project gate, down to the sill height (the bottom
  * of the mouth at GATE_Y − GATE_H/2 ≈ 2.0 is what makes a leap the only way in),
@@ -563,7 +594,7 @@ function buildActivityGate(
 ) {
   const gate = buildPortalGate(group, {
     key: def.key,
-    x: 0, y: GATE_Y, z: 0.1,
+    x: FRONT_FLANK, y: GATE_Y, z: 0.1,
     yaw: 0,
     width: GATE_W,
     height: GATE_H,
@@ -582,13 +613,16 @@ function buildActivityGate(
   });
 
   // the run-up notch, same shape as a project gate's
-  regions.push({ minX: -ALCOVE_HALF, maxX: ALCOVE_HALF, minZ: ALCOVE_NEAR, maxZ: MARGIN + 0.1 });
+  regions.push({
+    minX: FRONT_FLANK - ALCOVE_HALF, maxX: FRONT_FLANK + ALCOVE_HALF,
+    minZ: ALCOVE_NEAR, maxZ: MARGIN + 0.1,
+  });
 
   const sign = new THREE.Mesh(
     new THREE.PlaneGeometry(5.0, 1.43),
     new THREE.MeshBasicMaterial({ map: doorSignTexture(def.title), transparent: true }),
   );
-  sign.position.set(0, 6.2, 0.12);
+  sign.position.set(FRONT_FLANK, 6.2, 0.12);
   group.add(sign);
 }
 

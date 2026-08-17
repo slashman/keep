@@ -102,8 +102,9 @@ its distances from `JUMP_ARC` rather than hardcoding metres.
 **A year can hold an activity** — a place you dive into, complete, and come out of holding an
 artifact. `activities.ts` maps a year to an `ActivityDef` whose `build()` returns a plain
 `FloorBuild`, so `mountBuild` knows nothing about it; `main.ts` looks the def up and hands it
-to `buildFloor`, which grows one extra gate on the otherwise blank front wall behind the orb.
-Years with no entry grow no gate. 2026's is `obby.ts`, a jumping puzzle up a stone shaft, and
+to `buildFloor`, which grows one extra gate on the front wall's right flank (`FRONT_FLANK`,
+over by the right-hand door — not squarely behind the orb, where it was the first thing you
+backed into on arrival). Years with no entry grow no gate. 2026's is `obby.ts`, a jumping puzzle up a stone shaft, and
 **not one distance in it is written in metres** — the rise between its fifteen platforms, the
 spiral's radius, the shaft's size and the fall tolerance all come off `JUMP_ARC`, so retuning
 the leap retunes the tower with it. Two fractions are the whole difficulty knob: a rise is 62%
@@ -149,6 +150,16 @@ A floor where nothing qualifies promotes its largest work rather than sitting yo
 empty corridor with the year's whole output behind the side doors — and on a floor with no
 effort data at all (2017's fourteen projects log none) every candidate ties, so that comes down
 to whichever `projects.json` lists first.
+
+A floor also carries `continued`: the work that came *into* its year from projects begun in an
+earlier one, read off the same `byYear` breakdown and hung on the **front** wall — the activity
+gate's wall, beside it or centred when the year has none — as the `workLedgerTexture` plaque
+("also worked on in 2016 — Ananias, 139 days"). Those get no gate, which is the point; without
+the ledger a floor would deny anything was going on. The back wall is not the place for it: the
+tapestry and the chronicle already fill that wall, and a third panel crowds them. Its canvas
+grows a row at a time and `buildWorkLedger` shapes the plane from the texture's own aspect, so
+nothing there is a fixed size. Work in a year nothing was *begun* in is dropped — there is no
+floor to hang it on, and `buildFloors` will not conjure one.
 
 **How long a project took is one function**, `devEffort()` in `data.ts` (`isBigProject()` and
 both placard textures read it). It returns a lifetime `total` and the share `inYear`, and the

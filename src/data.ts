@@ -1,4 +1,4 @@
-import type { Project, ProjectsData, Floor, Collaborator, Person } from './types';
+import type { Project, ProjectsData, Floor, ContinuedWork, Collaborator, Person } from './types';
 import { DATA_BASE, ASSET_BASE } from './config';
 import { applyYearsData } from './yearContent';
 
@@ -140,18 +140,41 @@ export function collaboratorsForProject(p: Project, collab: Map<string, Collabor
  * A project stands on exactly one floor — the year it began — however many years
  * it went on being worked on; those later years show up as effort on its placard
  * (see `devEffort`), not as a second gate on a second floor.
+ *
+ * Each floor also carries the work that *carried into* its year from projects begun
+ * earlier, read off the same `byYear` breakdown. Those get no gate, only a line on
+ * the year's ledger, so a floor can still say what was actually going on that year.
  */
 export function buildFloors(data: ProjectsData): Floor[] {
+  const projects = flattenProjects(data);
   const byYear = new Map<number, Project[]>();
-  for (const p of flattenProjects(data)) {
+  for (const p of projects) {
     if (typeof p.year !== 'number' || !Number.isFinite(p.year)) continue;
     let arr = byYear.get(p.year);
     if (!arr) byYear.set(p.year, (arr = []));
     arr.push(p);
   }
+
+  const continued = new Map<number, ContinuedWork[]>();
+  for (const p of projects) {
+    const breakdown = (p.effortMeasures ?? []).find((m) => m.type === 'byYear' && m.years?.length);
+    for (const entry of breakdown?.years ?? []) {
+      // A year nothing was *begun* in has no floor to hang a ledger on, so work that
+      // fell only in such a year is dropped rather than conjuring a floor for it.
+      if (!entry.days || entry.year === p.year || !byYear.has(entry.year)) continue;
+      let arr = continued.get(entry.year);
+      if (!arr) continued.set(entry.year, (arr = []));
+      arr.push({ project: p, days: entry.days });
+    }
+  }
+
   return [...byYear.keys()]
     .sort((a, b) => b - a)
-    .map((year) => ({ year, projects: byYear.get(year)! }));
+    .map((year) => ({
+      year,
+      projects: byYear.get(year)!,
+      continued: (continued.get(year) ?? []).sort((a, b) => b.days - a.days),
+    }));
 }
 
 /** Days of work behind a project: the whole of it, and the part that fell in one year. */

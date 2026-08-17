@@ -49,7 +49,9 @@ npm run preview   # serve the production build
   stands on that one floor however many years it went on being worked on. Those
   later years show as **effort** instead: where `effortMeasures` breaks the work
   down per year, a gate and its placard read *148 days of work this year · 400 in
-  total*. The **magic orb** (press `E`) opens a floor directory to travel
+  total*, and the year it carried into names it on the **ledger plaque** on the
+  front wall — *also worked on in 2016: Ananias, 139 days* — with no gate of its own.
+  The **magic orb** (press `E`) opens a floor directory to travel
   between years. Only one floor is built at a time and disposed on travel, keeping
   the scene light.
 - **Floor plan (a plus/cross).** You arrive beside the **magic orb** in a short

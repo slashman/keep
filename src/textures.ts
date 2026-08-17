@@ -779,6 +779,86 @@ export function yearTapestryTexture(floor: Floor): THREE.CanvasTexture {
   return tex;
 }
 
+/**
+ * The ledger of work that carried into this year from projects begun in an earlier
+ * one. They have no gate on this floor — their gate stands on the year they started
+ * — so this board is the only place the year admits they were going on at all.
+ *
+ * Its canvas grows a row at a time, and the caller shapes its plane from the
+ * texture's own aspect (see `buildYearWall`) rather than assuming a size.
+ */
+export function workLedgerTexture(floor: Floor): THREE.CanvasTexture {
+  const W = 620, padX = 40, ROW = 62;
+  const rows = floor.continued.slice(0, 8);
+  const hidden = floor.continued.length - rows.length;
+  const headH = 122;
+  const H = headH + rows.length * ROW + (hidden ? 46 : 0) + 34;
+  const { canvas, ctx } = makeCanvas(W, H);
+
+  // same wood-and-gold as the gate plaques — this is a plaque, not a parchment panel
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#3a3222');
+  g.addColorStop(1, '#241e14');
+  ctx.fillStyle = g;
+  roundRect(ctx, 6, 6, W - 12, H - 12, 14);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(224,178,86,0.6)';
+  ctx.lineWidth = 4;
+  roundRect(ctx, 6, 6, W - 12, H - 12, 14);
+  ctx.stroke();
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#e9d9ac';
+  ctx.font = 'bold 30px Georgia, serif';
+  ctx.fillText('ALSO WORKED ON', W / 2, 56);
+  ctx.fillStyle = '#c9b481';
+  ctx.font = 'italic 25px Georgia, serif';
+  ctx.fillText(`in ${floor.year}`, W / 2, 90);
+  ctx.strokeStyle = 'rgba(224,178,86,0.35)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(padX, headH - 6);
+  ctx.lineTo(W - padX, headH - 6);
+  ctx.stroke();
+
+  rows.forEach((w, i) => {
+    const y = headH + ROW / 2 + i * ROW;
+    // the day count is fixed at the right edge; the title takes what is left of the row
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#c9b481';
+    ctx.font = 'italic 26px Georgia, serif';
+    const days = `${w.days} day${w.days === 1 ? '' : 's'}`;
+    ctx.fillText(days, W - padX, y);
+    const room = W - padX * 2 - ctx.measureText(days).width - 24;
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#efe6cd';
+    ctx.font = '27px Georgia, serif';
+    let t = w.project.title;
+    while (ctx.measureText(t).width > room && t.length > 4) t = t.slice(0, -1);
+    if (t !== w.project.title) t = t.slice(0, -1) + '…';
+    ctx.fillText(t, padX, y);
+
+    if (i < rows.length - 1) {
+      ctx.strokeStyle = 'rgba(224,178,86,0.16)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padX, y + ROW / 2);
+      ctx.lineTo(W - padX, y + ROW / 2);
+      ctx.stroke();
+    }
+  });
+
+  if (hidden) {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#9a8a62';
+    ctx.font = 'italic 23px Georgia, serif';
+    ctx.fillText(`…and ${hidden} more`, W / 2, headH + rows.length * ROW + 24);
+  }
+  return tuneTexture(new THREE.CanvasTexture(canvas));
+}
+
 /** The chronicle panel: a wide, short summary of the floor's year (two columns). */
 export function yearInfoTexture(floor: Floor): THREE.CanvasTexture {
   const W = 1680, H = 480;

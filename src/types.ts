@@ -79,8 +79,16 @@ export interface Person {
   portraitLeftMargin?: number; // 0..1: portrait x-crop offset (see squareImageTexture); undefined → centred
 }
 
+/** A project worked on during a year it was not begun in: a line on that year's ledger, not a gate. */
+export interface ContinuedWork {
+  project: Project;
+  days: number;
+}
+
 // A single explorable level of the Keep.
 export interface Floor {
   year: number;
   projects: Project[];
+  /** work carried into this year from a project begun in an earlier one, most days first */
+  continued: ContinuedWork[];
 }
